@@ -387,7 +387,7 @@ namespace Nex.Starter
             return foldout;
         }
 
-        private static class UpmConfigWriter
+        public static class UpmConfigWriter
         {
             // The format of the upmconfig is
             // [npmAuth."https://packages.nex.inc"]
