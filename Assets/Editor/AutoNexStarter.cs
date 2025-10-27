@@ -15,6 +15,24 @@ using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 using static Nex.Starter.NexStarter;
 namespace Nex.Starter
 {
+    public class AutoNexStarterForceReload
+    {
+        private const string CONFIG_KEY = "AutoNexStarter_Completed";
+
+        [MenuItem("Nex/Force Reload Nex Starter")]
+        private static void ForceReload()
+        {
+            if (EditorPrefs.HasKey(CONFIG_KEY))
+            {
+                EditorPrefs.DeleteKey(CONFIG_KEY);
+                Debug.Log("AutoNexStarterForceReload: 已重置 AutoNexStarter 完成標記，程序將在下次編譯或啟動時重新運行。");
+            }
+            else
+            {
+                Debug.Log("AutoNexStarterForceReload: 完成標記不存在，無需重置。");
+            }
+        }
+    }
     // 自動化 NexStarter 的所有步驟，並在完成後安裝 .unitypackage
     [InitializeOnLoad]
     public class AutoNexStarter
