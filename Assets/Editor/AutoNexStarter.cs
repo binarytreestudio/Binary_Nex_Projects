@@ -24,6 +24,7 @@ namespace Nex.Starter
 
         static AutoNexStarter()
         {
+            EditorPrefs.SetBool(CONFIG_KEY, false);
             // 只在首次運行或未完成時執行
             if (EditorPrefs.HasKey(CONFIG_KEY) && EditorPrefs.GetBool(CONFIG_KEY, false))
             {
