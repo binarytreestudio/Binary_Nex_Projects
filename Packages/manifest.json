@@ -43,5 +43,18 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "Nex Packages",
+      "url": "https://packages.nex.inc",
+      "scopes": [
+        "team.nex",
+        "com.cysharp.unitask",
+        "com.dbrizov.naughtyattributes",
+        "com.textus-games.serialized-reference-ui",
+        "net.tnrd.serializableinterface"
+      ]
+    }
+  ]
 }

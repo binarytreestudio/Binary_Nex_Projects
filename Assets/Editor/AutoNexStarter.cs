@@ -5,19 +5,22 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Build;
+using UnityEditor.PackageManager;
+using UnityEditor.PackageManager.Requests;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
-
-#nullable enable
-
+using static Nex.Starter.NexStarter;
 namespace Nex.Starter
 {
-    // 自動化 NexStarter 的所有步驟，在 Editor 啟動時執行一次。
+    // 自動化 NexStarter 的所有步驟，並在完成後安裝 .unitypackage
     [InitializeOnLoad]
     public class AutoNexStarter
     {
         private const string CONFIG_KEY = "AutoNexStarter_Completed"; // 用來檢查是否已執行過
+        private const string PACKAGE_PATH = "Assets/NexPackages/2.PlaygroundSDKEssentials-20251016.unitypackage"; // 目標 .unitypackage 路徑
 
         static AutoNexStarter()
         {
@@ -32,7 +35,7 @@ namespace Nex.Starter
             {
                 Debug.Log("AutoNexStarter: 開始自動配置 Nex SDK...");
 
-                // 步驟 1: 配置 UPM 認證 (使用你的 access token)
+                // 步驟 1: 配置 UPM 認證
                 ConfigureUpmConfig();
 
                 // 步驟 2: 配置 Scoped Registry
@@ -50,19 +53,22 @@ namespace Nex.Starter
                 // 步驟 6: 驗證 MDK 安裝
                 VerifyMdkInstallation();
 
+                // 步驟 7: 自動安裝 .unitypackage
+                InstallUnityPackage();
+
                 // 標記為已完成
                 EditorPrefs.SetBool(CONFIG_KEY, true);
 
-                Debug.Log("AutoNexStarter: 配置完成！請重啟 Unity Editor 以確保變更生效。");
+                Debug.Log("AutoNexStarter: 配置和 .unitypackage 安裝完成！請重啟 Unity Editor 以確保變更生效。");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"AutoNexStarter: 配置失敗 - {ex.Message}\n{ex.StackTrace}");
+                Debug.LogError($"AutoNexStarter: 配置或安裝失敗 - {ex.Message}\n{ex.StackTrace}");
                 // 不標記為完成，讓下次重試
             }
         }
 
-        // 步驟 1: 配置 .upmconfig.toml (從 NexStarter 複製)
+        // 步驟 1: 配置 .upmconfig.toml
         private static void ConfigureUpmConfig()
         {
             const string accessToken = "YOUR_ACCESS_TOKEN_HERE"; // 替換為你的 key
@@ -70,12 +76,12 @@ namespace Nex.Starter
             Debug.Log("AutoNexStarter: 已配置 UPM 認證 (.upmconfig.toml)。");
         }
 
-        // 步驟 2: 配置 Scoped Registry (從 NexStarter 複製)
+        // 步驟 2: 配置 Scoped Registry
         private static void ConfigureScopedRegistry()
         {
-            var manager = Nex.Starter.NexStarter.PackageManager.Instance;
+            var manager = PackageManager.Instance;
             manager.AddScopedRegistries(
-                new Nex.Starter.NexStarter.PackageManager.RegistrySpec("Nex Packages", "https://packages.nex.inc",
+                new PackageManager.RegistrySpec("Nex Packages", "https://packages.nex.inc",
                     new[]
                     {
                         "team.nex",
@@ -87,15 +93,15 @@ namespace Nex.Starter
             Debug.Log("AutoNexStarter: 已配置 Scoped Registry。");
         }
 
-        // 步驟 3: 添加 MDK 套件 (從 NexStarter 複製)
+        // 步驟 3: 添加 MDK 套件
         private static void AddMdk()
         {
-            var manager = Nex.Starter.NexStarter.PackageManager.Instance;
+            var manager = PackageManager.Instance;
             manager.AddPackages("team.nex.mdk.body", "team.nex.nex-opencv-for-unity", "team.nex.ml-models");
             Debug.Log("AutoNexStarter: 已添加/更新 MDK 套件。");
         }
 
-        // 步驟 4: 配置專案設定 (從 NexStarter 複製)
+        // 步驟 4: 配置專案設定
         private static void ConfigureProjectSettings()
         {
             PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, false);
@@ -120,10 +126,10 @@ namespace Nex.Starter
             Debug.Log("AutoNexStarter: 已配置專案設定。");
         }
 
-        // 步驟 5: (可選) 添加 Hand Pose (從 NexStarter 複製)
+        // 步驟 5: (可選) 添加 Hand Pose
         private static void AddHandPose()
         {
-            var manager = Nex.Starter.NexStarter.PackageManager.Instance;
+            var manager = PackageManager.Instance;
             if (IsMinApiLevelReadyForHandPose())
             {
                 manager.AddPackages("team.nex.mdk.hand");
@@ -152,7 +158,7 @@ namespace Nex.Starter
             return true;
         }
 
-        // 步驟 6: 驗證 MDK (從 NexStarter 複製)
+        // 步驟 6: 驗證 MDK 安裝
         private static void VerifyMdkInstallation()
         {
             try
@@ -174,7 +180,21 @@ namespace Nex.Starter
             }
         }
 
-        // 輔助類 (從 NexStarter 複製必要的部分)
+        // 步驟 7: 自動安裝 .unitypackage
+        private static void InstallUnityPackage()
+        {
+            if (File.Exists(PACKAGE_PATH))
+            {
+                AssetDatabase.ImportPackage(PACKAGE_PATH, true); // true 表示默認導入所有內容
+                Debug.Log($"AutoNexStarter: 已安裝 .unitypackage: {PACKAGE_PATH}");
+            }
+            else
+            {
+                Debug.LogError($"AutoNexStarter: 找不到 .unitypackage 檔案: {PACKAGE_PATH}");
+            }
+        }
+
+        // 輔助類
         [System.Serializable]
         private class MdkVerifier
         {
@@ -183,7 +203,6 @@ namespace Nex.Starter
 
         // 以下是從 NexStarter 複製的必要類別 (UpmConfigWriter 和 PackageManager)
         // ... (將 UpmConfigWriter 和 PackageManager 的完整代碼從 NexStarter.cs 複製到這裡)
-        // 注意：為了完整性，你需要將 NexStarter.cs 中的 UpmConfigWriter、PackageManager、RegistrySpec 等類別複製到此腳本中。
         // 如果空間不足，可以將整個 NexStarter.cs 作為依賴，或合併成一個檔案。
     }
 }
