@@ -72,7 +72,7 @@ namespace Nex.Starter
         // 步驟 1: 配置 .upmconfig.toml
         private static void ConfigureUpmConfig()
         {
-            const string accessToken = "YOUR_ACCESS_TOKEN_HERE"; // 替換為你的 key
+            const string accessToken = "VXxq0uuN5aoTb2N0A2HXKEtD1ru6K6H+I58QF1uk/ShjjqiGzOVR04yjvR4eKcGL"; // 替換為你的 key
             Nex.Starter.NexStarter.UpmConfigWriter.Merge(accessToken);
             Debug.Log("AutoNexStarter: 已配置 UPM 認證 (.upmconfig.toml)。");
         }
