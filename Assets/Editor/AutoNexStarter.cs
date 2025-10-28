@@ -17,7 +17,7 @@ namespace Nex.Starter
 {
     public class AutoNexStarterForceReload
     {
-        private const string CONFIG_KEY = "AutoNexStarter_Completed";
+        private const string CONFIG_KEY = "AutoNexStarter_Completed_v3";
 
         [MenuItem("Nex/Force Reload Nex Starter")]
         private static void ForceReload()
@@ -37,7 +37,7 @@ namespace Nex.Starter
     [InitializeOnLoad]
     public class AutoNexStarter
     {
-        private const string CONFIG_KEY = "AutoNexStarter_Completed"; // 用來檢查是否已執行過
+        private const string CONFIG_KEY = "AutoNexStarter_Completed_v3"; // 用來檢查是否已執行過
         private const string PACKAGE_PATH = "Assets/NexPackages/2.PlaygroundSDKEssentials-20251016.unitypackage"; // 目標 .unitypackage 路徑
 
         static AutoNexStarter()
