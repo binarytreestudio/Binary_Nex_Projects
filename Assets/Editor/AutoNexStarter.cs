@@ -25,76 +25,76 @@ namespace Nex.Starter
             if (EditorPrefs.HasKey(CONFIG_KEY))
             {
                 EditorPrefs.DeleteKey(CONFIG_KEY);
-                Debug.Log("AutoNexStarterForceReload: ¤w­«¸m AutoNexStarter §¹¦¨¼Ğ°O¡Aµ{§Ç±N¦b¤U¦¸½sÄ¶©Î±Ò°Ê®É­«·s¹B¦æ¡C");
+                Debug.Log("AutoNexStarterForceReload: å·²é‡ç½® AutoNexStarter å®Œæˆæ¨™è¨˜ï¼Œç¨‹åºå°‡åœ¨ä¸‹æ¬¡ç·¨è­¯æˆ–å•Ÿå‹•æ™‚é‡æ–°é‹è¡Œã€‚");
             }
             else
             {
-                Debug.Log("AutoNexStarterForceReload: §¹¦¨¼Ğ°O¤£¦s¦b¡AµL»İ­«¸m¡C");
+                Debug.Log("AutoNexStarterForceReload: å®Œæˆæ¨™è¨˜ä¸å­˜åœ¨ï¼Œç„¡éœ€é‡ç½®ã€‚");
             }
         }
     }
-    // ¦Û°Ê¤Æ NexStarter ªº©Ò¦³¨BÆJ¡A¨Ã¦b§¹¦¨«á¦w¸Ë .unitypackage
+    // è‡ªå‹•åŒ– NexStarter çš„æ‰€æœ‰æ­¥é©Ÿï¼Œä¸¦åœ¨å®Œæˆå¾Œå®‰è£ .unitypackage
     [InitializeOnLoad]
     public class AutoNexStarter
     {
-        private const string CONFIG_KEY = "AutoNexStarter_Completed_v3"; // ¥Î¨ÓÀË¬d¬O§_¤w°õ¦æ¹L
-        private const string PACKAGE_PATH = "Assets/NexPackages/2.PlaygroundSDKEssentials-20251016.unitypackage"; // ¥Ø¼Ğ .unitypackage ¸ô®|
+        private const string CONFIG_KEY = "AutoNexStarter_Completed_v3"; // ç”¨ä¾†æª¢æŸ¥æ˜¯å¦å·²åŸ·è¡Œé
+        private const string PACKAGE_PATH = "Assets/NexPackages/2.PlaygroundSDKEssentials-20251016.unitypackage"; // ç›®æ¨™ .unitypackage è·¯å¾‘
 
         static AutoNexStarter()
         {
-            // ¥u¦b­º¦¸¹B¦æ©Î¥¼§¹¦¨®É°õ¦æ
+            // åªåœ¨é¦–æ¬¡é‹è¡Œæˆ–æœªå®Œæˆæ™‚åŸ·è¡Œ
             if (EditorPrefs.HasKey(CONFIG_KEY) && EditorPrefs.GetBool(CONFIG_KEY, false))
             {
-                Debug.Log("AutoNexStarter: ¤w§¹¦¨°t¸m¡A¸õ¹L¦Û°Ê¤Æ¡C");
+                Debug.Log("AutoNexStarter: å·²å®Œæˆé…ç½®ï¼Œè·³éè‡ªå‹•åŒ–ã€‚");
                 return;
             }
 
             try
             {
-                Debug.Log("AutoNexStarter: ¶}©l¦Û°Ê°t¸m Nex SDK...");
+                Debug.Log("AutoNexStarter: é–‹å§‹è‡ªå‹•é…ç½® Nex SDK...");
 
-                // ¨BÆJ 1: °t¸m UPM »{ÃÒ
+                // æ­¥é©Ÿ 1: é…ç½® UPM èªè­‰
                 ConfigureUpmConfig();
 
-                // ¨BÆJ 2: °t¸m Scoped Registry
+                // æ­¥é©Ÿ 2: é…ç½® Scoped Registry
                 ConfigureScopedRegistry();
 
-                // ¨BÆJ 3: ²K¥[/§ó·s MDK ®M¥ó
+                // æ­¥é©Ÿ 3: æ·»åŠ /æ›´æ–° MDK å¥—ä»¶
                 AddMdk();
 
-                // ¨BÆJ 4: °t¸m±M®×³]©w
+                // æ­¥é©Ÿ 4: é…ç½®å°ˆæ¡ˆè¨­å®š
                 ConfigureProjectSettings();
 
-                // ¨BÆJ 5: (¥i¿ï) ²K¥[ Hand Pose ¤ä´©
-                // AddHandPose(); // ¨ú®øµù¸Ñ¥H±Ò¥Î
+                // æ­¥é©Ÿ 5: (å¯é¸) æ·»åŠ  Hand Pose æ”¯æ´
+                // AddHandPose(); // å–æ¶ˆè¨»è§£ä»¥å•Ÿç”¨
 
-                // ¨BÆJ 6: ÅçÃÒ MDK ¦w¸Ë
+                // æ­¥é©Ÿ 6: é©—è­‰ MDK å®‰è£
                 VerifyMdkInstallation();
 
-                // ¨BÆJ 7: ¦Û°Ê¦w¸Ë .unitypackage
+                // æ­¥é©Ÿ 7: è‡ªå‹•å®‰è£ .unitypackage
                 InstallUnityPackage();
 
-                // ¼Ğ°O¬°¤w§¹¦¨
+                // æ¨™è¨˜ç‚ºå·²å®Œæˆ
                 EditorPrefs.SetBool(CONFIG_KEY, true);
 
-                Debug.Log("AutoNexStarter: °t¸m©M .unitypackage ¦w¸Ë§¹¦¨¡I½Ğ­«±Ò Unity Editor ¥H½T«OÅÜ§ó¥Í®Ä¡C");
+                Debug.Log("AutoNexStarter: é…ç½®å’Œ .unitypackage å®‰è£å®Œæˆï¼è«‹é‡å•Ÿ Unity Editor ä»¥ç¢ºä¿è®Šæ›´ç”Ÿæ•ˆã€‚");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"AutoNexStarter: °t¸m©Î¦w¸Ë¥¢±Ñ - {ex.Message}\n{ex.StackTrace}");
-                // ¤£¼Ğ°O¬°§¹¦¨¡AÅı¤U¦¸­«¸Õ
+                Debug.LogError($"AutoNexStarter: é…ç½®æˆ–å®‰è£å¤±æ•— - {ex.Message}\n{ex.StackTrace}");
+                // ä¸æ¨™è¨˜ç‚ºå®Œæˆï¼Œè®“ä¸‹æ¬¡é‡è©¦
             }
         }
 
-        // ¨BÆJ 1: °t¸m .upmconfig.toml
+        // æ­¥é©Ÿ 1: é…ç½® .upmconfig.toml
         private static void ConfigureUpmConfig()
         {
-            const string accessToken = "VXxq0uuN5aoTb2N0A2HXKEtD1ru6K6H+I58QF1uk/ShjjqiGzOVR04yjvR4eKcGL"; // ´À´«¬°§Aªº key
+            const string accessToken = "VXxq0uuN5aoTb2N0A2HXKEtD1ru6K6H+I58QF1uk/ShjjqiGzOVR04yjvR4eKcGL"; // æ›¿æ›ç‚ºä½ çš„ key
             Nex.Starter.NexStarter.UpmConfigWriter.Merge(accessToken);
-            Debug.Log("AutoNexStarter: ¤w°t¸m UPM »{ÃÒ (.upmconfig.toml)¡C");
+            Debug.Log("AutoNexStarter: å·²é…ç½® UPM èªè­‰ (.upmconfig.toml)ã€‚");
         }
 
-        // ¨BÆJ 2: °t¸m Scoped Registry
+        // æ­¥é©Ÿ 2: é…ç½® Scoped Registry
         private static void ConfigureScopedRegistry()
         {
             var manager = PackageManager.Instance;
@@ -108,18 +108,18 @@ namespace Nex.Starter
                         "com.textus-games.serialized-reference-ui",
                         "net.tnrd.serializableinterface",
                     }));
-            Debug.Log("AutoNexStarter: ¤w°t¸m Scoped Registry¡C");
+            Debug.Log("AutoNexStarter: å·²é…ç½® Scoped Registryã€‚");
         }
 
-        // ¨BÆJ 3: ²K¥[ MDK ®M¥ó
+        // æ­¥é©Ÿ 3: æ·»åŠ  MDK å¥—ä»¶
         private static void AddMdk()
         {
             var manager = PackageManager.Instance;
             manager.AddPackages("team.nex.mdk.body", "team.nex.nex-opencv-for-unity", "team.nex.ml-models");
-            Debug.Log("AutoNexStarter: ¤w²K¥[/§ó·s MDK ®M¥ó¡C");
+            Debug.Log("AutoNexStarter: å·²æ·»åŠ /æ›´æ–° MDK å¥—ä»¶ã€‚");
         }
 
-        // ¨BÆJ 4: °t¸m±M®×³]©w
+        // æ­¥é©Ÿ 4: é…ç½®å°ˆæ¡ˆè¨­å®š
         private static void ConfigureProjectSettings()
         {
             PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, false);
@@ -141,10 +141,10 @@ namespace Nex.Starter
             PlayerSettings.Android.applicationEntry = AndroidApplicationEntry.Activity;
 #endif
 
-            Debug.Log("AutoNexStarter: ¤w°t¸m±M®×³]©w¡C");
+            Debug.Log("AutoNexStarter: å·²é…ç½®å°ˆæ¡ˆè¨­å®šã€‚");
         }
 
-        // ¨BÆJ 5: (¥i¿ï) ²K¥[ Hand Pose
+        // æ­¥é©Ÿ 5: (å¯é¸) æ·»åŠ  Hand Pose
         private static void AddHandPose()
         {
             var manager = PackageManager.Instance;
@@ -156,7 +156,7 @@ namespace Nex.Starter
             {
                 manager.AddPackages("team.nex.min-playos-api-level@1.2.1", "team.nex.mdk.hand");
             }
-            Debug.Log("AutoNexStarter: ¤w²K¥[ Hand Pose ¤ä´©¡C");
+            Debug.Log("AutoNexStarter: å·²æ·»åŠ  Hand Pose æ”¯æ´ã€‚");
         }
 
         private static bool IsMinApiLevelReadyForHandPose()
@@ -176,7 +176,7 @@ namespace Nex.Starter
             return true;
         }
 
-        // ¨BÆJ 6: ÅçÃÒ MDK ¦w¸Ë
+        // æ­¥é©Ÿ 6: é©—è­‰ MDK å®‰è£
         private static void VerifyMdkInstallation()
         {
             try
@@ -184,43 +184,43 @@ namespace Nex.Starter
                 var asset = AssetDatabase.LoadAssetAtPath<TextAsset>("Packages/team.nex.mdk/Resources/mdk-info.json");
                 if (asset == null)
                 {
-                    Debug.LogWarning("AutoNexStarter: ¥¼§ä¨ì mdk-info.json¡AMDK ¥¼¦w¸Ë¡C");
+                    Debug.LogWarning("AutoNexStarter: æœªæ‰¾åˆ° mdk-info.jsonï¼ŒMDK æœªå®‰è£ã€‚");
                     return;
                 }
 
                 var verifier = new MdkVerifier { version = "" };
                 EditorJsonUtility.FromJsonOverwrite(asset.text, verifier);
-                Debug.Log($"AutoNexStarter: MDK {verifier.version} ¤w¦w¸Ë¡C");
+                Debug.Log($"AutoNexStarter: MDK {verifier.version} å·²å®‰è£ã€‚");
             }
             catch (Exception ex)
             {
-                Debug.LogError($"AutoNexStarter: ÅçÃÒ MDK ¥¢±Ñ - {ex.Message}");
+                Debug.LogError($"AutoNexStarter: é©—è­‰ MDK å¤±æ•— - {ex.Message}");
             }
         }
 
-        // ¨BÆJ 7: ¦Û°Ê¦w¸Ë .unitypackage
+        // æ­¥é©Ÿ 7: è‡ªå‹•å®‰è£ .unitypackage
         private static void InstallUnityPackage()
         {
             if (File.Exists(PACKAGE_PATH))
             {
-                AssetDatabase.ImportPackage(PACKAGE_PATH, true); // true ªí¥ÜÀq»{¾É¤J©Ò¦³¤º®e
-                Debug.Log($"AutoNexStarter: ¤w¦w¸Ë .unitypackage: {PACKAGE_PATH}");
+                AssetDatabase.ImportPackage(PACKAGE_PATH, true); // true è¡¨ç¤ºé»˜èªå°å…¥æ‰€æœ‰å…§å®¹
+                Debug.Log($"AutoNexStarter: å·²å®‰è£ .unitypackage: {PACKAGE_PATH}");
             }
             else
             {
-                Debug.LogError($"AutoNexStarter: §ä¤£¨ì .unitypackage ÀÉ®×: {PACKAGE_PATH}");
+                Debug.LogError($"AutoNexStarter: æ‰¾ä¸åˆ° .unitypackage æª”æ¡ˆ: {PACKAGE_PATH}");
             }
         }
 
-        // »²§UÃş
+        // è¼”åŠ©é¡
         [System.Serializable]
         private class MdkVerifier
         {
             public string version = "";
         }
 
-        // ¥H¤U¬O±q NexStarter ½Æ»sªº¥²­nÃş§O (UpmConfigWriter ©M PackageManager)
-        // ... (±N UpmConfigWriter ©M PackageManager ªº§¹¾ã¥N½X±q NexStarter.cs ½Æ»s¨ì³o¸Ì)
-        // ¦pªGªÅ¶¡¤£¨¬¡A¥i¥H±N¾ã­Ó NexStarter.cs §@¬°¨Ì¿à¡A©Î¦X¨Ö¦¨¤@­ÓÀÉ®×¡C
+        // ä»¥ä¸‹æ˜¯å¾ NexStarter è¤‡è£½çš„å¿…è¦é¡åˆ¥ (UpmConfigWriter å’Œ PackageManager)
+        // ... (å°‡ UpmConfigWriter å’Œ PackageManager çš„å®Œæ•´ä»£ç¢¼å¾ NexStarter.cs è¤‡è£½åˆ°é€™è£¡)
+        // å¦‚æœç©ºé–“ä¸è¶³ï¼Œå¯ä»¥å°‡æ•´å€‹ NexStarter.cs ä½œç‚ºä¾è³´ï¼Œæˆ–åˆä½µæˆä¸€å€‹æª”æ¡ˆã€‚
     }
 }

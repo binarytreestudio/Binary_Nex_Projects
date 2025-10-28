@@ -1,0 +1,455 @@
+fileFormatVersion: 2
+guid: 10190da57c0dc134582b5c5110549a04
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2153494385918442766
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_0
+  - first:
+      213: 5360422112337581818
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_1
+  - first:
+      213: -8103995924642541110
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_2
+  - first:
+      213: 424867875296594744
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_3
+  - first:
+      213: 6314338999349167654
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_4
+  - first:
+      213: -5366141749427357622
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_5
+  - first:
+      213: 4487992481151351145
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_6
+  - first:
+      213: 9041823443679753223
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_7
+  - first:
+      213: 71509834166726221
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_8
+  - first:
+      213: 4854737892319784767
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_9
+  - first:
+      213: 1968234668542116472
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_10
+  - first:
+      213: 225063456428050211
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_11
+  - first:
+      213: 3077229453337490050
+    second: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_0
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 218
+        width: 52
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0d777afbbfb2ed10800000000000000
+      internalID: 2153494385918442766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_1
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 218
+        width: 52
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af6d70ca28b046a40800000000000000
+      internalID: 5360422112337581818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_2
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 218
+        width: 52
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac1d772b4a2d88f80800000000000000
+      internalID: -8103995924642541110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_3
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 218
+        width: 52
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83b478fd41f65e500800000000000000
+      internalID: 424867875296594744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_4
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 218
+        width: 53
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6264a977dd901a750800000000000000
+      internalID: 6314338999349167654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_5
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 218
+        width: 53
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a483dfa8282a785b0800000000000000
+      internalID: -5366141749427357622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_6
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 217
+        width: 52
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96976a9126d884e30800000000000000
+      internalID: 4487992481151351145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_7
+      rect:
+        serializedVersion: 2
+        x: 347
+        y: 218
+        width: 54
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 704b45234820b7d70800000000000000
+      internalID: 9041823443679753223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_8
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 217
+        width: 53
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4e6477b0dd0ef000800000000000000
+      internalID: 71509834166726221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_9
+      rect:
+        serializedVersion: 2
+        x: 430
+        y: 217
+        width: 53
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3f695d346e7f5340800000000000000
+      internalID: 4854737892319784767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_10
+      rect:
+        serializedVersion: 2
+        x: 469
+        y: 217
+        width: 56
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 872cf0db003905b10800000000000000
+      internalID: 1968234668542116472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_11
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 217
+        width: 54
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 327c05c65069f1300800000000000000
+      internalID: 225063456428050211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 598
+        height: 6
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 282fc8a42e384ba20800000000000000
+      internalID: 3077229453337490050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 1537655665
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_0: 2153494385918442766
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_1: 5360422112337581818
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_10: 1968234668542116472
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_11: 225063456428050211
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_12: 3077229453337490050
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_2: -8103995924642541110
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_3: 424867875296594744
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_4: 6314338999349167654
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_5: -5366141749427357622
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_6: 4487992481151351145
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_7: 9041823443679753223
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_8: 71509834166726221
+      loading-bar-status-icon-vector-illustration-loaded-icons-download-progress-donload-upload_1211661-4307_9: 4854737892319784767
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
