@@ -6,7 +6,7 @@ using UnityEngine;
 public class AttackPathManager : Singleton<AttackPathManager>
 {
     [Serializable]
-    public class AttackIndicatorMapping
+    private class AttackIndicatorMapping
     {
         public GameObject indicatorObject;
         public EnemyController.AttackPath path;

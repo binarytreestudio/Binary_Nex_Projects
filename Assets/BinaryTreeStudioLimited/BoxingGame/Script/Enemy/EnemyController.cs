@@ -31,6 +31,7 @@ public class EnemyController : MonoBehaviour
     private bool attacked = false;
     public AttackPath playerAttackPath = AttackPath.None;
     [SerializeField] private TMPro.TextMeshProUGUI enemyHealthText;
+    private EnemyIncomingAttack enemyIncomingAttack = EnemyIncomingAttack.None;
 
     private void Start()
     {
@@ -66,6 +67,7 @@ public class EnemyController : MonoBehaviour
         int i = UnityEngine.Random.Range(0, 100);
         if (enemyAttack ? (attacked ? i < 100 : i < BattleManager.Instance.playerAttackChance) : i < 100)
         {
+            enemyIncomingAttack = EnemyIncomingAttack.None;
             int randomPath = UnityEngine.Random.Range(1, Enum.GetValues(typeof(AttackPath)).Length);
             while (randomPath == (int)playerAttackPath)
             {
@@ -78,7 +80,8 @@ public class EnemyController : MonoBehaviour
         else
         {
             playerAttackPath = AttackPath.None;
-            BoxingEnemyAttackIndicator.Instance.Show(enemyAttackDelay);
+            enemyIncomingAttack = (EnemyIncomingAttack)UnityEngine.Random.Range(1, Enum.GetValues(typeof(EnemyIncomingAttack)).Length);
+            EnemyAttackIndicatorManager.Instance.Show(enemyIncomingAttack, enemyAttackDelay);
             StartCoroutine(EnemyAttackCoroutine());
             BattleManager.Instance.enemyAttacking = true;
             attacked = true;
@@ -88,6 +91,6 @@ public class EnemyController : MonoBehaviour
     IEnumerator EnemyAttackCoroutine()
     {
         yield return new WaitForSeconds(enemyAttackDelay);
-        BattleManager.Instance.EnemyUpSideAttack();
+        BattleManager.Instance.EnemyAttack(enemyIncomingAttack);
     }
 }

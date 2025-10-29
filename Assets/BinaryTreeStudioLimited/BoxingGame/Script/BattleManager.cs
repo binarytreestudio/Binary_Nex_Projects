@@ -34,7 +34,7 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField] SlashDetector rightSlashDetector = null!;
 
     [Header("UI Elements")]
-    [SerializeField] BoxingEnemyAttackIndicator upSideIncomingAttackIndicator;
+    [SerializeField] EnemyAttackIndicatorManager upSideIncomingAttackIndicator;
     [SerializeField] TMPro.TextMeshProUGUI comboText;
     [SerializeField] Color successColor = Color.yellow;
     [SerializeField] Color incomingAttackColor = Color.red;
@@ -75,6 +75,13 @@ public class BattleManager : Singleton<BattleManager>
         public float angle;
     }
     [SerializeField] private List<HitAngleMapping> hitAngleMappings = new List<HitAngleMapping>();
+
+    #endregion
+
+    #region Observer Pattern
+
+    private bool gameStarted = false;
+    public Action<bool> OnGameStarted;
 
     #endregion
 
@@ -184,6 +191,8 @@ public class BattleManager : Singleton<BattleManager>
         AttackPathManager.Instance.ShowAttackIndicator(enemyController.playerAttackPath);
         comboText.text = "Combo: " + playerCombo;
         comboTimerText.text = "";
+        gameStarted = true;
+        OnGameStarted?.Invoke(gameStarted);
     }
 
     #endregion
@@ -309,30 +318,53 @@ public class BattleManager : Singleton<BattleManager>
 
     #region Enemy Attack
 
-    public void EnemyUpSideAttack()
+    public void EnemyAttack(EnemyController.EnemyIncomingAttack attackPath)
     {
-        if (PlayerController.Instance.IsPlayerCrouching())
+        switch (attackPath)
         {
-            playerCombo++;
-            AttackPathManager.Instance.HideAllIndicators();
-            comboText.text = "Combo: " + playerCombo;
-            comboText.color = successColor;
-
-            AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Miss);
-            missEffect.Play();
-        }
-        else
-        {
-            playerCombo = 0;
-            comboText.text = "Combo: " + playerCombo;
-            comboText.color = incomingAttackColor;
-
-            AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
-            hitEffect.Play();
-            PlayerController.Instance.TakeDamage(1);
+            case EnemyController.EnemyIncomingAttack.Left:
+                if (PlayerController.Instance.IsPlayerBlockingLeft())
+                    PlayerBlockSuccess();
+                else
+                    PlayerBlockFail();
+                break;
+            case EnemyController.EnemyIncomingAttack.Right:
+                if (PlayerController.Instance.IsPlayerBlockingRight())
+                    PlayerBlockSuccess();
+                else
+                    PlayerBlockFail();
+                break;
+            case EnemyController.EnemyIncomingAttack.Up:
+                if (PlayerController.Instance.IsPlayerBlockingLeft() && PlayerController.Instance.IsPlayerBlockingRight())
+                    PlayerBlockSuccess();
+                else
+                    PlayerBlockFail();
+                break;
+            default:
+                break;
         }
         enemyAttacking = false;
         enemyController.EnemyRandom();
+    }
+
+    void PlayerBlockSuccess()
+    {
+        playerCombo++;
+        AttackPathManager.Instance.HideAllIndicators();
+        comboText.text = "Combo: " + playerCombo;
+        comboText.color = successColor;
+
+        //audio & vfx
+    }
+
+    void PlayerBlockFail()
+    {
+        playerCombo = 0;
+        comboText.text = "Combo: " + playerCombo;
+        comboText.color = incomingAttackColor;
+        PlayerController.Instance.TakeDamage(1);
+
+        //audio & vfx
     }
 
     #endregion
