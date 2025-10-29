@@ -5,6 +5,7 @@ using Nex.Essentials;
 using UnityEngine;
 using TMPro;
 using Jazz;
+using System.Collections.Generic;
 
 public class BattleManager : Singleton<BattleManager>
 {
@@ -46,10 +47,16 @@ public class BattleManager : Singleton<BattleManager>
     [Header("Settings")]
     [Tooltip("Percentage chance of player attack instead of enemy attack")]
     public int playerAttackChance = 70;
-    [SerializeField] private float slashDirectionThreshold = 0.5f;
+    [Range(0f, 360f)]
+    [SerializeField] private float goodHitAngle = 60f;
+    [Range(0f, 360f)]
+    [SerializeField] private float perfectHitAngle = 30f;
     [SerializeField] private float comboLastDuration = 2.0f;
     [SerializeField] private float crossFinisherBufferTime = 1;
     [SerializeField] private EnemyController enemyController;
+    [SerializeField] private float goodHitDamage = 10;
+    [SerializeField] private float perfectHitDamage = 15;
+    [SerializeField] private float comboDamageMultiplier = 2;
 
     #endregion
 
@@ -60,6 +67,14 @@ public class BattleManager : Singleton<BattleManager>
     private bool crossFinisherLeftSuccess = false;
     private bool crossFinisherRightSuccess = false;
     private float crossFinisherTimer;
+    [Serializable]
+    private class HitAngleMapping
+    {
+        public EnemyController.AttackPath attackPath;
+        [Range(0f, 360f)]
+        public float angle;
+    }
+    [SerializeField] private List<HitAngleMapping> hitAngleMappings = new List<HitAngleMapping>();
 
     #endregion
 
@@ -187,33 +202,50 @@ public class BattleManager : Singleton<BattleManager>
 
     void SlashDetected(Handedness handedness, Vector2 direction)
     {
-        Debug.Log(direction.normalized.x + ", " + direction.normalized.y);
+        float angleDegrees = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        angleDegrees = (angleDegrees + 360) % 360;
+        var hitAngle = hitAngleMappings.Find(mapping => mapping?.attackPath == enemyController.playerAttackPath)?.angle ?? 0f;
         switch (enemyController.playerAttackPath)
         {
             case EnemyController.AttackPath.LeftHook:
                 if (handedness != Handedness.Left)
                     break; // Must be left hand
-                if (Mathf.Abs(direction.normalized.x) < slashDirectionThreshold)
-                    break; // Must be mostly horizontal
                 if (direction.x < 0)
                     break; // Left hand must move right to perform left hook
-                AttackSuccess();
+                if (angleDegrees < hitAngle - goodHitAngle || angleDegrees > hitAngle + goodHitAngle)
+                    break; // Must be in good angle range
+                if (angleDegrees > hitAngle - perfectHitAngle && angleDegrees < hitAngle + perfectHitAngle)
+                {
+                    AttackSuccess(true);    // Perfect hit
+                    return;
+                }
+                AttackSuccess();    // Good hit
                 return;
             case EnemyController.AttackPath.RightHook:
                 if (handedness != Handedness.Right)
                     break; // Must be right hand
-                if (Mathf.Abs(direction.normalized.x) < slashDirectionThreshold)
-                    break; // Must be mostly horizontal
                 if (direction.x > 0)
                     break; // Right hand must move left to perform right hook
-                AttackSuccess();
+                if (angleDegrees < hitAngle - goodHitAngle || angleDegrees > hitAngle + goodHitAngle)
+                    break; // Must be in good angle range
+                if (angleDegrees > hitAngle - perfectHitAngle && angleDegrees < hitAngle + perfectHitAngle)
+                {
+                    AttackSuccess(true);    // Perfect hit
+                    return;
+                }
+                AttackSuccess();    // Good hit
                 return;
             case EnemyController.AttackPath.Uppercut:
                 if (direction.y < 0)
                     break; // Must be upward
-                if (Mathf.Abs(direction.normalized.y) < slashDirectionThreshold)
-                    break; // Must be mostly vertical
-                AttackSuccess();
+                if (angleDegrees < hitAngle - goodHitAngle || angleDegrees > hitAngle + goodHitAngle)
+                    break; // Must be in good angle range
+                if (angleDegrees > hitAngle - perfectHitAngle && angleDegrees < hitAngle + perfectHitAngle)
+                {
+                    AttackSuccess(true);    // Perfect hit
+                    return;
+                }
+                AttackSuccess();    // Good hit
                 return;
             case EnemyController.AttackPath.CrossFinisher:
                 if (direction.x > 0 && direction.y < 0)
@@ -232,7 +264,7 @@ public class BattleManager : Singleton<BattleManager>
                 {
                     crossFinisherLeftSuccess = false;
                     crossFinisherRightSuccess = false;
-                    AttackSuccess();
+                    AttackSuccess(true);
                 }
                 return;
             default:
@@ -245,7 +277,7 @@ public class BattleManager : Singleton<BattleManager>
 
     #region Attack Results
 
-    void AttackSuccess()
+    void AttackSuccess(bool perfectHit = false)
     {
         comboTimer = comboLastDuration;
         playerCombo++;
@@ -255,9 +287,12 @@ public class BattleManager : Singleton<BattleManager>
         comboText.color = successColor;
 
         AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
-        hitEffect.Play();
+        if (perfectHit)
+        {
+            hitEffect.Play();
+        }
 
-        enemyController.TakeDamage(10 + playerCombo * 2 - 2);
+        enemyController.TakeDamage((perfectHit ? perfectHitDamage : goodHitDamage) + playerCombo * comboDamageMultiplier - comboDamageMultiplier);
     }
 
     void AttackFail()

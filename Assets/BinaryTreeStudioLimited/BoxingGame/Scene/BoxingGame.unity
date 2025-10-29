@@ -306,11 +306,22 @@ MonoBehaviour:
   hitEffect: {fileID: 1575353054}
   missEffect: {fileID: 3417696752788836637}
   playerAttackChance: 80
-  slashDirectionThreshold: 0.3
+  goodHitAngle: 60
+  perfectHitAngle: 30
   comboLastDuration: 2
   crossFinisherBufferTime: 1
   enemyController: {fileID: 1500007357}
+  goodHitDamage: 10
+  perfectHitDamage: 15
+  comboDamageMultiplier: 2
   enemyAttacking: 0
+  hitAngleMappings:
+  - attackPath: 1
+    angle: 45
+  - attackPath: 2
+    angle: 135
+  - attackPath: 3
+    angle: 90
 --- !u!4 &128584046
 Transform:
   m_ObjectHideFlags: 0
@@ -828,7 +839,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &800824113
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1423,11 +1434,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f63cef646331344cb8b0bbafbf2fd0b3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.01
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f63cef646331344cb8b0bbafbf2fd0b3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -12.99
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: f63cef646331344cb8b0bbafbf2fd0b3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3235,7 +3246,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000061035156, y: 0}
+  m_AnchoredPosition: {x: 0.00012207031, y: 0}
   m_SizeDelta: {x: 800, y: 200}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1798361800
@@ -3716,7 +3727,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
 --- !u!114 &1887424963
 MonoBehaviour:
   m_ObjectHideFlags: 0
