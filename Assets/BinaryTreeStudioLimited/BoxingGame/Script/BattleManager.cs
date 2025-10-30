@@ -40,8 +40,10 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField] Color incomingAttackColor = Color.red;
 
     [Header("VFX")]
-    [SerializeField] ParticleSystem hitEffect;
+    [SerializeField] ParticleSystem perfectHitEffect;
     [SerializeField] ParticleSystem missEffect;
+    [SerializeField] ParticleSystem goodHitEffect;
+
 
     [Header("Settings")]
     [Tooltip("Percentage chance of player attack instead of enemy attack")]
@@ -262,18 +264,19 @@ public class BattleManager : Singleton<BattleManager>
             case HitType.Good:
                 enemyController.TakeDamage(goodHitDamage + playerCombo * comboDamageMultiplier - comboDamageMultiplier);
                 // VFX & SFX for good hit
+                goodHitEffect.Play();
                 AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
                 break;
             case HitType.Perfect:
                 enemyController.TakeDamage(perfectHitDamage + playerCombo * comboDamageMultiplier - comboDamageMultiplier);
                 // VFX & SFX for perfect hit
-                hitEffect.Play();
+                perfectHitEffect.Play();
                 AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
                 break;
             case HitType.Finisher:
                 enemyController.TakeDamage(finisherHitDamage + playerCombo * comboDamageMultiplier - comboDamageMultiplier);
                 // VFX & SFX for finisher hit
-                hitEffect.Play();
+                perfectHitEffect.Play();
                 AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
                 break;
             default:

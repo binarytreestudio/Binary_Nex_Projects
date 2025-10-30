@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 using Jazz;
 
 public class AttackPathIndicatorController : MonoBehaviour
@@ -24,11 +25,13 @@ public class AttackPathIndicatorController : MonoBehaviour
 
         foreach (var indicator in attackPathIndicators)
         {
+            Image image = indicator.arrow.GetComponent<Image>();
             indicator.fill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, indicator.arrow.rect.width);
             DOTween.To(() => timer, x => timer = x, 0f, duration).SetEase(Ease.Linear).OnUpdate(() =>
             {
                 float fillWidth = (timer / duration) * indicator.arrow.rect.width;
                 indicator.fill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, fillWidth);
+                image.fillAmount = timer / duration;
             })
             .OnComplete(() =>
             {

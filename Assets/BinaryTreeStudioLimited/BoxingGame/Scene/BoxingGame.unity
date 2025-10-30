@@ -582,8 +582,9 @@ MonoBehaviour:
   comboText: {fileID: 116894061}
   successColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   incomingAttackColor: {r: 1, g: 0, b: 0, a: 1}
-  hitEffect: {fileID: 1575353054}
-  missEffect: {fileID: 1240149710228309648}
+  perfectHitEffect: {fileID: 1575353054}
+  missEffect: {fileID: 3104612530617683475}
+  goodHitEffect: {fileID: 941445262}
   playerAttackChance: 80
   goodHitAngle: 60
   perfectHitAngle: 30
@@ -1153,7 +1154,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &748327862
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1297,6 +1298,11 @@ RectTransform:
   m_AnchoredPosition: {x: 0.000061035156, y: 0}
   m_SizeDelta: {x: 643.1001, y: 0}
   m_Pivot: {x: 1, y: 0.5}
+--- !u!198 &941445262 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 8389948790688650237, guid: 77abbd2cc0008ed4dae573462702dbe7, type: 3}
+  m_PrefabInstance: {fileID: 6897931379458267472}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &946155813
 GameObject:
   m_ObjectHideFlags: 0
@@ -2217,7 +2223,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1403241256
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2495,7 +2501,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1491147584
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2660,7 +2666,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyMaxHealth: 100
-  enemyAttack: 1
+  enemyAttack: 0
   enemyAttackDelay: 2
   enemyStandDuration: 2
   playerAttackPath: 0
@@ -3003,13 +3009,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 10190da57c0dc134582b5c5110549a04, type: 3}
-  m_Type: 0
+  m_Type: 3
   m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 0
   m_FillAmount: 1
   m_FillClockwise: 1
-  m_FillOrigin: 0
+  m_FillOrigin: 1
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
 --- !u!222 &1701420075
@@ -4947,14 +4953,14 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2115775628}
   m_CullTransparentMesh: 1
---- !u!198 &1240149710228309648 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 6582707506449576612, guid: a27fedaf881b27e40a95286d3acdf6ed, type: 3}
-  m_PrefabInstance: {fileID: 5787978855463315878}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3104612530617683473 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5031909095401930348, guid: a27fedaf881b27e40a95286d3acdf6ed, type: 3}
+  m_PrefabInstance: {fileID: 5787978855463315878}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &3104612530617683475 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 3702382876885310030, guid: a27fedaf881b27e40a95286d3acdf6ed, type: 3}
   m_PrefabInstance: {fileID: 5787978855463315878}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5787978855463315878
