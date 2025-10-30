@@ -15,27 +15,51 @@ public class EnemyController : MonoBehaviour
     public enum EnemyIncomingAttack
     {
         None,
-        Left,
-        Right,
         Up
     }
 
-    [Tooltip("If false, disable enemy attack")]
-    public bool enemyAttack = false;
-    [Tooltip("Delay before enemy attack executes")]
+    [Header("Enemy Settings")]
     [SerializeField] private float enemyMaxHealth = 100;
     private float enemyHealth;
     public float EnemyHealth => enemyHealth;
-
+    [Tooltip("If false, disable enemy attack")]
+    public bool enemyAttack = false;
+    [Tooltip("Delay before enemy attack executes")]
     [SerializeField] private float enemyAttackDelay = 2.0f;
+    [SerializeField] private float enemyStandDuration = 1.0f;
+
     private bool attacked = false;
-    public AttackPath playerAttackPath = AttackPath.None;
+    [HideInInspector] public AttackPath playerAttackPath = AttackPath.None;
     [SerializeField] private TMPro.TextMeshProUGUI enemyHealthText;
     private EnemyIncomingAttack enemyIncomingAttack = EnemyIncomingAttack.None;
+    private float enemyStandTimer;
 
     private void Start()
     {
+        BattleManager.Instance.OnGameStarted += OnGameStarted;
         enemyHealth = enemyMaxHealth;
+    }
+
+    void OnGameStarted(bool isStarted)
+    {
+        EnemyRandom();
+    }
+
+    void Update()
+    {
+        switch (playerAttackPath)
+        {
+            case AttackPath.None:
+                break;
+            default:
+                enemyStandTimer -= Time.deltaTime;
+                if (enemyStandTimer <= 0)
+                {
+                    BattleManager.Instance.AttackFail();
+                    EnemyRandom();
+                }
+                break;
+        }
     }
 
     public void TakeDamage(float damage)
@@ -62,20 +86,28 @@ public class EnemyController : MonoBehaviour
 
     }
 
-    public void EnemyRandom()
+    void EnemyRandom()
     {
         int i = UnityEngine.Random.Range(0, 100);
-        if (enemyAttack ? (attacked ? i < 100 : i < BattleManager.Instance.playerAttackChance) : i < 100)
+        if (enemyAttack ? ((attacked || EnemyHealth <= 30) ? i < 100 : i < BattleManager.Instance.playerAttackChance) : i < 100)
         {
             enemyIncomingAttack = EnemyIncomingAttack.None;
-            int randomPath = UnityEngine.Random.Range(1, Enum.GetValues(typeof(AttackPath)).Length);
-            while (randomPath == (int)playerAttackPath)
+            if (EnemyHealth > 30)
             {
-                randomPath = UnityEngine.Random.Range(1, Enum.GetValues(typeof(AttackPath)).Length);
+                int randomPath = UnityEngine.Random.Range(1, Enum.GetValues(typeof(AttackPath)).Length - 1);
+                while (randomPath == (int)playerAttackPath)
+                {
+                    randomPath = UnityEngine.Random.Range(1, Enum.GetValues(typeof(AttackPath)).Length - 1);
+                }
+                playerAttackPath = (AttackPath)randomPath;
             }
-            playerAttackPath = (AttackPath)randomPath;
-            AttackPathManager.Instance.ShowAttackIndicator(playerAttackPath);
+            else
+            {
+                playerAttackPath = AttackPath.CrossFinisher;
+            }
+            AttackPathIndicatorManager.Instance.ShowAttackIndicator(playerAttackPath, enemyStandDuration);
             attacked = false;
+            enemyStandTimer = enemyStandDuration;
         }
         else
         {
@@ -92,5 +124,6 @@ public class EnemyController : MonoBehaviour
     {
         yield return new WaitForSeconds(enemyAttackDelay);
         BattleManager.Instance.EnemyAttack(enemyIncomingAttack);
+        EnemyRandom();
     }
 }

@@ -38,7 +38,6 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField] TMPro.TextMeshProUGUI comboText;
     [SerializeField] Color successColor = Color.yellow;
     [SerializeField] Color incomingAttackColor = Color.red;
-    [SerializeField] private TMPro.TextMeshProUGUI comboTimerText;
 
     [Header("VFX")]
     [SerializeField] ParticleSystem hitEffect;
@@ -51,22 +50,20 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField] private float goodHitAngle = 60f;
     [Range(0f, 360f)]
     [SerializeField] private float perfectHitAngle = 30f;
-    [SerializeField] private float comboLastDuration = 2.0f;
     [SerializeField] private float crossFinisherBufferTime = 1;
     [SerializeField] private EnemyController enemyController;
     [SerializeField] private float goodHitDamage = 10;
     [SerializeField] private float perfectHitDamage = 15;
+    [SerializeField] private float finisherHitDamage = 30;
     [SerializeField] private float comboDamageMultiplier = 2;
 
     #endregion
 
     #region private var
     int playerCombo = 0;
-    private float comboTimer = 0.0f;
     [HideInInspector] public bool enemyAttacking = false;
     private bool crossFinisherLeftSuccess = false;
     private bool crossFinisherRightSuccess = false;
-    private float crossFinisherTimer;
     [Serializable]
     private class HitAngleMapping
     {
@@ -75,6 +72,13 @@ public class BattleManager : Singleton<BattleManager>
         public float angle;
     }
     [SerializeField] private List<HitAngleMapping> hitAngleMappings = new List<HitAngleMapping>();
+
+    private enum HitType
+    {
+        Good,
+        Perfect,
+        Finisher
+    }
 
     #endregion
 
@@ -96,45 +100,8 @@ public class BattleManager : Singleton<BattleManager>
 
     #endregion
 
-    #region Update
-
-    void Update()
-    {
-        if (playerCombo > 0 && !enemyAttacking)
-        {
-            comboTimerText.text = "Timer: " + comboTimer.ToString("F2") + "s";
-            if (comboTimer > 0)
-            {
-                comboTimer -= Time.deltaTime;
-            }
-            else
-            {
-                playerCombo = 0;
-                comboText.text = "Combo: " + playerCombo;
-                comboText.color = incomingAttackColor;
-                comboTimerText.text = "";
-            }
-        }
-
-        if (crossFinisherLeftSuccess != crossFinisherRightSuccess)
-        {
-            if (crossFinisherTimer > 0)
-            {
-                crossFinisherTimer -= Time.deltaTime;
-            }
-            else
-            {
-                crossFinisherLeftSuccess = false;
-                crossFinisherRightSuccess = false;
-                AttackFail();
-                AttackPathManager.Instance.ShowAttackIndicator(EnemyController.AttackPath.CrossFinisher);
-            }
-        }
-    }
-
-    #endregion
-
     #region Async Methods
+
     private async UniTaskVoid Run(CancellationToken cancellationToken)
     {
         mdkController.DewarpLocked = false;
@@ -188,9 +155,7 @@ public class BattleManager : Singleton<BattleManager>
         leftSlashDetector.OnSlashDetected += OnLeftSlashDetected;
         rightSlashDetector.OnSlashDetected += OnRightSlashDetected;
         enemyController.playerAttackPath = (EnemyController.AttackPath)UnityEngine.Random.Range(1, Enum.GetValues(typeof(EnemyController.AttackPath)).Length);
-        AttackPathManager.Instance.ShowAttackIndicator(enemyController.playerAttackPath);
         comboText.text = "Combo: " + playerCombo;
-        comboTimerText.text = "";
         gameStarted = true;
         OnGameStarted?.Invoke(gameStarted);
     }
@@ -225,10 +190,10 @@ public class BattleManager : Singleton<BattleManager>
                     break; // Must be in good angle range
                 if (angleDegrees > hitAngle - perfectHitAngle && angleDegrees < hitAngle + perfectHitAngle)
                 {
-                    AttackSuccess(true);    // Perfect hit
+                    AttackSuccess(HitType.Perfect);    // Perfect hit
                     return;
                 }
-                AttackSuccess();    // Good hit
+                AttackSuccess(HitType.Good);    // Good hit
                 return;
             case EnemyController.AttackPath.RightHook:
                 if (handedness != Handedness.Right)
@@ -239,10 +204,10 @@ public class BattleManager : Singleton<BattleManager>
                     break; // Must be in good angle range
                 if (angleDegrees > hitAngle - perfectHitAngle && angleDegrees < hitAngle + perfectHitAngle)
                 {
-                    AttackSuccess(true);    // Perfect hit
+                    AttackSuccess(HitType.Perfect);    // Perfect hit
                     return;
                 }
-                AttackSuccess();    // Good hit
+                AttackSuccess(HitType.Good);    // Good hit
                 return;
             case EnemyController.AttackPath.Uppercut:
                 if (direction.y < 0)
@@ -251,60 +216,72 @@ public class BattleManager : Singleton<BattleManager>
                     break; // Must be in good angle range
                 if (angleDegrees > hitAngle - perfectHitAngle && angleDegrees < hitAngle + perfectHitAngle)
                 {
-                    AttackSuccess(true);    // Perfect hit
+                    AttackSuccess(HitType.Perfect);    // Perfect hit
                     return;
                 }
-                AttackSuccess();    // Good hit
+                AttackSuccess(HitType.Good);    // Good hit
                 return;
             case EnemyController.AttackPath.CrossFinisher:
                 if (direction.x > 0 && direction.y < 0)
                 {
                     crossFinisherLeftSuccess = true;
-                    AttackPathManager.Instance.HideAttackIndicator(EnemyController.AttackPath.CrossFinisher, Handedness.Left);
-                    crossFinisherTimer = crossFinisherBufferTime;
+                    AttackPathIndicatorManager.Instance.HideAttackIndicator(EnemyController.AttackPath.CrossFinisher, Handedness.Left);
                 }
                 if (direction.x < 0 && direction.y < 0)
                 {
                     crossFinisherRightSuccess = true;
-                    AttackPathManager.Instance.HideAttackIndicator(EnemyController.AttackPath.CrossFinisher, Handedness.Right);
-                    crossFinisherTimer = crossFinisherBufferTime;
+                    AttackPathIndicatorManager.Instance.HideAttackIndicator(EnemyController.AttackPath.CrossFinisher, Handedness.Right);
                 }
                 if (crossFinisherLeftSuccess && crossFinisherRightSuccess)
                 {
                     crossFinisherLeftSuccess = false;
                     crossFinisherRightSuccess = false;
-                    AttackSuccess(true);
+                    AttackSuccess(HitType.Finisher);
                 }
                 return;
             default:
                 return;
         }
-        AttackFail();
+        //AttackFail();
     }
 
     #endregion
 
     #region Attack Results
 
-    void AttackSuccess(bool perfectHit = false)
+    void AttackSuccess(HitType hitType)
     {
-        comboTimer = comboLastDuration;
         playerCombo++;
 
-        AttackPathManager.Instance.HideAllIndicators();
+        AttackPathIndicatorManager.Instance.HideAllIndicators();
         comboText.text = "Combo: " + playerCombo;
         comboText.color = successColor;
 
-        AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
-        if (perfectHit)
+        switch (hitType)
         {
-            hitEffect.Play();
+            case HitType.Good:
+                enemyController.TakeDamage(goodHitDamage + playerCombo * comboDamageMultiplier - comboDamageMultiplier);
+                // VFX & SFX for good hit
+                AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
+                break;
+            case HitType.Perfect:
+                enemyController.TakeDamage(perfectHitDamage + playerCombo * comboDamageMultiplier - comboDamageMultiplier);
+                // VFX & SFX for perfect hit
+                hitEffect.Play();
+                AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
+                break;
+            case HitType.Finisher:
+                enemyController.TakeDamage(finisherHitDamage + playerCombo * comboDamageMultiplier - comboDamageMultiplier);
+                // VFX & SFX for finisher hit
+                hitEffect.Play();
+                AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
+                break;
+            default:
+                break;
         }
-
-        enemyController.TakeDamage((perfectHit ? perfectHitDamage : goodHitDamage) + playerCombo * comboDamageMultiplier - comboDamageMultiplier);
     }
 
-    void AttackFail()
+    public void AttackFail()
     {
         playerCombo = 0;
         comboText.text = "Combo: " + playerCombo;
@@ -322,18 +299,6 @@ public class BattleManager : Singleton<BattleManager>
     {
         switch (attackPath)
         {
-            case EnemyController.EnemyIncomingAttack.Left:
-                if (PlayerController.Instance.IsPlayerBlockingLeft())
-                    PlayerBlockSuccess();
-                else
-                    PlayerBlockFail();
-                break;
-            case EnemyController.EnemyIncomingAttack.Right:
-                if (PlayerController.Instance.IsPlayerBlockingRight())
-                    PlayerBlockSuccess();
-                else
-                    PlayerBlockFail();
-                break;
             case EnemyController.EnemyIncomingAttack.Up:
                 if (PlayerController.Instance.IsPlayerBlockingLeft() && PlayerController.Instance.IsPlayerBlockingRight())
                     PlayerBlockSuccess();
@@ -344,13 +309,12 @@ public class BattleManager : Singleton<BattleManager>
                 break;
         }
         enemyAttacking = false;
-        enemyController.EnemyRandom();
     }
 
     void PlayerBlockSuccess()
     {
         playerCombo++;
-        AttackPathManager.Instance.HideAllIndicators();
+        AttackPathIndicatorManager.Instance.HideAllIndicators();
         comboText.text = "Combo: " + playerCombo;
         comboText.color = successColor;
 
