@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyController : MonoBehaviour
 {
@@ -31,7 +32,7 @@ public class EnemyController : MonoBehaviour
 
     private bool attacked = false;
     [HideInInspector] public AttackPath playerAttackPath = AttackPath.None;
-    [SerializeField] private TMPro.TextMeshProUGUI enemyHealthText;
+    [SerializeField] private Image enemyHealthImage;
     private EnemyIncomingAttack enemyIncomingAttack = EnemyIncomingAttack.None;
     private float enemyStandTimer;
 
@@ -68,7 +69,7 @@ public class EnemyController : MonoBehaviour
         enemyHealth -= damage;
         if (enemyHealth > 0)
         {
-            enemyHealthText.text = "Enemy HP: " + enemyHealth.ToString("F1");
+            enemyHealthImage.fillAmount = enemyHealth / enemyMaxHealth;
             animator.SetTrigger("Hit");
         }
         else
@@ -77,8 +78,7 @@ public class EnemyController : MonoBehaviour
 
             //prototype infinite health
             enemyHealth = enemyMaxHealth;
-            enemyHealthText.text = "Enemy HP: " + enemyHealth.ToString("F1");
-            enemyHealthText.text += "\nEnemy Defeated!";
+            enemyHealthImage.fillAmount = enemyHealth / enemyMaxHealth;
         }
         EnemyRandom();
     }
