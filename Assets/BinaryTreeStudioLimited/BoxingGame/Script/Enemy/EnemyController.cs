@@ -27,6 +27,7 @@ public class EnemyController : MonoBehaviour
     [Tooltip("Delay before enemy attack executes")]
     [SerializeField] private float enemyAttackDelay = 2.0f;
     [SerializeField] private float enemyStandDuration = 1.0f;
+    [SerializeField] private Animator animator;
 
     private bool attacked = false;
     [HideInInspector] public AttackPath playerAttackPath = AttackPath.None;
@@ -68,6 +69,7 @@ public class EnemyController : MonoBehaviour
         if (enemyHealth > 0)
         {
             enemyHealthText.text = "Enemy HP: " + enemyHealth.ToString("F1");
+            animator.SetTrigger("Hit");
         }
         else
         {

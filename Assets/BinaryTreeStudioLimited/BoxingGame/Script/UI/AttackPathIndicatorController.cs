@@ -16,9 +16,16 @@ public class AttackPathIndicatorController : MonoBehaviour
     [SerializeField] private List<AttackPathIndicator> attackPathIndicators = new();
 
     private float timer;
+    List<Tween> fillTweens = new();
 
     public void Show(float duration)
     {
+        if (fillTweens.Count > 0)
+        {
+            fillTweens.ForEach(tween => tween?.Complete());
+            fillTweens.Clear();
+        }
+
         gameObject.SetActive(true);
         attackPathIndicators.ForEach(indicator => indicator.arrow.gameObject.SetActive(true));
         timer = duration;
@@ -27,7 +34,7 @@ public class AttackPathIndicatorController : MonoBehaviour
         {
             Image image = indicator.arrow.GetComponent<Image>();
             indicator.fill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, indicator.arrow.rect.width);
-            DOTween.To(() => timer, x => timer = x, 0f, duration).SetEase(Ease.Linear).OnUpdate(() =>
+            fillTweens.Add(DOTween.To(() => timer, x => timer = x, 0f, duration).SetEase(Ease.Linear).OnUpdate(() =>
             {
                 float fillWidth = (timer / duration) * indicator.arrow.rect.width;
                 indicator.fill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, fillWidth);
@@ -36,7 +43,7 @@ public class AttackPathIndicatorController : MonoBehaviour
             .OnComplete(() =>
             {
                 Hide();
-            });
+            }));
         }
     }
 

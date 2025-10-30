@@ -2669,6 +2669,7 @@ MonoBehaviour:
   enemyAttack: 0
   enemyAttackDelay: 2
   enemyStandDuration: 2
+  animator: {fileID: 2028394104}
   playerAttackPath: 0
   enemyHealthText: {fileID: 1727024070}
 --- !u!1001 &1575353050
@@ -4878,6 +4879,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f11fc98cf1e8d5547a9b2ec85cc9c664, type: 3}
+--- !u!95 &2028394104 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 95389170962898660, guid: f11fc98cf1e8d5547a9b2ec85cc9c664, type: 3}
+  m_PrefabInstance: {fileID: 2028394103}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2115775628
 GameObject:
   m_ObjectHideFlags: 0
