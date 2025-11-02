@@ -1505,14 +1505,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CriticalHit
       objectReference: {fileID: 0}
-    - target: {fileID: 3934042263424223181, guid: ec3a8d8dd9903d642b4897e1e5e40413, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3934042263424223181, guid: ec3a8d8dd9903d642b4897e1e5e40413, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 1.113
-      objectReference: {fileID: 0}
     - target: {fileID: 5496304956563286661, guid: ec3a8d8dd9903d642b4897e1e5e40413, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.143
@@ -1553,8 +1545,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 492403610919790252, guid: ec3a8d8dd9903d642b4897e1e5e40413, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -2525,6 +2516,10 @@ PrefabInstance:
       propertyPath: provider
       value: 
       objectReference: {fileID: 951897116}
+    - target: {fileID: 1236690626827541926, guid: 28ffb499b6aa6ff4c9e493fb75d2776f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2763415090666772450, guid: 28ffb499b6aa6ff4c9e493fb75d2776f, type: 3}
       propertyPath: m_Name
       value: Canvas
@@ -2541,6 +2536,10 @@ PrefabInstance:
       propertyPath: previewFrameProvider
       value: 
       objectReference: {fileID: 951897116}
+    - target: {fileID: 4041804025804908868, guid: 28ffb499b6aa6ff4c9e493fb75d2776f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4541766109516940074, guid: 28ffb499b6aa6ff4c9e493fb75d2776f, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -2621,6 +2620,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8433084402125017526, guid: 28ffb499b6aa6ff4c9e493fb75d2776f, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8457919408722387602, guid: 28ffb499b6aa6ff4c9e493fb75d2776f, type: 3}
       propertyPath: slashDetector
       value: 
@@ -2645,6 +2648,10 @@ PrefabInstance:
     - target: {fileID: 4875065264873710597, guid: 77abbd2cc0008ed4dae573462702dbe7, type: 3}
       propertyPath: m_Name
       value: NormalHit
+      objectReference: {fileID: 0}
+    - target: {fileID: 8135928905943554220, guid: 77abbd2cc0008ed4dae573462702dbe7, type: 3}
+      propertyPath: ClampVelocityModule.enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8471870180333882672, guid: 77abbd2cc0008ed4dae573462702dbe7, type: 3}
       propertyPath: m_LocalPosition.x
