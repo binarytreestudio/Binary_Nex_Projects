@@ -1,14 +1,29 @@
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks.Linq;
 using Nex.Essentials;
 using UnityEngine;
+using UnityEngine.Serialization;
 using TMPro;
 using Jazz;
 using System.Collections.Generic;
 
 public class BattleManager : Singleton<BattleManager>
 {
+    #region Public Enums
+
+    public enum ScoreType
+    {
+        Good = 100,
+        Perfect = 200,
+        Finisher = 300,
+        Block = 150,
+        AdditionalScorePerCombo = 25
+    }
+
+    #endregion
+
     #region Public var
 
     [Serializable]
@@ -21,6 +36,7 @@ public class BattleManager : Singleton<BattleManager>
         public float canvasWidth = 1920;
     }
     [Header("Nex Setup")]
+    [SerializeField] private bool skipNexSetup = false;
     [SerializeField] private SetupConfig setupConfig = null!;
 
     [SerializeField] private MdkController mdkController = null!;
@@ -29,15 +45,10 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField] private PlayAreaPreviewFrameProvider playAreaPreviewFrameProvider = null!;
 
 
-    [Header("Slash Detectors")]
+    [Header("Motion Detectors")]
     [SerializeField] SlashDetector leftSlashDetector = null!;
     [SerializeField] SlashDetector rightSlashDetector = null!;
-
-    [Header("UI Elements")]
-    [SerializeField] EnemyAttackIndicatorManager upSideIncomingAttackIndicator;
-    [SerializeField] TMPro.TextMeshProUGUI comboText;
-    [SerializeField] Color successColor = Color.yellow;
-    [SerializeField] Color incomingAttackColor = Color.red;
+    [FormerlySerializedAs("signalDetector")][SerializeField] private SignalPolarityDetector leanSignalPolarityDetector = null!;
 
     [Header("VFX")]
     [SerializeField] ParticleSystem perfectHitEffect;
@@ -57,11 +68,10 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField] private float goodHitDamage = 10;
     [SerializeField] private float perfectHitDamage = 15;
     [SerializeField] private float finisherHitDamage = 30;
-    [SerializeField] private float comboDamageMultiplier = 2;
-
     #endregion
 
     #region private var
+    private bool gameStarted = false;
     int playerCombo = 0;
     [HideInInspector] public bool enemyAttacking = false;
     private bool crossFinisherLeftSuccess = false;
@@ -81,13 +91,18 @@ public class BattleManager : Singleton<BattleManager>
         Perfect,
         Finisher
     }
+    private bool playerLeaningLeft = false;
+    private bool playerLeaningRight = false;
+    private int playerScore = 0;
 
     #endregion
 
     #region Observer Pattern
 
-    private bool gameStarted = false;
     public Action<bool> OnGameStarted;
+    public Action<int> OnPlayerComboChanged;
+    public Action<int, ScoreType> OnPlayerScoreChanged;
+    public Action OnAttackSuccess;
 
     #endregion
 
@@ -97,7 +112,33 @@ public class BattleManager : Singleton<BattleManager>
     {
         mdkController.StartRunning().Forget();
 
+        if (skipNexSetup)
+        {
+            RunGame();
+            return;
+        }
         Run(destroyCancellationToken).Forget();
+    }
+
+    #endregion
+
+    #region Update
+
+    void Update()
+    {
+        if (!gameStarted) return;
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            AttackSuccess(HitType.Perfect);
+        }
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            playerLeaningLeft = true;
+        }
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            playerLeaningRight = true;
+        }
     }
 
     #endregion
@@ -109,6 +150,7 @@ public class BattleManager : Singleton<BattleManager>
         mdkController.DewarpLocked = false;
         mdkController.EnableConsistency = false;
         playAreaController.Locked = false;
+
         await RunSetup(cancellationToken);
 
         mdkController.DewarpLocked = true;
@@ -157,8 +199,10 @@ public class BattleManager : Singleton<BattleManager>
         leftSlashDetector.OnSlashDetected += OnLeftSlashDetected;
         rightSlashDetector.OnSlashDetected += OnRightSlashDetected;
         enemyController.playerAttackPath = (EnemyController.AttackPath)UnityEngine.Random.Range(1, Enum.GetValues(typeof(EnemyController.AttackPath)).Length);
-        comboText.text = "Combo: " + playerCombo;
+        OnPlayerComboChanged?.Invoke(playerCombo);
+        OnPlayerScoreChanged?.Invoke(playerScore, 0);
         gameStarted = true;
+        leanSignalPolarityDetector.SignalStream.Subscribe(HandleLeanSignal, destroyCancellationToken);
         OnGameStarted?.Invoke(gameStarted);
     }
 
@@ -227,12 +271,10 @@ public class BattleManager : Singleton<BattleManager>
                 if (direction.x > 0 && direction.y < 0)
                 {
                     crossFinisherLeftSuccess = true;
-                    AttackPathIndicatorManager.Instance.HideAttackIndicator(EnemyController.AttackPath.CrossFinisher, Handedness.Left);
                 }
                 if (direction.x < 0 && direction.y < 0)
                 {
                     crossFinisherRightSuccess = true;
-                    AttackPathIndicatorManager.Instance.HideAttackIndicator(EnemyController.AttackPath.CrossFinisher, Handedness.Right);
                 }
                 if (crossFinisherLeftSuccess && crossFinisherRightSuccess)
                 {
@@ -249,35 +291,55 @@ public class BattleManager : Singleton<BattleManager>
 
     #endregion
 
+    #region Lean Detection
+
+    private void HandleLeanSignal(SignalPolarityDetector.SignalPolarity signal)
+    {
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
+            return;
+        playerLeaningLeft = signal == SignalPolarityDetector.SignalPolarity.Positive;
+        playerLeaningRight = signal == SignalPolarityDetector.SignalPolarity.Negative;
+    }
+
+    #endregion
+
     #region Attack Results
 
     void AttackSuccess(HitType hitType)
     {
         playerCombo++;
 
-        AttackPathIndicatorManager.Instance.HideAllIndicators();
-        comboText.text = "Combo: " + playerCombo;
-        comboText.color = successColor;
+        OnPlayerComboChanged?.Invoke(playerCombo);
+        OnAttackSuccess?.Invoke();
 
         switch (hitType)
         {
             case HitType.Good:
-                enemyController.TakeDamage(goodHitDamage + playerCombo * comboDamageMultiplier - comboDamageMultiplier);
+                enemyController.TakeDamage(goodHitDamage);
                 // VFX & SFX for good hit
                 goodHitEffect.Play();
                 AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
+
+                playerScore += (int)ScoreType.Good + ((int)ScoreType.AdditionalScorePerCombo * playerCombo);
+                OnPlayerScoreChanged?.Invoke(playerScore, ScoreType.Good);
                 break;
             case HitType.Perfect:
-                enemyController.TakeDamage(perfectHitDamage + playerCombo * comboDamageMultiplier - comboDamageMultiplier);
+                enemyController.TakeDamage(perfectHitDamage);
                 // VFX & SFX for perfect hit
                 perfectHitEffect.Play();
                 AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
+
+                playerScore += (int)ScoreType.Perfect + ((int)ScoreType.AdditionalScorePerCombo * playerCombo);
+                OnPlayerScoreChanged?.Invoke(playerScore, ScoreType.Perfect);
                 break;
             case HitType.Finisher:
-                enemyController.TakeDamage(finisherHitDamage + playerCombo * comboDamageMultiplier - comboDamageMultiplier);
+                enemyController.TakeDamage(finisherHitDamage);
                 // VFX & SFX for finisher hit
                 perfectHitEffect.Play();
                 AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
+
+                playerScore += (int)ScoreType.Finisher + ((int)ScoreType.AdditionalScorePerCombo * playerCombo);
+                OnPlayerScoreChanged?.Invoke(playerScore, ScoreType.Finisher);
                 break;
             default:
                 break;
@@ -287,8 +349,8 @@ public class BattleManager : Singleton<BattleManager>
     public void AttackFail()
     {
         playerCombo = 0;
-        comboText.text = "Combo: " + playerCombo;
-        comboText.color = incomingAttackColor;
+
+        OnPlayerComboChanged?.Invoke(playerCombo);
 
         AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Miss);
         missEffect.Play();
@@ -302,11 +364,25 @@ public class BattleManager : Singleton<BattleManager>
     {
         switch (attackPath)
         {
-            case EnemyController.EnemyIncomingAttack.Up:
-                if (PlayerController.Instance.IsPlayerBlockingLeft() && PlayerController.Instance.IsPlayerBlockingRight())
+            case EnemyController.EnemyIncomingAttack.Left:
+                if (playerLeaningRight)
+                {
                     PlayerBlockSuccess();
+                }
                 else
+                {
                     PlayerBlockFail();
+                }
+                break;
+            case EnemyController.EnemyIncomingAttack.Right:
+                if (playerLeaningLeft)
+                {
+                    PlayerBlockSuccess();
+                }
+                else
+                {
+                    PlayerBlockFail();
+                }
                 break;
             default:
                 break;
@@ -317,9 +393,10 @@ public class BattleManager : Singleton<BattleManager>
     void PlayerBlockSuccess()
     {
         playerCombo++;
-        AttackPathIndicatorManager.Instance.HideAllIndicators();
-        comboText.text = "Combo: " + playerCombo;
-        comboText.color = successColor;
+        playerScore += (int)ScoreType.Block + ((int)ScoreType.AdditionalScorePerCombo * playerCombo);
+
+        OnPlayerComboChanged?.Invoke(playerCombo);
+        OnPlayerScoreChanged?.Invoke(playerScore, ScoreType.Block);
 
         //audio & vfx
     }
@@ -327,9 +404,9 @@ public class BattleManager : Singleton<BattleManager>
     void PlayerBlockFail()
     {
         playerCombo = 0;
-        comboText.text = "Combo: " + playerCombo;
-        comboText.color = incomingAttackColor;
         PlayerController.Instance.TakeDamage(1);
+
+        OnPlayerComboChanged?.Invoke(playerCombo);
 
         //audio & vfx
     }

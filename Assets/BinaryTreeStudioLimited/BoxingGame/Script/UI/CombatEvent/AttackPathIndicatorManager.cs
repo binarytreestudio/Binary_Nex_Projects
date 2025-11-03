@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Jazz;
 using UnityEngine;
 
-public class AttackPathIndicatorManager : Singleton<AttackPathIndicatorManager>
+public class AttackPathIndicatorManager : MonoBehaviour
 {
     [Serializable]
     private class AttackIndicatorMapping
@@ -16,6 +16,8 @@ public class AttackPathIndicatorManager : Singleton<AttackPathIndicatorManager>
     void Start()
     {
         HideAllIndicators();
+        EnemyController.Instance.OnEnemyStandSelected += ShowAttackIndicator;
+        BattleManager.Instance.OnAttackSuccess += HideAllIndicators;
     }
 
     public void ShowAttackIndicator(EnemyController.AttackPath path, float duration)
@@ -39,5 +41,11 @@ public class AttackPathIndicatorManager : Singleton<AttackPathIndicatorManager>
     public void HideAllIndicators()
     {
         attackIndicators.ForEach(indicator => indicator.attackPathIndicatorController.Hide());
+    }
+
+    void OnDestroy()
+    {
+        EnemyController.Instance.OnEnemyStandSelected -= ShowAttackIndicator;
+        BattleManager.Instance.OnAttackSuccess -= HideAllIndicators;
     }
 }

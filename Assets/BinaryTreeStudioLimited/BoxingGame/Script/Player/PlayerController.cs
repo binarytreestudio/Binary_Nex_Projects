@@ -2,14 +2,13 @@ using UnityEngine;
 using Nex.Essentials;
 using SignalPolarity = Nex.Essentials.SignalPolarityDetector.SignalPolarity;
 using NodeIndex = Nex.Essentials.SimplePose.NodeIndex;
+using System;
 
 public class PlayerController : Singleton<PlayerController>
 {
     [Header("Health")]
     [SerializeField] private int playerMaxHealth = 3;
-    private float playerHealth;
-    public float PlayerHealth => playerHealth;
-    [SerializeField] private TMPro.TextMeshProUGUI playerHealthText;
+    private int playerHealth;
 
     [Header("Crouch Detection")]
     [SerializeField] private SignalPolarityDetector verticalSignalDetector = null!;
@@ -18,17 +17,16 @@ public class PlayerController : Singleton<PlayerController>
     [Header("Block Detection")]
     [SerializeField] private BodyPoseController bodyPoseController = null!;
 
-    [Header("Debug")]
-    [SerializeField] private TMPro.TextMeshProUGUI debugCrouchText;
-    [SerializeField] private TMPro.TextMeshProUGUI debugBlockText;
-
     private bool gameStarted = false;
+
+    public Action<int> OnPlayerHPChanged;
+    public Action OnPlayerDied;
 
 
     private void Start()
     {
         playerHealth = playerMaxHealth;
-        playerHealthText.text = "Player HP: " + playerHealth.ToString("F1");
+        OnPlayerHPChanged?.Invoke(playerHealth);
         BattleManager.Instance.OnGameStarted += OnGameStarted;
     }
 
@@ -47,34 +45,22 @@ public class PlayerController : Singleton<PlayerController>
             // Player stopped crouching
             currentPolarity = SignalPolarity.Neutral;
         }
-        debugCrouchText.text = "verticalSignalDetector.Signal: " + polarity.ToString();
-        debugCrouchText.text += "\nIs Crouching: " + IsPlayerCrouching().ToString();
-
-        debugBlockText.text = "Is Blocking Left: " + IsPlayerBlockingLeft().ToString();
-        debugBlockText.text += "\nIs Blocking Right: " + IsPlayerBlockingRight().ToString();
     }
 
     public void TakeDamage(int damage)
     {
         playerHealth -= damage;
-        if (playerHealth > 0)
-        {
-            playerHealthText.text = "Player HP: " + playerHealth.ToString("F1");
-        }
-        else
+        OnPlayerHPChanged?.Invoke(playerHealth);
+        if (playerHealth <= 0)
         {
             Die();
-
-            //prototype infinite health
-            playerHealth = playerMaxHealth;
-            playerHealthText.text = "Player HP: " + playerHealth.ToString("F1");
-            playerHealthText.text += "\nPlayer Defeated!";
         }
     }
 
     void Die()
     {
-
+        UIManager.Instance.ShowGameOverPanel();
+        OnPlayerDied?.Invoke();
     }
 
     #region Player Crouch

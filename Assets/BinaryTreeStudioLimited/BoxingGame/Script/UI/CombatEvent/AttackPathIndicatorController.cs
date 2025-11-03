@@ -28,7 +28,10 @@ public class AttackPathIndicatorController : MonoBehaviour
 
         gameObject.SetActive(true);
         attackPathIndicators.ForEach(indicator => indicator.arrow.gameObject.SetActive(true));
+        if (duration <= 0f) return;
+
         timer = duration;
+
 
         foreach (var indicator in attackPathIndicators)
         {
