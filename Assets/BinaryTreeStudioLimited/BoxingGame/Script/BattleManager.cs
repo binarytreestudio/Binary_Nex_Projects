@@ -22,6 +22,13 @@ public class BattleManager : Singleton<BattleManager>
         AdditionalScorePerCombo = 25
     }
 
+    public enum HitType
+    {
+        Good = 10,
+        Perfect = 15,
+        Finisher = 30
+    }
+
     #endregion
 
     #region Public var
@@ -57,17 +64,15 @@ public class BattleManager : Singleton<BattleManager>
 
 
     [Header("Settings")]
-    [Tooltip("Percentage chance of player attack instead of enemy attack")]
-    public int playerAttackChance = 70;
     [Range(0f, 360f)]
     [SerializeField] private float goodHitAngle = 60f;
     [Range(0f, 360f)]
     [SerializeField] private float perfectHitAngle = 30f;
-    [SerializeField] private float crossFinisherBufferTime = 1;
     [SerializeField] private EnemyController enemyController;
-    [SerializeField] private float goodHitDamage = 10;
-    [SerializeField] private float perfectHitDamage = 15;
-    [SerializeField] private float finisherHitDamage = 30;
+    [SerializeField] private int comboThresholdForDamageMultiplier = 9;
+    [Range(0f, 1f)]
+    [SerializeField] private float comboDamageMultiplier = .5f;
+
     #endregion
 
     #region private var
@@ -85,12 +90,6 @@ public class BattleManager : Singleton<BattleManager>
     }
     [SerializeField] private List<HitAngleMapping> hitAngleMappings = new List<HitAngleMapping>();
 
-    private enum HitType
-    {
-        Good,
-        Perfect,
-        Finisher
-    }
     private bool playerLeaningLeft = false;
     private bool playerLeaningRight = false;
     private int playerScore = 0;
@@ -102,7 +101,7 @@ public class BattleManager : Singleton<BattleManager>
     public Action<bool> OnGameStarted;
     public Action<int> OnPlayerComboChanged;
     public Action<int, ScoreType> OnPlayerScoreChanged;
-    public Action OnAttackSuccess;
+    public Action<HitType, float> OnAttackSuccess;
 
     #endregion
 
@@ -126,10 +125,18 @@ public class BattleManager : Singleton<BattleManager>
 
     void Update()
     {
-        if (!gameStarted) return;
+        if (!gameStarted)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                gameStarted = true;
+                OnGameStarted?.Invoke(gameStarted);
+            }
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            AttackSuccess(HitType.Perfect);
+            AttackSuccess(HitType.Finisher);
         }
         if (Input.GetKey(KeyCode.LeftArrow))
         {
@@ -201,12 +208,20 @@ public class BattleManager : Singleton<BattleManager>
         enemyController.playerAttackPath = (EnemyController.AttackPath)UnityEngine.Random.Range(1, Enum.GetValues(typeof(EnemyController.AttackPath)).Length);
         OnPlayerComboChanged?.Invoke(playerCombo);
         OnPlayerScoreChanged?.Invoke(playerScore, 0);
-        gameStarted = true;
         leanSignalPolarityDetector.SignalStream.Subscribe(HandleLeanSignal, destroyCancellationToken);
-        OnGameStarted?.Invoke(gameStarted);
+        UIManager.Instance.ShowStartScreen();
+        EnemyController.Instance.OnEnemyAttack += EnemyAttack;
     }
 
     #endregion
+
+    protected override void OnDestroy()
+    {
+        leftSlashDetector.OnSlashDetected -= OnLeftSlashDetected;
+        rightSlashDetector.OnSlashDetected -= OnRightSlashDetected;
+        EnemyController.Instance.OnEnemyAttack -= EnemyAttack;
+        base.OnDestroy();
+    }
 
     #region Slash Detection
 
@@ -224,7 +239,20 @@ public class BattleManager : Singleton<BattleManager>
     {
         float angleDegrees = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         angleDegrees = (angleDegrees + 360) % 360;
+
+        if (!gameStarted)
+        {
+            if (direction.y < 0)
+                return; // Must be upward
+            if (angleDegrees < 90 - goodHitAngle || angleDegrees > 90 + goodHitAngle)
+                return; // Must be in good angle range
+            gameStarted = true;
+            OnGameStarted?.Invoke(gameStarted);
+            return;
+        }
+
         var hitAngle = hitAngleMappings.Find(mapping => mapping?.attackPath == enemyController.playerAttackPath)?.angle ?? 0f;
+
         switch (enemyController.playerAttackPath)
         {
             case EnemyController.AttackPath.LeftHook:
@@ -310,12 +338,14 @@ public class BattleManager : Singleton<BattleManager>
         playerCombo++;
 
         OnPlayerComboChanged?.Invoke(playerCombo);
-        OnAttackSuccess?.Invoke();
+
+        float damage = (int)hitType;
+        damage *= playerCombo > comboThresholdForDamageMultiplier / 2 ? (playerCombo > comboThresholdForDamageMultiplier ? 1 + comboDamageMultiplier : 1 + comboDamageMultiplier / 2) : 1f;
+        OnAttackSuccess?.Invoke(hitType, damage);
 
         switch (hitType)
         {
             case HitType.Good:
-                enemyController.TakeDamage(goodHitDamage);
                 // VFX & SFX for good hit
                 goodHitEffect.Play();
                 AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
@@ -324,7 +354,6 @@ public class BattleManager : Singleton<BattleManager>
                 OnPlayerScoreChanged?.Invoke(playerScore, ScoreType.Good);
                 break;
             case HitType.Perfect:
-                enemyController.TakeDamage(perfectHitDamage);
                 // VFX & SFX for perfect hit
                 perfectHitEffect.Play();
                 AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
@@ -333,7 +362,6 @@ public class BattleManager : Singleton<BattleManager>
                 OnPlayerScoreChanged?.Invoke(playerScore, ScoreType.Perfect);
                 break;
             case HitType.Finisher:
-                enemyController.TakeDamage(finisherHitDamage);
                 // VFX & SFX for finisher hit
                 perfectHitEffect.Play();
                 AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Hit);
@@ -360,7 +388,7 @@ public class BattleManager : Singleton<BattleManager>
 
     #region Enemy Attack
 
-    public void EnemyAttack(EnemyController.EnemyIncomingAttack attackPath)
+    void EnemyAttack(EnemyController.EnemyIncomingAttack attackPath, float damage)
     {
         switch (attackPath)
         {
@@ -371,7 +399,7 @@ public class BattleManager : Singleton<BattleManager>
                 }
                 else
                 {
-                    PlayerBlockFail();
+                    PlayerBlockFail(damage);
                 }
                 break;
             case EnemyController.EnemyIncomingAttack.Right:
@@ -381,7 +409,7 @@ public class BattleManager : Singleton<BattleManager>
                 }
                 else
                 {
-                    PlayerBlockFail();
+                    PlayerBlockFail(damage);
                 }
                 break;
             default:
@@ -401,10 +429,10 @@ public class BattleManager : Singleton<BattleManager>
         //audio & vfx
     }
 
-    void PlayerBlockFail()
+    void PlayerBlockFail(float damage)
     {
         playerCombo = 0;
-        PlayerController.Instance.TakeDamage(1);
+        PlayerController.Instance.TakeDamage(damage);
 
         OnPlayerComboChanged?.Invoke(playerCombo);
 
@@ -412,13 +440,4 @@ public class BattleManager : Singleton<BattleManager>
     }
 
     #endregion
-
-
-
-    protected override void OnDestroy()
-    {
-        leftSlashDetector.OnSlashDetected -= OnLeftSlashDetected;
-        rightSlashDetector.OnSlashDetected -= OnRightSlashDetected;
-        base.OnDestroy();
-    }
 }

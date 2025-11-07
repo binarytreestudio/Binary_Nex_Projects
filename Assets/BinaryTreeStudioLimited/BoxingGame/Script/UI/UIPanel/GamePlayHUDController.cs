@@ -6,13 +6,14 @@ using UnityEngine.UI;
 public class GamePlayHUDController : MonoBehaviour
 {
     [Header("Player")]
-    [SerializeField] private List<Image> playerHPImages = new();
+    [SerializeField] private Image playerHPImage;
     [SerializeField] private TextMeshProUGUI playerComboText;
     [SerializeField] private Color successComboColor = Color.yellow;
     [SerializeField] private Color failedComboColor = Color.red;
 
     [Header("Enemy")]
     [SerializeField] private Image enemyHPImage;
+    [SerializeField] private TextMeshProUGUI enemyLevelText;
 
     [Header("Score")]
     [SerializeField] private TextMeshProUGUI playerScoreText;
@@ -23,28 +24,56 @@ public class GamePlayHUDController : MonoBehaviour
     private int previousPlayerCombo = 0;
     List<GameObject> scorePopups = new();
 
-    void Start()
+    private void Start()
     {
         PlayerController.Instance.OnPlayerHPChanged += UpdatePlayerHP;
+
+        EnemyManager.Instance.OnEnemyReset += OnEnemyReset;
+
         EnemyController.Instance.OnEnemyHPChanged += UpdateEnemyHP;
+
         BattleManager.Instance.OnPlayerComboChanged += UpdatePlayerCombo;
         BattleManager.Instance.OnPlayerScoreChanged += OnScoreChanged;
     }
 
-    private void UpdatePlayerHP(int newHP)
+    private void OnDestroy()
     {
-        for (int i = 0; i < playerHPImages.Count; i++)
-        {
-            playerHPImages[i].enabled = i < newHP;
-        }
+        PlayerController.Instance.OnPlayerHPChanged -= UpdatePlayerHP;
+
+        EnemyManager.Instance.OnEnemyReset -= OnEnemyReset;
+
+        EnemyController.Instance.OnEnemyHPChanged -= UpdateEnemyHP;
+
+        BattleManager.Instance.OnPlayerComboChanged -= UpdatePlayerCombo;
+        BattleManager.Instance.OnPlayerScoreChanged -= OnScoreChanged;
+    }
+
+    private void UpdatePlayerHP(float normalizedHP)
+    {
+        playerHPImage.fillAmount = normalizedHP;
+    }
+
+    private void OnEnemyReset(EnemyType enemyType, int level)
+    {
+        enemyLevelText.text = $"Level: {level}";
     }
 
     private void UpdateEnemyHP(float normalizedHP)
     {
+        if (normalizedHP <= 0)
+        {
+            //Hide enemy HP bar when enemy is dead
+            enemyHPImage.transform.parent.gameObject.SetActive(false);
+        }
+        else
+        {
+            enemyHPImage.transform.parent.gameObject.SetActive(true);
+        }
+
         enemyHPImage.fillAmount = normalizedHP;
     }
 
-    public void UpdatePlayerCombo(int combo)
+    private void UpdatePlayerCombo(int combo)
     {
         if (combo > previousPlayerCombo)
         {
@@ -90,7 +119,7 @@ public class GamePlayHUDController : MonoBehaviour
         AddScorePopup(scorePopup);
     }
 
-    void AddScorePopup(GameObject popup)
+    private void AddScorePopup(GameObject popup)
     {
         scorePopups.Add(popup);
         if (scorePopups.Count > playerScorePopupLimit)

@@ -7,8 +7,8 @@ using System;
 public class PlayerController : Singleton<PlayerController>
 {
     [Header("Health")]
-    [SerializeField] private int playerMaxHealth = 3;
-    private int playerHealth;
+    [SerializeField] private float playerMaxHealth = 100f;
+    private float playerHealth;
 
     [Header("Crouch Detection")]
     [SerializeField] private SignalPolarityDetector verticalSignalDetector = null!;
@@ -19,14 +19,14 @@ public class PlayerController : Singleton<PlayerController>
 
     private bool gameStarted = false;
 
-    public Action<int> OnPlayerHPChanged;
+    public Action<float> OnPlayerHPChanged;
     public Action OnPlayerDied;
 
 
     private void Start()
     {
         playerHealth = playerMaxHealth;
-        OnPlayerHPChanged?.Invoke(playerHealth);
+        OnPlayerHPChanged?.Invoke(playerHealth / playerMaxHealth);
         BattleManager.Instance.OnGameStarted += OnGameStarted;
     }
 
@@ -47,10 +47,10 @@ public class PlayerController : Singleton<PlayerController>
         }
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         playerHealth -= damage;
-        OnPlayerHPChanged?.Invoke(playerHealth);
+        OnPlayerHPChanged?.Invoke(playerHealth / playerMaxHealth);
         if (playerHealth <= 0)
         {
             Die();

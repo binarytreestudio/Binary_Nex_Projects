@@ -38,7 +38,12 @@ public class AttackPathIndicatorManager : MonoBehaviour
         attackIndicators.Find(indicator => indicator.path == attackPath).attackPathIndicatorController.Hide();
     }
 
-    public void HideAllIndicators()
+    void HideAllIndicators(BattleManager.HitType hitType, float damage)
+    {
+        HideAllIndicators();
+    }
+
+    void HideAllIndicators()
     {
         attackIndicators.ForEach(indicator => indicator.attackPathIndicatorController.Hide());
     }
