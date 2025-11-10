@@ -59,6 +59,8 @@ public class AttackPathIndicatorManager : MonoBehaviour
         indicatorController.Show(path, duration);
 
         attactkPathIndicatorObjects.Add(new AttackIndicatorMapping { indicatorObject = indicatorObj, path = path, position = position });
+
+        indicatorController.OnIndicatorDestroyed += OnIndicatorDestroyed;
     }
 
     public void HideAttackIndicator(int playerIndex, BattleManager.HitType hitType, float damage, EnemyController.PlayerAttackPath path)
@@ -66,8 +68,14 @@ public class AttackPathIndicatorManager : MonoBehaviour
         AttackIndicatorMapping mapping = attactkPathIndicatorObjects.Find(m => m.path == path);
         if (mapping.indicatorObject != null)
         {
-            Destroy(mapping.indicatorObject);
+            mapping.indicatorObject.GetComponent<AttackPathIndicatorController>().Hide();
             attactkPathIndicatorObjects.Remove(mapping);
         }
+    }
+
+    void OnIndicatorDestroyed(GameObject indicatorObject)
+    {
+        AttackIndicatorMapping mapping = attactkPathIndicatorObjects.Find(obj => obj.indicatorObject == indicatorObject);
+        attactkPathIndicatorObjects.Remove(mapping);
     }
 }

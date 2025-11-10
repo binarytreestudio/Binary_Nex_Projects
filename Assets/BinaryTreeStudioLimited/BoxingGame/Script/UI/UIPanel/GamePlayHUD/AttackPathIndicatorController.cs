@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
-using Jazz;
 
 public class AttackPathIndicatorController : MonoBehaviour
 {
@@ -16,6 +15,8 @@ public class AttackPathIndicatorController : MonoBehaviour
     [SerializeField] private List<PathAngleMapping> pathAngleMappings = new();
     [SerializeField] private Image arrowImage;
     [SerializeField] private GameObject crossFinisherAdditionalArrow;
+
+    public Action<GameObject> OnIndicatorDestroyed;
 
     private float timer;
 
@@ -63,6 +64,7 @@ public class AttackPathIndicatorController : MonoBehaviour
 
     public void Hide()
     {
+        OnIndicatorDestroyed?.Invoke(gameObject);
         Destroy(gameObject);
     }
 }

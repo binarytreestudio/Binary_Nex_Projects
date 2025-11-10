@@ -47,7 +47,6 @@ public class EnemyController : Singleton<EnemyController>
     private float enemyAttackDamage;
     private float enemyAttackDelay;
     private float enemyAttackChance;
-    private bool attacked = false;
     private bool attacking;
 
     private float bubbleFrequency;
@@ -55,6 +54,7 @@ public class EnemyController : Singleton<EnemyController>
     private int bubbleLimit;
     private float bubbleTimer;
     private int bubbleCount = 0;
+    private bool finisherBubbleActive = false;
 
     private bool gameStarted = false;
     private int playerCount;
@@ -102,10 +102,11 @@ public class EnemyController : Singleton<EnemyController>
 
     void Update()
     {
-        if (!gameStarted || attacking || enemyHealth <= (int)BattleManager.HitType.Finisher) return;
+        if (!gameStarted || attacking || finisherBubbleActive) return;
 
         if (bubbleCount <= 0)
         {
+            bubbleCount = 0;
             EnemyRandom();
             return;
         }
@@ -174,6 +175,7 @@ public class EnemyController : Singleton<EnemyController>
     void Die()
     {
         animator.SetTrigger("Die");
+        finisherBubbleActive = false;
     }
 
     #endregion
@@ -183,7 +185,7 @@ public class EnemyController : Singleton<EnemyController>
     void EnemyRandom(int actionOverrided = -1)      //actionOverrided: -1: random, 0: stand, 1: attack
     {
         float i = UnityEngine.Random.Range(0.01f, 1.00f);
-        if ((!enemyAttack || attacked || attacking || enemyHealth <= (int)BattleManager.HitType.Finisher || i > enemyAttackChance || actionOverrided == 0) && actionOverrided != 1)
+        if ((!enemyAttack || attacking || enemyHealth <= (int)BattleManager.HitType.Finisher || i > enemyAttackChance || actionOverrided == 0) && actionOverrided != 1)
         {
             if (enemyHealth > (int)BattleManager.HitType.Finisher)
             {
@@ -193,8 +195,8 @@ public class EnemyController : Singleton<EnemyController>
             else
             {
                 OnEnemyCreateBubble?.Invoke(PlayerAttackPath.CrossFinisher, -1);
+                finisherBubbleActive = true;
             }
-            attacked = false;
             enemyAttackChance += enemyAttackChanceIncreasePerHit;
 
             bubbleCount++;
@@ -205,16 +207,15 @@ public class EnemyController : Singleton<EnemyController>
             OnEnemyAttackSelected?.Invoke(enemyIncomingAttack, enemyAttackDelay);
 
             animator.SetTrigger("Attack");
-            animator.SetFloat("AttackSpeed", 2.167f / enemyAttackDelay); // 2.167f is the base attack animation duration
+            animator.SetFloat("AttackSpeedMultiplier", 2.167f / enemyAttackDelay); // 2.167f is the base attack animation duration
             animator.SetBool("MirrorAttack", enemyIncomingAttack == EnemyIncomingAttack.Right);
             BattleManager.Instance.enemyAttacking = true;
-            attacked = true;
             enemyAttackChance = currentEnemyType.attackChance;
             attacking = true;
             DOVirtual.DelayedCall(enemyAttackDelay, () =>
             {
                 OnEnemyAttack?.Invoke(enemyIncomingAttack, enemyAttackDamage);
-                EnemyRandom();
+                EnemyRandom(0);
                 attacking = false;
             });
         }

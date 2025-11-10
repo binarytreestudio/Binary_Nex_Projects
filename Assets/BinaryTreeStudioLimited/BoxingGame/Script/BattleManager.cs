@@ -89,7 +89,6 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField] private float goodHitAngle = 60f;
     [Range(0f, 360f)]
     [SerializeField] private float perfectHitAngle = 30f;
-    [SerializeField] private EnemyController enemyController;
     [SerializeField] private int comboThresholdForDamageMultiplier = 9;
     [Range(0f, 1f)]
     [SerializeField] private float comboDamageMultiplier = .5f;
@@ -110,11 +109,8 @@ public class BattleManager : Singleton<BattleManager>
     }
     [SerializeField] private List<HitAngleMapping> hitAngleMappings = new List<HitAngleMapping>();
 
-    private bool playerLeaningLeft = false;
-    private bool playerLeaningRight = false;
     private int playerScore = 0;
     private int playerCount;
-    public int PlayerCount => playerCount;
     private List<Bubble> createdBubbles = new();
 
 
