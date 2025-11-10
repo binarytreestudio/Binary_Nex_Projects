@@ -26,7 +26,7 @@ public class EnemyManager : Singleton<EnemyManager>
         base.OnDestroy();
     }
 
-    void OnGameStarted(bool started)
+    void OnGameStarted(int playerCount)
     {
         enemyLevel = 1;
         OnEnemyReset?.Invoke(normalEnemy, enemyLevel);

@@ -6,10 +6,8 @@ using UnityEngine.UI;
 public class GamePlayHUDController : MonoBehaviour
 {
     [Header("Player")]
-    [SerializeField] private Image playerHPImage;
-    [SerializeField] private TextMeshProUGUI playerComboText;
-    [SerializeField] private Color successComboColor = Color.yellow;
-    [SerializeField] private Color failedComboColor = Color.red;
+    [SerializeField] private GameObject playerInfoPrefab;
+    [SerializeField] private Transform playerInfoParent;
 
     [Header("Enemy")]
     [SerializeField] private Image enemyHPImage;
@@ -26,31 +24,41 @@ public class GamePlayHUDController : MonoBehaviour
 
     private void Start()
     {
-        PlayerController.Instance.OnPlayerHPChanged += UpdatePlayerHP;
-
         EnemyManager.Instance.OnEnemyReset += OnEnemyReset;
 
         EnemyController.Instance.OnEnemyHPChanged += UpdateEnemyHP;
 
-        BattleManager.Instance.OnPlayerComboChanged += UpdatePlayerCombo;
+        BattleManager.Instance.OnGameStarted += OnGameStarted;
         BattleManager.Instance.OnPlayerScoreChanged += OnScoreChanged;
     }
 
     private void OnDestroy()
     {
-        PlayerController.Instance.OnPlayerHPChanged -= UpdatePlayerHP;
-
         EnemyManager.Instance.OnEnemyReset -= OnEnemyReset;
 
         EnemyController.Instance.OnEnemyHPChanged -= UpdateEnemyHP;
 
-        BattleManager.Instance.OnPlayerComboChanged -= UpdatePlayerCombo;
+        BattleManager.Instance.OnGameStarted -= OnGameStarted;
         BattleManager.Instance.OnPlayerScoreChanged -= OnScoreChanged;
     }
 
-    private void UpdatePlayerHP(float normalizedHP)
+    private void OnGameStarted(int playerCount)
     {
-        playerHPImage.fillAmount = normalizedHP;
+        for (int i = 0; i < playerCount; i++)
+        {
+            var playerInfoObj = Instantiate(playerInfoPrefab, playerInfoParent);
+
+            var rectTransform = playerInfoObj.GetComponent<RectTransform>();
+            if (rectTransform != null)
+            {
+                var size = rectTransform.sizeDelta;
+                size.x = 1920f / (playerCount + 1);
+                rectTransform.sizeDelta = size;
+            }
+
+            var playerInfoController = playerInfoObj.GetComponent<PlayerInfoController>();
+            playerInfoController.Init(i);
+        }
     }
 
     private void OnEnemyReset(EnemyType enemyType, int level)
@@ -71,26 +79,6 @@ public class GamePlayHUDController : MonoBehaviour
         }
 
         enemyHPImage.fillAmount = normalizedHP;
-    }
-
-    private void UpdatePlayerCombo(int combo)
-    {
-        if (combo > previousPlayerCombo)
-        {
-            // Flash success color
-            playerComboText.color = successComboColor;
-            var scorePopup = Instantiate(scorePopupPrefab, scorePopupParent);
-            var popupText = scorePopup.GetComponent<TextMeshProUGUI>();
-            popupText.text = $"{combo} Combo + {(int)BattleManager.ScoreType.AdditionalScorePerCombo * combo}";
-            AddScorePopup(scorePopup);
-        }
-        else if (combo == 0 && previousPlayerCombo > 0)
-        {
-            // Flash incoming attack color
-            playerComboText.color = failedComboColor;
-        }
-        playerComboText.text = "Combo: " + combo;
-        previousPlayerCombo = combo;
     }
 
     private void OnScoreChanged(int newScore, BattleManager.ScoreType scoreType)

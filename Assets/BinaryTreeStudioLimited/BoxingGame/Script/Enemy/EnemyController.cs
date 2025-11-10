@@ -1,15 +1,13 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class EnemyController : Singleton<EnemyController>
 {
     #region Enums
-    public enum AttackPath
+    public enum PlayerAttackPath
     {
-        None,
         LeftHook,
         RightHook,
         Uppercut,
@@ -35,6 +33,8 @@ public class EnemyController : Singleton<EnemyController>
     [SerializeField] private float enemyHealthIncreasePerLevel = 20f;
     [Range(0f, 1f)]
     [SerializeField] private float enemyAttackChanceIncreasePerHit = 0.03f;
+    [SerializeField] private float bubbleFrequencyDecreasePercentagePerLevel = 0.01f;
+    [SerializeField] private float bubbleFrequencyDecreasePercentagePerPlayer = 0.5f;
 
     #endregion
 
@@ -42,25 +42,31 @@ public class EnemyController : Singleton<EnemyController>
 
     private EnemyType currentEnemyType;
     private float enemyHealth;
+    private int enemyLevel = 1;
+
     private float enemyAttackDamage;
     private float enemyAttackDelay;
-    private float enemyStandDuration;
-    private bool attacked = false;
-    [HideInInspector] public AttackPath playerAttackPath = AttackPath.None;
-    private EnemyIncomingAttack enemyIncomingAttack = EnemyIncomingAttack.None;
-    private float enemyStandTimer;
-    private int enemyLevel = 1;
     private float enemyAttackChance;
+    private bool attacked = false;
+    private bool attacking;
+
+    private float bubbleFrequency;
+    private float bubbleDuration;
+    private int bubbleLimit;
+    private float bubbleTimer;
+    private int bubbleCount = 0;
+
     private bool gameStarted = false;
+    private int playerCount;
 
     #endregion
 
     #region Events
 
-    public Action<AttackPath, float> OnEnemyStandSelected;
-    public Action<EnemyIncomingAttack, float> OnEnemyAttackSelected;
-    public Action<float> OnEnemyHPChanged;
-    public Action<EnemyIncomingAttack, float> OnEnemyAttack;
+    public Action<PlayerAttackPath, float> OnEnemyCreateBubble;     //float: bubble duration
+    public Action<EnemyIncomingAttack, float> OnEnemyAttackSelected;    //float: attack delay
+    public Action<float> OnEnemyHPChanged;    //float: health percentage
+    public Action<EnemyIncomingAttack, float> OnEnemyAttack;    //float: attack damage
 
     #endregion
 
@@ -68,8 +74,10 @@ public class EnemyController : Singleton<EnemyController>
 
     private void Start()
     {
-        BattleManager.Instance.OnAttackSuccess += TakeDamage;
+        BattleManager.Instance.OnPlayerAttackSuccess += TakeDamage;
         BattleManager.Instance.OnGameStarted += OnGameStarted;
+        BattleManager.Instance.OnBubbleExpired += OnBubbleExpired;
+
         EnemyManager.Instance.OnEnemyReset += InitEnemy;
     }
 
@@ -79,8 +87,10 @@ public class EnemyController : Singleton<EnemyController>
 
     protected override void OnDestroy()
     {
-        BattleManager.Instance.OnAttackSuccess -= TakeDamage;
+        BattleManager.Instance.OnPlayerAttackSuccess -= TakeDamage;
         BattleManager.Instance.OnGameStarted -= OnGameStarted;
+        BattleManager.Instance.OnBubbleExpired -= OnBubbleExpired;
+
         EnemyManager.Instance.OnEnemyReset -= InitEnemy;
 
         base.OnDestroy();
@@ -89,30 +99,32 @@ public class EnemyController : Singleton<EnemyController>
     #endregion
 
     #region Update
+
     void Update()
     {
-        if (!gameStarted) return;
-        switch (playerAttackPath)
+        if (!gameStarted || attacking || enemyHealth <= (int)BattleManager.HitType.Finisher) return;
+
+        if (bubbleCount <= 0)
         {
-            case AttackPath.None:
-            case AttackPath.CrossFinisher:
-                break;
-            default:
-                enemyStandTimer -= Time.deltaTime;
-                if (enemyStandTimer <= 0)
-                {
-                    BattleManager.Instance.AttackFail();
-                    EnemyRandom(1);
-                }
-                break;
+            EnemyRandom();
+            return;
+        }
+        bubbleTimer -= Time.deltaTime;
+        if (bubbleTimer <= 0)
+        {
+            if (bubbleCount < bubbleLimit)
+            {
+                EnemyRandom();
+            }
         }
     }
 
     #endregion
 
-    void OnGameStarted(bool started)
+    void OnGameStarted(int playerCount)
     {
-        gameStarted = started;
+        gameStarted = true;
+        this.playerCount = playerCount;
     }
 
     void InitEnemy(EnemyType enemyType, int level)
@@ -129,92 +141,92 @@ public class EnemyController : Singleton<EnemyController>
 
         enemyAttackDamage = enemyType.attackDamage;
         enemyAttackDelay = Mathf.Max(minimumReactionTime, enemyType.attackDelay * (1 - ((enemyLevel - 1) * reduceReactionTimePercentagePerLevel)));
-        enemyStandDuration = Mathf.Max(minimumReactionTime, enemyType.standDuration * (1 - ((enemyLevel - 1) * reduceReactionTimePercentagePerLevel)));
-
         enemyAttackChance = enemyType.attackChance;
+
+        bubbleDuration = Mathf.Max(minimumReactionTime, enemyType.bubbleDuration * (1 - ((enemyLevel - 1) * reduceReactionTimePercentagePerLevel)));
+        bubbleFrequency = enemyType.bubbleFrequency * (1 + ((enemyLevel - 1) * bubbleFrequencyDecreasePercentagePerLevel));
+        bubbleFrequency /= 1 + (playerCount - 1) * bubbleFrequencyDecreasePercentagePerPlayer;
+        bubbleLimit = enemyType.bubbleLimit;
+
+        bubbleCount = 0;
 
         EnemyRandom(0);
     }
 
     #region TakeDamage
 
-    void TakeDamage(BattleManager.HitType hitType, float damage)
+    void TakeDamage(int playerIndex, BattleManager.HitType hitType, float damage, PlayerAttackPath path)
     {
         enemyHealth -= damage;
         OnEnemyHPChanged?.Invoke(enemyHealth / currentEnemyType.maxHealth);
+        bubbleCount--;
 
         if (enemyHealth > 0)
         {
             animator.SetTrigger("Hit");
-            EnemyRandom();
         }
         else
         {
             Die();
         }
-
     }
 
     void Die()
     {
         animator.SetTrigger("Die");
-        playerAttackPath = AttackPath.None;
-        enemyIncomingAttack = EnemyIncomingAttack.None;
     }
 
     #endregion
 
     #region Enemy Attack
 
-    void EnemyRandom(int actionOverrided = -1)      // -1: random, 0: stand, 1: attack
+    void EnemyRandom(int actionOverrided = -1)      //actionOverrided: -1: random, 0: stand, 1: attack
     {
         float i = UnityEngine.Random.Range(0.01f, 1.00f);
-        if ((!enemyAttack || attacked || enemyHealth <= (int)BattleManager.HitType.Finisher || i > enemyAttackChance || actionOverrided == 0) && actionOverrided != 1)
+        if ((!enemyAttack || attacked || attacking || enemyHealth <= (int)BattleManager.HitType.Finisher || i > enemyAttackChance || actionOverrided == 0) && actionOverrided != 1)
         {
-            enemyIncomingAttack = EnemyIncomingAttack.None;
             if (enemyHealth > (int)BattleManager.HitType.Finisher)
             {
-                int randomPath = UnityEngine.Random.Range(1, Enum.GetValues(typeof(AttackPath)).Length - 1);
-                while (randomPath == (int)playerAttackPath)
-                {
-                    randomPath = UnityEngine.Random.Range(1, Enum.GetValues(typeof(AttackPath)).Length - 1);
-                }
-                playerAttackPath = (AttackPath)randomPath;
-                OnEnemyStandSelected?.Invoke(playerAttackPath, enemyStandDuration);
+                int randomPath = UnityEngine.Random.Range(1, Enum.GetValues(typeof(PlayerAttackPath)).Length - 1);
+                OnEnemyCreateBubble?.Invoke((PlayerAttackPath)randomPath, bubbleDuration);
             }
             else
             {
-                playerAttackPath = AttackPath.CrossFinisher;
-                OnEnemyStandSelected?.Invoke(playerAttackPath, -1);
+                OnEnemyCreateBubble?.Invoke(PlayerAttackPath.CrossFinisher, -1);
             }
             attacked = false;
-            enemyStandTimer = enemyStandDuration;
-
             enemyAttackChance += enemyAttackChanceIncreasePerHit;
+
+            bubbleCount++;
         }
         else
         {
-            playerAttackPath = AttackPath.None;
-            enemyIncomingAttack = (EnemyIncomingAttack)UnityEngine.Random.Range(1, Enum.GetValues(typeof(EnemyIncomingAttack)).Length);
+            EnemyIncomingAttack enemyIncomingAttack = (EnemyIncomingAttack)UnityEngine.Random.Range(1, Enum.GetValues(typeof(EnemyIncomingAttack)).Length);
             OnEnemyAttackSelected?.Invoke(enemyIncomingAttack, enemyAttackDelay);
-            StartCoroutine(EnemyAttackCoroutine());
-            BattleManager.Instance.enemyAttacking = true;
-            attacked = true;
 
             animator.SetTrigger("Attack");
             animator.SetFloat("AttackSpeed", 2.167f / enemyAttackDelay); // 2.167f is the base attack animation duration
             animator.SetBool("MirrorAttack", enemyIncomingAttack == EnemyIncomingAttack.Right);
-
+            BattleManager.Instance.enemyAttacking = true;
+            attacked = true;
             enemyAttackChance = currentEnemyType.attackChance;
+            attacking = true;
+            DOVirtual.DelayedCall(enemyAttackDelay, () =>
+            {
+                OnEnemyAttack?.Invoke(enemyIncomingAttack, enemyAttackDamage);
+                EnemyRandom();
+                attacking = false;
+            });
         }
-    }
-
-    IEnumerator EnemyAttackCoroutine()
-    {
-        yield return new WaitForSeconds(enemyAttackDelay);
-        OnEnemyAttack?.Invoke(enemyIncomingAttack, enemyAttackDamage);
-        EnemyRandom();
+        bubbleTimer = bubbleFrequency;
     }
 
     #endregion
+
+    void OnBubbleExpired(PlayerAttackPath path)
+    {
+        bubbleCount--;
+        EnemyRandom(1);
+    }
+
 }

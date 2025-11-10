@@ -1,20 +1,49 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class StartScreenController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private GameObject firstSelected;
+
+
+    void OnEnable()
     {
-        BattleManager.Instance.OnGameStarted += OnGameStarted;
+        EventSystem.current.SetSelectedGameObject(firstSelected);
+
+        PlayerManager.Instance.OnPlayerSlashDetected += OnPlayerSlashDetected;
     }
 
-    private void OnGameStarted(bool isStarted)
+    private void OnDisable()
     {
-        gameObject.SetActive(!isStarted);
+        PlayerManager.Instance.OnPlayerSlashDetected -= OnPlayerSlashDetected;
     }
 
-    private void OnDestroy()
+    private void OnPlayerSlashDetected(int playerIndex, Jazz.Handedness handedness, Vector2 direction, int combo)
     {
-        BattleManager.Instance.OnGameStarted -= OnGameStarted;
+        Navigation navigation = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>().navigation;
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+        {
+            if (direction.x > 0)
+            {
+                EventSystem.current.SetSelectedGameObject(navigation.selectOnRight.gameObject);
+            }
+            else if (direction.x < 0)
+            {
+                EventSystem.current.SetSelectedGameObject(navigation.selectOnLeft.gameObject);
+            }
+        }
+        else if (direction.y > 0)
+        {
+            GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
+            if (currentSelected == null) { Debug.LogWarning("No current selected GameObject"); return; }
+            var selectable = currentSelected.GetComponent<Selectable>();
+            if (selectable == null) { Debug.LogWarning("Current selected GameObject is not selectable"); return; }
+            var pointer = new PointerEventData(EventSystem.current);
+            // (position is irrelevant for ExecuteEvents, but some components read it)
+            pointer.position = Input.mousePosition;
+            ExecuteEvents.Execute(currentSelected, pointer, ExecuteEvents.submitHandler);
+            ExecuteEvents.Execute(currentSelected, pointer, ExecuteEvents.pointerClickHandler);
+        }
     }
 }

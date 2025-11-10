@@ -1,14 +1,21 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using Nex.Essentials;
 using SignalPolarity = Nex.Essentials.SignalPolarityDetector.SignalPolarity;
 using NodeIndex = Nex.Essentials.SimplePose.NodeIndex;
 using System;
+using Cysharp.Threading.Tasks.Linq;
 
-public class PlayerController : Singleton<PlayerController>
+public class PlayerController : MonoBehaviour
 {
     [Header("Health")]
     [SerializeField] private float playerMaxHealth = 100f;
     private float playerHealth;
+
+    [Header("Slash Detectors")]
+    [SerializeField] SlashDetector leftSlashDetector = null!;
+    [SerializeField] SlashDetector rightSlashDetector = null!;
+
 
     [Header("Crouch Detection")]
     [SerializeField] private SignalPolarityDetector verticalSignalDetector = null!;
@@ -17,17 +24,56 @@ public class PlayerController : Singleton<PlayerController>
     [Header("Block Detection")]
     [SerializeField] private BodyPoseController bodyPoseController = null!;
 
+    [Header("Lean Detection")]
+    [SerializeField] private AngularSignalProducer leanSignalProducer = null!;
+    [FormerlySerializedAs("signalDetector")][SerializeField] private SignalPolarityDetector leanSignalPolarityDetector = null!;
+    private bool playerLeaningLeft = false;
+    private bool playerLeaningRight = false;
+
+    [Header("IK Avatar Controller")]
+    [SerializeField] private IKAvatarController ikAvatarController = null!;
+
     private bool gameStarted = false;
+    int playerIndex;
+    int playerCombo = 0;
 
-    public Action<float> OnPlayerHPChanged;
-    public Action OnPlayerDied;
+    public Action<int, float> OnPlayerHPChanged;    // int: player index, float: health percentage
+    public Action<int> OnPlayerDied;    // int: player index
+    public Action<int, Jazz.Handedness, Vector2, int> OnSlashDetected;   // int: player index, Jazz.Handedness: handedness, Vector2: direction, int: combo
+    public Action<int, int> OnPlayerComboChanged; // int: player index, int: combo
+    public Action<int> OnPlayerAvoidedAttack; // int: player index
 
-
-    private void Start()
+    public void Init(int playerIndex)
     {
+        this.playerIndex = playerIndex;
+        leftSlashDetector.Init(playerIndex);
+        rightSlashDetector.Init(playerIndex);
+        leanSignalProducer.Init(playerIndex);
+        ikAvatarController.Init(playerIndex);
+
         playerHealth = playerMaxHealth;
-        OnPlayerHPChanged?.Invoke(playerHealth / playerMaxHealth);
+        OnPlayerHPChanged?.Invoke(playerIndex, playerHealth / playerMaxHealth);
+
+        leanSignalPolarityDetector.SignalStream.Subscribe(HandleLeanSignal, destroyCancellationToken);
+        leftSlashDetector.OnSlashDetected += OnLeftSlashDetected;
+        rightSlashDetector.OnSlashDetected += OnRightSlashDetected;
+
         BattleManager.Instance.OnGameStarted += OnGameStarted;
+        BattleManager.Instance.OnPlayerAttackSuccess += OnPlayerAttackSuccess;
+        //BattleManager.Instance.OnBubbleExpired += OnBubbleExpired;
+        EnemyController.Instance.OnEnemyAttack += OnEnemyAttack;
+
+    }
+
+    void OnDestroy()
+    {
+        leftSlashDetector.OnSlashDetected -= OnLeftSlashDetected;
+        rightSlashDetector.OnSlashDetected -= OnRightSlashDetected;
+
+        BattleManager.Instance.OnGameStarted -= OnGameStarted;
+        BattleManager.Instance.OnPlayerAttackSuccess -= OnPlayerAttackSuccess;
+        //BattleManager.Instance.OnBubbleExpired -= OnBubbleExpired;
+        EnemyController.Instance.OnEnemyAttack -= OnEnemyAttack;
     }
 
     private void Update()
@@ -47,10 +93,13 @@ public class PlayerController : Singleton<PlayerController>
         }
     }
 
-    public void TakeDamage(float damage)
+    void TakeDamage(float damage)
     {
         playerHealth -= damage;
-        OnPlayerHPChanged?.Invoke(playerHealth / playerMaxHealth);
+        OnPlayerHPChanged?.Invoke(playerIndex, playerHealth / playerMaxHealth);
+
+        ResetPlayerCombo();
+
         if (playerHealth <= 0)
         {
             Die();
@@ -60,8 +109,28 @@ public class PlayerController : Singleton<PlayerController>
     void Die()
     {
         UIManager.Instance.ShowGameOverPanel();
-        OnPlayerDied?.Invoke();
+        OnPlayerDied?.Invoke(playerIndex);
     }
+
+    #region Slash Detection
+
+    void OnLeftSlashDetected(Vector2 direction)
+    {
+        SlashDetected(Jazz.Handedness.Left, direction, playerCombo);
+    }
+
+    void OnRightSlashDetected(Vector2 direction)
+    {
+        SlashDetected(Jazz.Handedness.Right, direction, playerCombo);
+    }
+
+    void SlashDetected(Jazz.Handedness handedness, Vector2 direction, int combo)
+    {
+        OnSlashDetected?.Invoke(playerIndex, handedness, direction, combo);
+    }
+
+    #endregion
+
 
     #region Player Crouch
 
@@ -76,7 +145,7 @@ public class PlayerController : Singleton<PlayerController>
 
     public bool IsPlayerBlockingLeft()
     {
-        if (!bodyPoseController.TryGetBodyPose(0, BodyPoseController.PoseFlavor.Raw, out var bodyPose))
+        if (!bodyPoseController.TryGetBodyPose(playerIndex, BodyPoseController.PoseFlavor.Raw, out var bodyPose))
         {
             Debug.LogError("Failed to get body pose.");
             return false;
@@ -100,7 +169,7 @@ public class PlayerController : Singleton<PlayerController>
 
     public bool IsPlayerBlockingRight()
     {
-        if (!bodyPoseController.TryGetBodyPose(0, BodyPoseController.PoseFlavor.Raw, out var bodyPose))
+        if (!bodyPoseController.TryGetBodyPose(playerIndex, BodyPoseController.PoseFlavor.Raw, out var bodyPose))
         {
             Debug.LogError("Failed to get body pose.");
             return false;
@@ -124,14 +193,75 @@ public class PlayerController : Singleton<PlayerController>
 
     #endregion
 
-    void OnGameStarted(bool started)
+    #region Lean Detection
+
+    private void HandleLeanSignal(SignalPolarity signal)
     {
-        gameStarted = started;
+        playerLeaningLeft = signal == SignalPolarity.Positive;
+        playerLeaningRight = signal == SignalPolarity.Negative;
     }
 
-    protected override void OnDestroy()
+    #endregion
+
+    void OnGameStarted(int playerCount)
     {
-        BattleManager.Instance.OnGameStarted -= OnGameStarted;
-        base.OnDestroy();
+        gameStarted = true;
+    }
+
+    void OnEnemyAttack(EnemyController.EnemyIncomingAttack attack, float damage)
+    {
+        bool avoided = false;
+        switch (attack)
+        {
+            case EnemyController.EnemyIncomingAttack.Left:
+                avoided = playerLeaningRight;
+                break;
+            case EnemyController.EnemyIncomingAttack.Right:
+                avoided = playerLeaningLeft;
+                break;
+            default:
+                break;
+        }
+
+        if (avoided)
+        {
+            AvoidedAttack();
+        }
+        else
+        {
+            TakeDamage(damage);
+        }
+    }
+
+    void OnPlayerAttackSuccess(int playerIndex, BattleManager.HitType hitType, float damage, EnemyController.PlayerAttackPath path)
+    {
+        if (this.playerIndex != playerIndex) return;
+
+        AddPlayerCombo();
+    }
+
+    void OnBubbleExpired(int playerIndex)
+    {
+        if (this.playerIndex != playerIndex) return;
+
+        ResetPlayerCombo();
+    }
+
+    void AvoidedAttack()
+    {
+        AddPlayerCombo();
+        OnPlayerAvoidedAttack?.Invoke(playerIndex);
+    }
+
+    void AddPlayerCombo()
+    {
+        playerCombo++;
+        OnPlayerComboChanged?.Invoke(playerIndex, playerCombo);
+    }
+
+    void ResetPlayerCombo()
+    {
+        playerCombo = 0;
+        OnPlayerComboChanged?.Invoke(playerIndex, playerCombo);
     }
 }

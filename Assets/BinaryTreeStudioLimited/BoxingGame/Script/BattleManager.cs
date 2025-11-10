@@ -4,13 +4,20 @@ using Cysharp.Threading.Tasks;
 using Cysharp.Threading.Tasks.Linq;
 using Nex.Essentials;
 using UnityEngine;
-using UnityEngine.Serialization;
 using TMPro;
-using Jazz;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using Jazz;
 
 public class BattleManager : Singleton<BattleManager>
 {
+    public struct Bubble
+    {
+        public EnemyController.PlayerAttackPath path;
+        public float spawnTime;
+        public float duration;
+    }
+
     #region Public Enums
 
     public enum ScoreType
@@ -43,19 +50,33 @@ public class BattleManager : Singleton<BattleManager>
         public float canvasWidth = 1920;
     }
     [Header("Nex Setup")]
-    [SerializeField] private bool skipNexSetup = false;
+    //[SerializeField] private bool skipNexSetup = false;
     [SerializeField] private SetupConfig setupConfig = null!;
-
     [SerializeField] private MdkController mdkController = null!;
     [SerializeField] private PlayAreaController playAreaController = null!;
     [SerializeField] private BodyPoseController bodyPoseController = null!;
     [SerializeField] private PlayAreaPreviewFrameProvider playAreaPreviewFrameProvider = null!;
 
+    [Serializable]
+    private class MenuScreenConfig
+    {
+        public GameObject menuPanel = null!;
+        public Button singlePlayerButton = null!;
+        public Button twoPlayerButton = null!;
+    }
 
-    [Header("Motion Detectors")]
-    [SerializeField] SlashDetector leftSlashDetector = null!;
-    [SerializeField] SlashDetector rightSlashDetector = null!;
-    [FormerlySerializedAs("signalDetector")][SerializeField] private SignalPolarityDetector leanSignalPolarityDetector = null!;
+    [Header("Player Config")]
+    [SerializeField] private MenuScreenConfig menuScreenConfig = null!;
+    [Serializable]
+    private class PlayerConfig
+    {
+        public float[] singlePlayerPosition = { 0.5f };
+        public float[] twoPlayerPositions = { 0.3f, 0.6f };
+    }
+    [SerializeField] private PlayerConfig playerPositionsConfig = null!;
+    [SerializeField] private PlayerController defaultPlayer;
+    [SerializeField] private GameObject playerPrefab;
+
 
     [Header("VFX")]
     [SerializeField] ParticleSystem perfectHitEffect;
@@ -77,14 +98,13 @@ public class BattleManager : Singleton<BattleManager>
 
     #region private var
     private bool gameStarted = false;
-    int playerCombo = 0;
     [HideInInspector] public bool enemyAttacking = false;
     private bool crossFinisherLeftSuccess = false;
     private bool crossFinisherRightSuccess = false;
     [Serializable]
     private class HitAngleMapping
     {
-        public EnemyController.AttackPath attackPath;
+        public EnemyController.PlayerAttackPath attackPath;
         [Range(0f, 360f)]
         public float angle;
     }
@@ -93,15 +113,19 @@ public class BattleManager : Singleton<BattleManager>
     private bool playerLeaningLeft = false;
     private bool playerLeaningRight = false;
     private int playerScore = 0;
+    private int playerCount;
+    public int PlayerCount => playerCount;
+    private List<Bubble> createdBubbles = new();
+
 
     #endregion
 
     #region Observer Pattern
 
-    public Action<bool> OnGameStarted;
-    public Action<int> OnPlayerComboChanged;
-    public Action<int, ScoreType> OnPlayerScoreChanged;
-    public Action<HitType, float> OnAttackSuccess;
+    public Action<int> OnGameStarted;   // int: player count
+    public Action<int, ScoreType> OnPlayerScoreChanged;  // int: score, ScoreType: score type
+    public Action<int, HitType, float, EnemyController.PlayerAttackPath> OnPlayerAttackSuccess;    // int: player index, HitType: hit type, float: damage, EnemyController.PlayerAttackPath: attack path
+    public Action<EnemyController.PlayerAttackPath> OnBubbleExpired;    // EnemyController.PlayerAttackPath: bubble path
 
     #endregion
 
@@ -110,12 +134,15 @@ public class BattleManager : Singleton<BattleManager>
     void Start()
     {
         mdkController.StartRunning().Forget();
+        PlayerManager.Instance.OnPlayerSlashDetected += OnPlayerSlashDetected;
 
-        if (skipNexSetup)
-        {
-            RunGame();
-            return;
-        }
+        //if (skipNexSetup)
+        //{
+        //    RunGame();
+        //    return;
+        //}
+
+        PlayerManager.Instance.RegisterPlayerController(defaultPlayer);
         Run(destroyCancellationToken).Forget();
     }
 
@@ -127,24 +154,19 @@ public class BattleManager : Singleton<BattleManager>
     {
         if (!gameStarted)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                gameStarted = true;
-                OnGameStarted?.Invoke(gameStarted);
-            }
             return;
         }
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (createdBubbles.Count > 0)
         {
-            AttackSuccess(HitType.Finisher);
-        }
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            playerLeaningLeft = true;
-        }
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            playerLeaningRight = true;
+            Bubble[] bubblesArray = createdBubbles.ToArray();
+            foreach (var bubble in bubblesArray)
+            {
+                if (Time.time - bubble.spawnTime > bubble.duration && bubble.duration > 0)
+                {
+                    OnBubbleExpired?.Invoke(bubble.path);
+                    createdBubbles.Remove(bubble);
+                }
+            }
         }
     }
 
@@ -158,6 +180,8 @@ public class BattleManager : Singleton<BattleManager>
         mdkController.EnableConsistency = false;
         playAreaController.Locked = false;
 
+        await RunMenu(cancellationToken);
+
         await RunSetup(cancellationToken);
 
         mdkController.DewarpLocked = true;
@@ -166,15 +190,54 @@ public class BattleManager : Singleton<BattleManager>
         RunGame();
     }
 
+    /// Choose the number of players and update the PlayAreaController
+    private async UniTask RunMenu(CancellationToken cancellationToken)
+    {
+        menuScreenConfig.menuPanel.SetActive(true);
+
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        var onePlayerButton = menuScreenConfig.singlePlayerButton.OnClickAsync(linkedCts.Token);
+        var twoPlayerButton = menuScreenConfig.twoPlayerButton.OnClickAsync(linkedCts.Token);
+
+        var task = await UniTask.WhenAny(onePlayerButton, twoPlayerButton);
+
+        // One task finished, cancel others
+        linkedCts.Cancel();
+
+        // Set the number of players based on the button/key input
+        switch (task)
+        {
+            case 0:
+                playerCount = 1;
+                playAreaController.PlayerPositions = playerPositionsConfig.singlePlayerPosition;
+                break;
+
+            case 1:
+                playerCount = 2;
+                playAreaController.PlayerPositions = playerPositionsConfig.twoPlayerPositions;
+                break;
+        }
+
+        menuScreenConfig.menuPanel.SetActive(false);
+    }
+
 
     private async UniTask RunSetup(CancellationToken cancellationToken)
     {
+        // Now we enter setup state.
+        // Switch the instructions depending on the number of players
+        setupConfig.setupInstruction.text = playerCount switch
+        {
+            1 => "Stand in the middle and raise your hand to start.",
+            2 => "Stand side by side and raise your hand to start.",
+            _ => setupConfig.setupInstruction.text
+        };
+
         setupConfig.setupPanel.SetActive(true);
 
         // For each player, we want to figure out if they are holding up one of their hands or not.
         // And which hand they are holding up.
         // If both are raised, default to right hand.
-        const int playerCount = 1;
         var playerSetupDetectors = new OnePlayerSetupDetector[playerCount];
         for (var playerIndex = 0; playerIndex < playerCount; ++playerIndex)
         {
@@ -195,6 +258,13 @@ public class BattleManager : Singleton<BattleManager>
             provider.Initialize(playAreaPreviewFrameProvider, playerPosition);
         }
 
+        for (int i = 1; i < playerCount; i++)
+        {
+            var playerObj = Instantiate(playerPrefab);
+            var playerController = playerObj.GetComponent<PlayerController>();
+            PlayerManager.Instance.RegisterPlayerController(playerController);
+        }
+
         await UniTask.WhenAll(playerSetupDetectors.Select(detector =>
             detector.WaitUntilIsReady(cancellationToken)));
 
@@ -203,145 +273,110 @@ public class BattleManager : Singleton<BattleManager>
 
     void RunGame()
     {
-        leftSlashDetector.OnSlashDetected += OnLeftSlashDetected;
-        rightSlashDetector.OnSlashDetected += OnRightSlashDetected;
-        enemyController.playerAttackPath = (EnemyController.AttackPath)UnityEngine.Random.Range(1, Enum.GetValues(typeof(EnemyController.AttackPath)).Length);
-        OnPlayerComboChanged?.Invoke(playerCombo);
         OnPlayerScoreChanged?.Invoke(playerScore, 0);
-        leanSignalPolarityDetector.SignalStream.Subscribe(HandleLeanSignal, destroyCancellationToken);
-        UIManager.Instance.ShowStartScreen();
-        EnemyController.Instance.OnEnemyAttack += EnemyAttack;
+
+        EnemyController.Instance.OnEnemyCreateBubble += OnEnemyCreateBubble;
+        PlayerManager.Instance.OnPlayerAvoidedAttack += OnPlayerAvoidedAttack;
+
+        gameStarted = true;
+        OnGameStarted?.Invoke(playerCount);
     }
 
     #endregion
 
     protected override void OnDestroy()
     {
-        leftSlashDetector.OnSlashDetected -= OnLeftSlashDetected;
-        rightSlashDetector.OnSlashDetected -= OnRightSlashDetected;
-        EnemyController.Instance.OnEnemyAttack -= EnemyAttack;
+        PlayerManager.Instance.OnPlayerSlashDetected -= OnPlayerSlashDetected;
+        PlayerManager.Instance.OnPlayerAvoidedAttack -= OnPlayerAvoidedAttack;
+
+        EnemyController.Instance.OnEnemyCreateBubble -= OnEnemyCreateBubble;
+
         base.OnDestroy();
     }
 
-    #region Slash Detection
-
-    void OnLeftSlashDetected(Vector2 direction)
+    void OnPlayerSlashDetected(int playerIndex, Handedness handedness, Vector2 direction, int combo)
     {
-        SlashDetected(Handedness.Left, direction);
-    }
-
-    void OnRightSlashDetected(Vector2 direction)
-    {
-        SlashDetected(Handedness.Right, direction);
-    }
-
-    void SlashDetected(Handedness handedness, Vector2 direction)
-    {
+        if (createdBubbles.Count == 0)
+            return;
         float angleDegrees = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         angleDegrees = (angleDegrees + 360) % 360;
-
-        if (!gameStarted)
+        Debug.Log("player " + playerIndex + ": Slash angle: " + angleDegrees);
+        foreach (var bubble in createdBubbles)
         {
-            if (direction.y < 0)
-                return; // Must be upward
-            if (angleDegrees < 90 - goodHitAngle || angleDegrees > 90 + goodHitAngle)
-                return; // Must be in good angle range
-            gameStarted = true;
-            OnGameStarted?.Invoke(gameStarted);
-            return;
+            var hitAngle = hitAngleMappings.Find(mapping => mapping?.attackPath == bubble.path)?.angle ?? 0f;
+            switch (bubble.path)
+            {
+                case EnemyController.PlayerAttackPath.LeftHook:
+                    if (handedness != Handedness.Left)
+                        break; // Must be left hand
+                    if (direction.x < 0)
+                        break; // Left hand must move right to perform left hook
+                    if (angleDegrees < hitAngle - goodHitAngle || angleDegrees > hitAngle + goodHitAngle)
+                        break; // Must be in good angle range
+                    if (angleDegrees > hitAngle - perfectHitAngle && angleDegrees < hitAngle + perfectHitAngle)
+                    {
+                        AttackSuccess(playerIndex, HitType.Perfect, combo, bubble.path);    // Perfect hit
+                        return;
+                    }
+                    AttackSuccess(playerIndex, HitType.Good, combo, bubble.path);    // Good hit
+                    return;
+                case EnemyController.PlayerAttackPath.RightHook:
+                    if (handedness != Handedness.Right)
+                        break; // Must be right hand
+                    if (direction.x > 0)
+                        break; // Right hand must move left to perform right hook
+                    if (angleDegrees < hitAngle - goodHitAngle || angleDegrees > hitAngle + goodHitAngle)
+                        break; // Must be in good angle range
+                    if (angleDegrees > hitAngle - perfectHitAngle && angleDegrees < hitAngle + perfectHitAngle)
+                    {
+                        AttackSuccess(playerIndex, HitType.Perfect, combo, bubble.path);    // Perfect hit
+                        return;
+                    }
+                    AttackSuccess(playerIndex, HitType.Good, combo, bubble.path);    // Good hit
+                    return;
+                case EnemyController.PlayerAttackPath.Uppercut:
+                    if (direction.y < 0)
+                        break; // Must be upward
+                    if (angleDegrees < hitAngle - goodHitAngle || angleDegrees > hitAngle + goodHitAngle)
+                        break; // Must be in good angle range
+                    if (angleDegrees > hitAngle - perfectHitAngle && angleDegrees < hitAngle + perfectHitAngle)
+                    {
+                        AttackSuccess(playerIndex, HitType.Perfect, combo, bubble.path);    // Perfect hit
+                        return;
+                    }
+                    AttackSuccess(playerIndex, HitType.Good, combo, bubble.path);    // Good hit
+                    return;
+                case EnemyController.PlayerAttackPath.CrossFinisher:
+                    if (direction.x > 0 && direction.y < 0)
+                    {
+                        crossFinisherLeftSuccess = true;
+                    }
+                    if (direction.x < 0 && direction.y < 0)
+                    {
+                        crossFinisherRightSuccess = true;
+                    }
+                    if (crossFinisherLeftSuccess && crossFinisherRightSuccess)
+                    {
+                        crossFinisherLeftSuccess = false;
+                        crossFinisherRightSuccess = false;
+                        AttackSuccess(playerIndex, HitType.Finisher, combo, bubble.path);
+                    }
+                    return;
+                default:
+                    return;
+            }
         }
-
-        var hitAngle = hitAngleMappings.Find(mapping => mapping?.attackPath == enemyController.playerAttackPath)?.angle ?? 0f;
-
-        switch (enemyController.playerAttackPath)
-        {
-            case EnemyController.AttackPath.LeftHook:
-                if (handedness != Handedness.Left)
-                    break; // Must be left hand
-                if (direction.x < 0)
-                    break; // Left hand must move right to perform left hook
-                if (angleDegrees < hitAngle - goodHitAngle || angleDegrees > hitAngle + goodHitAngle)
-                    break; // Must be in good angle range
-                if (angleDegrees > hitAngle - perfectHitAngle && angleDegrees < hitAngle + perfectHitAngle)
-                {
-                    AttackSuccess(HitType.Perfect);    // Perfect hit
-                    return;
-                }
-                AttackSuccess(HitType.Good);    // Good hit
-                return;
-            case EnemyController.AttackPath.RightHook:
-                if (handedness != Handedness.Right)
-                    break; // Must be right hand
-                if (direction.x > 0)
-                    break; // Right hand must move left to perform right hook
-                if (angleDegrees < hitAngle - goodHitAngle || angleDegrees > hitAngle + goodHitAngle)
-                    break; // Must be in good angle range
-                if (angleDegrees > hitAngle - perfectHitAngle && angleDegrees < hitAngle + perfectHitAngle)
-                {
-                    AttackSuccess(HitType.Perfect);    // Perfect hit
-                    return;
-                }
-                AttackSuccess(HitType.Good);    // Good hit
-                return;
-            case EnemyController.AttackPath.Uppercut:
-                if (direction.y < 0)
-                    break; // Must be upward
-                if (angleDegrees < hitAngle - goodHitAngle || angleDegrees > hitAngle + goodHitAngle)
-                    break; // Must be in good angle range
-                if (angleDegrees > hitAngle - perfectHitAngle && angleDegrees < hitAngle + perfectHitAngle)
-                {
-                    AttackSuccess(HitType.Perfect);    // Perfect hit
-                    return;
-                }
-                AttackSuccess(HitType.Good);    // Good hit
-                return;
-            case EnemyController.AttackPath.CrossFinisher:
-                if (direction.x > 0 && direction.y < 0)
-                {
-                    crossFinisherLeftSuccess = true;
-                }
-                if (direction.x < 0 && direction.y < 0)
-                {
-                    crossFinisherRightSuccess = true;
-                }
-                if (crossFinisherLeftSuccess && crossFinisherRightSuccess)
-                {
-                    crossFinisherLeftSuccess = false;
-                    crossFinisherRightSuccess = false;
-                    AttackSuccess(HitType.Finisher);
-                }
-                return;
-            default:
-                return;
-        }
-        //AttackFail();
     }
-
-    #endregion
-
-    #region Lean Detection
-
-    private void HandleLeanSignal(SignalPolarityDetector.SignalPolarity signal)
-    {
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
-            return;
-        playerLeaningLeft = signal == SignalPolarityDetector.SignalPolarity.Positive;
-        playerLeaningRight = signal == SignalPolarityDetector.SignalPolarity.Negative;
-    }
-
-    #endregion
 
     #region Attack Results
 
-    void AttackSuccess(HitType hitType)
+    void AttackSuccess(int playerIndex, HitType hitType, int playerCombo, EnemyController.PlayerAttackPath path)
     {
-        playerCombo++;
-
-        OnPlayerComboChanged?.Invoke(playerCombo);
-
         float damage = (int)hitType;
         damage *= playerCombo > comboThresholdForDamageMultiplier / 2 ? (playerCombo > comboThresholdForDamageMultiplier ? 1 + comboDamageMultiplier : 1 + comboDamageMultiplier / 2) : 1f;
-        OnAttackSuccess?.Invoke(hitType, damage);
+        var hitBubble = createdBubbles.Find(bubble => bubble.path == path);
+        createdBubbles.Remove(hitBubble);
+        OnPlayerAttackSuccess?.Invoke(playerIndex, hitType, damage, path);
 
         switch (hitType)
         {
@@ -374,70 +409,63 @@ public class BattleManager : Singleton<BattleManager>
         }
     }
 
-    public void AttackFail()
-    {
-        playerCombo = 0;
-
-        OnPlayerComboChanged?.Invoke(playerCombo);
-
-        AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Miss);
-        missEffect.Play();
-    }
+    //public void AttackFail()
+    //{
+    //    playerCombo = 0;
+    //
+    //    OnPlayerComboChanged?.Invoke(playerCombo);
+    //
+    //    AudioManager.Instance.PlayAudio(AudioManager.SFXAudioType.Miss);
+    //    missEffect.Play();
+    //}
 
     #endregion
 
     #region Enemy Attack
 
-    void EnemyAttack(EnemyController.EnemyIncomingAttack attackPath, float damage)
-    {
-        switch (attackPath)
-        {
-            case EnemyController.EnemyIncomingAttack.Left:
-                if (playerLeaningRight)
-                {
-                    PlayerBlockSuccess();
-                }
-                else
-                {
-                    PlayerBlockFail(damage);
-                }
-                break;
-            case EnemyController.EnemyIncomingAttack.Right:
-                if (playerLeaningLeft)
-                {
-                    PlayerBlockSuccess();
-                }
-                else
-                {
-                    PlayerBlockFail(damage);
-                }
-                break;
-            default:
-                break;
-        }
-        enemyAttacking = false;
-    }
+    //void EnemyAttack(EnemyController.EnemyIncomingAttack attackPath, float damage)
+    //{
+    //    switch (attackPath)
+    //    {
+    //        case EnemyController.EnemyIncomingAttack.Left:
+    //            if (playerLeaningRight)
+    //            {
+    //                PlayerBlockSuccess();
+    //            }
+    //            else
+    //            {
+    //                PlayerBlockFail(damage);
+    //            }
+    //            break;
+    //        case EnemyController.EnemyIncomingAttack.Right:
+    //            if (playerLeaningLeft)
+    //            {
+    //                PlayerBlockSuccess();
+    //            }
+    //            else
+    //            {
+    //                PlayerBlockFail(damage);
+    //            }
+    //            break;
+    //        default:
+    //            break;
+    //    }
+    //    enemyAttacking = false;
+    //}
 
-    void PlayerBlockSuccess()
+    void OnPlayerAvoidedAttack(int playerIndex)
     {
-        playerCombo++;
-        playerScore += (int)ScoreType.Block + ((int)ScoreType.AdditionalScorePerCombo * playerCombo);
+        playerScore += (int)ScoreType.Block;
 
-        OnPlayerComboChanged?.Invoke(playerCombo);
         OnPlayerScoreChanged?.Invoke(playerScore, ScoreType.Block);
 
         //audio & vfx
     }
 
-    void PlayerBlockFail(float damage)
-    {
-        playerCombo = 0;
-        PlayerController.Instance.TakeDamage(damage);
-
-        OnPlayerComboChanged?.Invoke(playerCombo);
-
-        //audio & vfx
-    }
-
     #endregion
+
+    private void OnEnemyCreateBubble(EnemyController.PlayerAttackPath path, float duration)
+    {
+        createdBubbles.Add(new Bubble { path = path, spawnTime = Time.time, duration = duration });
+    }
 }

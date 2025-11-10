@@ -15,5 +15,7 @@ MonoBehaviour:
   maxHealth: 100
   attackDamage: 10
   attackDelay: 2
-  standDuration: 2
+  bubbleFrequency: 2
+  bubbleDuration: 2
+  bubbleLimit: 4
   attackChance: 0.1

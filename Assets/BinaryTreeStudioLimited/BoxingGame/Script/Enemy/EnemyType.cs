@@ -6,8 +6,12 @@ public class EnemyType : ScriptableObject
     public float maxHealth;
     public float attackDamage;
     public float attackDelay;
-    [Tooltip("Duration the player can attack")]
-    public float standDuration;
+    [Tooltip("How often the bubble appears in seconds")]
+    public float bubbleFrequency;
+    [Tooltip("how long the bubble lasts in seconds")]
+    public float bubbleDuration;
+    [Tooltip("Max number of bubbles")]
+    public int bubbleLimit;
     [Range(0f, 1f)]
     public float attackChance;
 }

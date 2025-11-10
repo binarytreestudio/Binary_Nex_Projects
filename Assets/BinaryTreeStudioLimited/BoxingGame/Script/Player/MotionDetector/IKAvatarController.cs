@@ -260,4 +260,11 @@ public class IKAvatarController : MonoBehaviour
     {
         return inputZInInches / 60 * zMultiplier;
     }
+
+    public void Init(int index)
+    {
+        poseIndex = index;
+
+        bodyPoseController = FindFirstObjectByType<BodyPoseController>();
+    }
 }
