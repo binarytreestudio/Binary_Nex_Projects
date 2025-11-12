@@ -55,6 +55,7 @@ namespace TowerDefence
 
         void SlashDetected(Jazz.Handedness handedness, Vector2 direction)
         {
+            PlayerManager.Instance.PlayerSlashDetected(playerIndex, handedness, direction);
             if (!gameStarted)
                 return;
             if (handedness == Jazz.Handedness.Left && Mathf.Abs(direction.x) > Mathf.Abs(direction.y) && direction.x > 0)

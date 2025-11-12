@@ -9,6 +9,10 @@ namespace TowerDefence
         void Update()
         {
             transform.Translate(Vector3.forward * speed * Time.deltaTime);
+            if (transform.position.z >= 100f)
+            {
+                Destroy(gameObject);
+            }
         }
 
         public void Init(float speed, float damage)

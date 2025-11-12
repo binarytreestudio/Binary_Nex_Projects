@@ -12,7 +12,7 @@ public class AttackPathIndicatorManager : MonoBehaviour
         public EnemyController.PlayerAttackPath path;
         public int position;
     }
-    List<AttackIndicatorMapping> attactkPathIndicatorObjects = new();
+    List<AttackIndicatorMapping> attackPathIndicatorObjects = new();
 
     void Start()
     {
@@ -37,7 +37,7 @@ public class AttackPathIndicatorManager : MonoBehaviour
         if (path != EnemyController.PlayerAttackPath.CrossFinisher)
         {
             position = UnityEngine.Random.Range(0, 9);
-            while (attactkPathIndicatorObjects.Exists(m => m.position == position) || position == 4)
+            while (attackPathIndicatorObjects.Exists(m => m.position == position) || position == 4)
             {
                 position = UnityEngine.Random.Range(0, 9);
             }
@@ -58,24 +58,24 @@ public class AttackPathIndicatorManager : MonoBehaviour
 
         indicatorController.Show(path, duration);
 
-        attactkPathIndicatorObjects.Add(new AttackIndicatorMapping { indicatorObject = indicatorObj, path = path, position = position });
+        attackPathIndicatorObjects.Add(new AttackIndicatorMapping { indicatorObject = indicatorObj, path = path, position = position });
 
         indicatorController.OnIndicatorDestroyed += OnIndicatorDestroyed;
     }
 
     public void HideAttackIndicator(int playerIndex, BattleManager.HitType hitType, float damage, EnemyController.PlayerAttackPath path)
     {
-        AttackIndicatorMapping mapping = attactkPathIndicatorObjects.Find(m => m.path == path);
+        AttackIndicatorMapping mapping = attackPathIndicatorObjects.Find(m => m.path == path);
         if (mapping.indicatorObject != null)
         {
             mapping.indicatorObject.GetComponent<AttackPathIndicatorController>().Hide();
-            attactkPathIndicatorObjects.Remove(mapping);
         }
     }
 
     void OnIndicatorDestroyed(GameObject indicatorObject)
     {
-        AttackIndicatorMapping mapping = attactkPathIndicatorObjects.Find(obj => obj.indicatorObject == indicatorObject);
-        attactkPathIndicatorObjects.Remove(mapping);
+        AttackIndicatorMapping mapping = attackPathIndicatorObjects.Find(obj => obj.indicatorObject == indicatorObject);
+        mapping.indicatorObject.GetComponent<AttackPathIndicatorController>().OnIndicatorDestroyed -= OnIndicatorDestroyed;
+        attackPathIndicatorObjects.Remove(mapping);
     }
 }

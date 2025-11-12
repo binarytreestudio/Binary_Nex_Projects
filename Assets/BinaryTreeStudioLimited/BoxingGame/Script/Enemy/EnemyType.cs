@@ -14,4 +14,15 @@ public class EnemyType : ScriptableObject
     public int bubbleLimit;
     [Range(0f, 1f)]
     public float attackChance;
+
+    public EnemyType(EnemyType other)
+    {
+        maxHealth = other.maxHealth;
+        attackDamage = other.attackDamage;
+        attackDelay = other.attackDelay;
+        bubbleFrequency = other.bubbleFrequency;
+        bubbleDuration = other.bubbleDuration;
+        bubbleLimit = other.bubbleLimit;
+        attackChance = other.attackChance;
+    }
 }

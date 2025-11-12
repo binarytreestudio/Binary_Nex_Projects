@@ -421,6 +421,58 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+--- !u!1 &367878454
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 367878456}
+  - component: {fileID: 367878455}
+  m_Layer: 0
+  m_Name: DefaultLeftHandSlashDetector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &367878455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 367878454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5257f4fb10ea5bb409b754a48e8e7003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poseIndex: 1
+  handedness: 0
+  bodyPoseController: {fileID: 529520463}
+  slashSpeedThreshold: 80
+  slashDetectionWindow: 0.3
+  slashCooldown: 0.3
+  requireTriggerFromChest: 0
+  chestDistanceThreshold: 10
+--- !u!4 &367878456
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 367878454}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.63}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &529520462
 GameObject:
   m_ObjectHideFlags: 0
@@ -849,6 +901,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MDK
       objectReference: {fileID: 0}
+    - target: {fileID: 9134985066995305071, guid: ce1920ca9b38d4d869de473880ee68e9, type: 3}
+      propertyPath: m_BlockingMask.m_Bits
+      value: 55
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -1132,6 +1188,58 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1081585929}
   m_CullTransparentMesh: 1
+--- !u!1 &1252647747
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1252647749}
+  - component: {fileID: 1252647748}
+  m_Layer: 0
+  m_Name: DefaultRightHandSlashDetector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1252647748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252647747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5257f4fb10ea5bb409b754a48e8e7003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poseIndex: 1
+  handedness: 1
+  bodyPoseController: {fileID: 529520463}
+  slashSpeedThreshold: 80
+  slashDetectionWindow: 0.3
+  slashCooldown: 0.3
+  requireTriggerFromChest: 0
+  chestDistanceThreshold: 10
+--- !u!4 &1252647749
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252647747}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.63}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1621522576
 GameObject:
   m_ObjectHideFlags: 0
@@ -1836,7 +1944,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.11764706}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.5764706}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2784,13 +2892,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7968413643433171077}
-  - {fileID: 3679165248798058021}
   - {fileID: 2090203662187335620}
   - {fileID: 4787367623714471783}
   - {fileID: 7443205183160461572}
   - {fileID: 511090818842167371}
   - {fileID: 1846586169551394601}
   - {fileID: 2151744072761398007}
+  - {fileID: 3679165248798058021}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3316,7 +3424,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameOverPanelController: {fileID: 7052900351130360501}
-  startScreenController: {fileID: 0}
 --- !u!1 &7368730586340202236
 GameObject:
   m_ObjectHideFlags: 0
@@ -3518,6 +3625,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2151744072761398007}
+  - component: {fileID: 8106294385933284147}
   m_Layer: 5
   m_Name: MenuPanel
   m_TagString: Untagged
@@ -3525,6 +3633,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
+--- !u!114 &8106294385933284147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8106294385933284146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6246bf13b100b447aed7606449844ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firstSelected: {fileID: 8206061309067654327}
+  defaultLeftSlashDetector: {fileID: 367878455}
+  defaultRightSlashDetector: {fileID: 1252647748}
 --- !u!224 &8154124015239562931
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3807,3 +3930,5 @@ SceneRoots:
   - {fileID: 4541766109621941703}
   - {fileID: 574281155}
   - {fileID: 1059230280}
+  - {fileID: 367878456}
+  - {fileID: 1252647749}

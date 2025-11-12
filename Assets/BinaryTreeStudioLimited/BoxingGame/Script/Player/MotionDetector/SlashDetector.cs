@@ -47,7 +47,7 @@ public class SlashDetector : MonoBehaviour
     private History<Vector2> handPositionHistory = null!; // Slash detection window in seconds
 
 
-    private void Start()
+    private void OnEnable()
     {
         handPositionHistory = new History<Vector2>(slashDetectionWindow);
         SlashDetectionLoop(destroyCancellationToken).Forget();

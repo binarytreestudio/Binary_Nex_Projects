@@ -27,14 +27,7 @@ public class EnemyController : Singleton<EnemyController>
     [Header("Enemy Settings")]
     [Tooltip("If false, disable enemy attack")][SerializeField] bool enemyAttack = false;
     [SerializeField] private Animator animator;
-    [SerializeField] private float minimumReactionTime = 0.3f;
-    [Range(0f, 1f)]
-    [SerializeField] private float reduceReactionTimePercentagePerLevel = 0.01f;
-    [SerializeField] private float enemyHealthIncreasePerLevel = 20f;
-    [Range(0f, 1f)]
-    [SerializeField] private float enemyAttackChanceIncreasePerHit = 0.03f;
-    [SerializeField] private float bubbleFrequencyDecreasePercentagePerLevel = 0.01f;
-    [SerializeField] private float bubbleFrequencyDecreasePercentagePerPlayer = 0.5f;
+    [SerializeField] private float enemyAttackChanceIncreasePerHit = 0.05f;
 
     #endregion
 
@@ -42,12 +35,12 @@ public class EnemyController : Singleton<EnemyController>
 
     private EnemyType currentEnemyType;
     private float enemyHealth;
-    private int enemyLevel = 1;
 
     private float enemyAttackDamage;
     private float enemyAttackDelay;
     private float enemyAttackChance;
     private bool attacking;
+    private PlayerAttackPath previousPlayerAttackPath = PlayerAttackPath.CrossFinisher;
 
     private float bubbleFrequency;
     private float bubbleDuration;
@@ -102,7 +95,7 @@ public class EnemyController : Singleton<EnemyController>
 
     void Update()
     {
-        if (!gameStarted || attacking || finisherBubbleActive) return;
+        if (!gameStarted || attacking || finisherBubbleActive || enemyHealth <= 0) return;
 
         if (bubbleCount <= 0)
         {
@@ -130,24 +123,20 @@ public class EnemyController : Singleton<EnemyController>
 
     void InitEnemy(EnemyType enemyType, int level)
     {
-        enemyLevel = level;
-
         animator.Play("Idle");
 
         currentEnemyType = enemyType;
 
-        enemyHealth = enemyType.maxHealth + enemyLevel * UnityEngine.Random.Range(enemyHealthIncreasePerLevel / 5, enemyHealthIncreasePerLevel);
-        currentEnemyType.maxHealth = enemyHealth;
+        enemyHealth = currentEnemyType.maxHealth;
         OnEnemyHPChanged?.Invoke(enemyHealth / currentEnemyType.maxHealth);
 
-        enemyAttackDamage = enemyType.attackDamage;
-        enemyAttackDelay = Mathf.Max(minimumReactionTime, enemyType.attackDelay * (1 - ((enemyLevel - 1) * reduceReactionTimePercentagePerLevel)));
-        enemyAttackChance = enemyType.attackChance;
+        enemyAttackDamage = currentEnemyType.attackDamage;
+        enemyAttackDelay = currentEnemyType.attackDelay;
+        enemyAttackChance = currentEnemyType.attackChance;
 
-        bubbleDuration = Mathf.Max(minimumReactionTime, enemyType.bubbleDuration * (1 - ((enemyLevel - 1) * reduceReactionTimePercentagePerLevel)));
-        bubbleFrequency = enemyType.bubbleFrequency * (1 + ((enemyLevel - 1) * bubbleFrequencyDecreasePercentagePerLevel));
-        bubbleFrequency /= 1 + (playerCount - 1) * bubbleFrequencyDecreasePercentagePerPlayer;
-        bubbleLimit = enemyType.bubbleLimit;
+        bubbleDuration = currentEnemyType.bubbleDuration;
+        bubbleFrequency = currentEnemyType.bubbleFrequency; ;
+        bubbleLimit = currentEnemyType.bubbleLimit;
 
         bubbleCount = 0;
 
@@ -189,7 +178,14 @@ public class EnemyController : Singleton<EnemyController>
         {
             if (enemyHealth > (int)BattleManager.HitType.Finisher)
             {
-                int randomPath = UnityEngine.Random.Range(1, Enum.GetValues(typeof(PlayerAttackPath)).Length - 1);
+                int randomPath = UnityEngine.Random.Range(0, Enum.GetValues(typeof(PlayerAttackPath)).Length - 1);
+                // Ensure not the same as previous path
+                while ((PlayerAttackPath)randomPath == previousPlayerAttackPath)
+                {
+                    randomPath = UnityEngine.Random.Range(0, Enum.GetValues(typeof(PlayerAttackPath)).Length - 1);
+                }
+                previousPlayerAttackPath = (PlayerAttackPath)randomPath;
+
                 OnEnemyCreateBubble?.Invoke((PlayerAttackPath)randomPath, bubbleDuration);
             }
             else

@@ -36,6 +36,7 @@ public class PlayerController : MonoBehaviour
     private bool gameStarted = false;
     int playerIndex;
     int playerCombo = 0;
+    int shieldStacks = 0;
 
     public Action<int, float> OnPlayerHPChanged;    // int: player index, float: health percentage
     public Action<int> OnPlayerDied;    // int: player index
@@ -229,6 +230,12 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            if (shieldStacks > 0)
+            {
+                shieldStacks--;
+                AvoidedAttack();
+                return;
+            }
             TakeDamage(damage);
         }
     }
@@ -263,5 +270,28 @@ public class PlayerController : MonoBehaviour
     {
         playerCombo = 0;
         OnPlayerComboChanged?.Invoke(playerIndex, playerCombo);
+    }
+
+    public void AddShield()
+    {
+        shieldStacks++;
+    }
+
+    public void RecoverHP(float amount)
+    {
+        playerHealth = Mathf.Min(playerHealth + amount, playerMaxHealth);
+        OnPlayerHPChanged?.Invoke(playerIndex, playerHealth / playerMaxHealth);
+    }
+
+    public void IncreaseMaxHP(float amount)
+    {
+        playerMaxHealth += amount;
+        playerHealth += amount;
+        OnPlayerHPChanged?.Invoke(playerIndex, playerHealth / playerMaxHealth);
+    }
+
+    public bool IsDamaged()
+    {
+        return playerHealth < playerMaxHealth;
     }
 }

@@ -19,7 +19,6 @@ public class GamePlayHUDController : MonoBehaviour
     [SerializeField] private GameObject scorePopupPrefab;
     [SerializeField] private int playerScorePopupLimit = 3;
 
-    private int previousPlayerCombo = 0;
     List<GameObject> scorePopups = new();
 
     private void Start()
@@ -64,14 +63,15 @@ public class GamePlayHUDController : MonoBehaviour
     private void OnEnemyReset(EnemyType enemyType, int level)
     {
         enemyLevelText.text = $"Level: {level}";
+        playerScoreText.transform.parent.gameObject.SetActive(true);
     }
 
     private void UpdateEnemyHP(float normalizedHP)
     {
         if (normalizedHP <= 0)
         {
-            //Hide enemy HP bar when enemy is dead
             enemyHPImage.transform.parent.gameObject.SetActive(false);
+            playerScoreText.transform.parent.gameObject.SetActive(false);
         }
         else
         {

@@ -74,7 +74,6 @@ public class BattleManager : Singleton<BattleManager>
         public float[] twoPlayerPositions = { 0.3f, 0.6f };
     }
     [SerializeField] private PlayerConfig playerPositionsConfig = null!;
-    [SerializeField] private PlayerController defaultPlayer;
     [SerializeField] private GameObject playerPrefab;
 
 
@@ -97,6 +96,7 @@ public class BattleManager : Singleton<BattleManager>
 
     #region private var
     private bool gameStarted = false;
+    public bool GameStarted => gameStarted;
     [HideInInspector] public bool enemyAttacking = false;
     private bool crossFinisherLeftSuccess = false;
     private bool crossFinisherRightSuccess = false;
@@ -112,6 +112,8 @@ public class BattleManager : Singleton<BattleManager>
     private int playerScore = 0;
     private int playerCount;
     private List<Bubble> createdBubbles = new();
+
+    private List<int> playerHitCounter = new();
 
 
     #endregion
@@ -130,7 +132,6 @@ public class BattleManager : Singleton<BattleManager>
     void Start()
     {
         mdkController.StartRunning().Forget();
-        PlayerManager.Instance.OnPlayerSlashDetected += OnPlayerSlashDetected;
 
         //if (skipNexSetup)
         //{
@@ -138,7 +139,6 @@ public class BattleManager : Singleton<BattleManager>
         //    return;
         //}
 
-        PlayerManager.Instance.RegisterPlayerController(defaultPlayer);
         Run(destroyCancellationToken).Forget();
     }
 
@@ -157,6 +157,10 @@ public class BattleManager : Singleton<BattleManager>
             Bubble[] bubblesArray = createdBubbles.ToArray();
             foreach (var bubble in bubblesArray)
             {
+                if (bubble.duration <= 0f)
+                {
+                    continue;
+                }
                 if (Time.time - bubble.spawnTime > bubble.duration && bubble.duration > 0)
                 {
                     OnBubbleExpired?.Invoke(bubble.path);
@@ -254,11 +258,13 @@ public class BattleManager : Singleton<BattleManager>
             provider.Initialize(playAreaPreviewFrameProvider, playerPosition);
         }
 
-        for (int i = 1; i < playerCount; i++)
+        for (int i = 0; i < playerCount; i++)
         {
             var playerObj = Instantiate(playerPrefab);
             var playerController = playerObj.GetComponent<PlayerController>();
             PlayerManager.Instance.RegisterPlayerController(playerController);
+
+            playerHitCounter.Add(0);
         }
 
         await UniTask.WhenAll(playerSetupDetectors.Select(detector =>
@@ -272,6 +278,8 @@ public class BattleManager : Singleton<BattleManager>
         OnPlayerScoreChanged?.Invoke(playerScore, 0);
 
         EnemyController.Instance.OnEnemyCreateBubble += OnEnemyCreateBubble;
+
+        PlayerManager.Instance.OnPlayerSlashDetected += OnPlayerSlashDetected;
         PlayerManager.Instance.OnPlayerAvoidedAttack += OnPlayerAvoidedAttack;
 
         gameStarted = true;
@@ -369,7 +377,34 @@ public class BattleManager : Singleton<BattleManager>
     void AttackSuccess(int playerIndex, HitType hitType, int playerCombo, EnemyController.PlayerAttackPath path)
     {
         float damage = (int)hitType;
+        var playerPowerUps = PowerUpManager.Instance.GetPlayerPowerUps(playerIndex);
+
+        // Apply Strength Power-Up effect
+        int strengthIndex = playerPowerUps.appliedPowerUps.FindIndex(power => power.powerUpType == PowerUpDatabase.PowerUpType.Strength);
+        int strengthStackCount = 0;
+        if (strengthIndex >= 0)
+        {
+            var strengthPowerUp = playerPowerUps.appliedPowerUps[strengthIndex];
+            Debug.Log("Player " + playerIndex + " has Strength Power-Up with stack count: " + strengthPowerUp.stackCount);
+            strengthStackCount = strengthPowerUp.stackCount;
+        }
+        damage += strengthStackCount * 5;
+
+        // Apply Combo Damage Multiplier
         damage *= playerCombo > comboThresholdForDamageMultiplier / 2 ? (playerCombo > comboThresholdForDamageMultiplier ? 1 + comboDamageMultiplier : 1 + comboDamageMultiplier / 2) : 1f;
+
+        // Apply Double Damage Power-Up effect
+        int doubleDamageIndex = playerPowerUps.appliedPowerUps.FindIndex(power => power.powerUpType == PowerUpDatabase.PowerUpType.DoubleDamage);
+        if (doubleDamageIndex >= 0)
+        {
+            playerHitCounter[playerIndex]++;
+            if (playerHitCounter[playerIndex] >= 5)
+            {
+                damage *= 2;
+                playerHitCounter[playerIndex] = 0;
+            }
+        }
+
         var hitBubble = createdBubbles.Find(bubble => bubble.path == path);
         createdBubbles.Remove(hitBubble);
         OnPlayerAttackSuccess?.Invoke(playerIndex, hitType, damage, path);

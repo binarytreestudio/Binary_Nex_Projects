@@ -17,6 +17,8 @@ namespace TowerDefence
         }
         private List<PlayerMapping> playerMapping = new();
 
+        public Action<int, Jazz.Handedness, Vector2> OnPlayerSlashDetected;
+
         void Start()
         {
             currentHealth = maxHealth;
@@ -34,13 +36,17 @@ namespace TowerDefence
 
         public void PlayerTakeDamage(float damage)
         {
-            Debug.Log("Player Take Damage: " + damage);
             currentHealth -= damage;
             GameplayHUDController.Instance.SetPlayerHealthBarValue(currentHealth / maxHealth);
             if (currentHealth <= 0)
             {
                 BattleManager.Instance.GameOver();
             }
+        }
+
+        public void PlayerSlashDetected(int playerIndex, Jazz.Handedness handedness, Vector2 direction)
+        {
+            OnPlayerSlashDetected?.Invoke(playerIndex, handedness, direction);
         }
     }
 

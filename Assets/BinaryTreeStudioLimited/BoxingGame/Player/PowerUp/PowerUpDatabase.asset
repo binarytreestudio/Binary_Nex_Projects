@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 186afb11857df2d4d8efdee979b81fda, type: 3}
+  m_Name: PowerUpDatabase
+  m_EditorClassIdentifier: 
+  powerUpDataList:
+  - powerUpType: 0
+    icon: {fileID: 0}
+    powerUpName: Strength
+    description: Attack Damage + 5
+    maxStack: -1
+  - powerUpType: 1
+    icon: {fileID: 0}
+    powerUpName: Unseen Hand
+    description: Double the damage after every 5 successful hit
+    maxStack: 1
+  - powerUpType: 2
+    icon: {fileID: 0}
+    powerUpName: Shield
+    description: Automatically avoid next attack
+    maxStack: -1
+  - powerUpType: 3
+    icon: {fileID: 0}
+    powerUpName: Heal
+    description: Recover 20 HP
+    maxStack: -1
+  - powerUpType: 4
+    icon: {fileID: 0}
+    powerUpName: Endurance
+    description: Increase max HP by 10
+    maxStack: -1

@@ -67,6 +67,7 @@ namespace TowerDefence
 
         private int playerCount = 1;
         private bool gameStarted = false;
+        public bool GameStarted => gameStarted;
         private List<GameObject> spawnedLanes = new();
 
         public Action<int> OnGameStarted;
@@ -133,7 +134,6 @@ namespace TowerDefence
             }
 
             menuScreenConfig.menuPanel.SetActive(false);
-
         }
 
         private async UniTask RunSetup(CancellationToken cancellationToken)

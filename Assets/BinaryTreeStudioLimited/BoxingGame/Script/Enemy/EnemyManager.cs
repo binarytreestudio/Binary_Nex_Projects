@@ -1,17 +1,24 @@
 using UnityEngine;
-using DG.Tweening;
 using System;
 
 public class EnemyManager : Singleton<EnemyManager>
 {
     [SerializeField] private int bossFrequency = 10;
-    [SerializeField] private float delayBeforeReset = 7;
     [SerializeField] private EnemyType normalEnemy;
     [SerializeField] private EnemyType boss;
+    [SerializeField] private float minimumReactionTime = 0.5f;
+    [Range(0f, 1f)]
+    [SerializeField] private float reduceReactionTimePercentagePerLevel = 0.03f;
+    [SerializeField] private float enemyHealthIncreasePerLevel = 30f;
+    [Range(0f, 1f)]
+    [SerializeField] private float bubbleFrequencyDecreasePercentagePerLevel = 0.05f;
+    [SerializeField] private float bubbleFrequencyDecreasePercentagePerPlayer = 0.5f;
 
-    int enemyLevel = 1;
 
-    public Action<EnemyType, int> OnEnemyReset;
+    private int enemyLevel = 1;
+    private int playerCount;
+
+    public Action<EnemyType, int> OnEnemyReset;     // EnemyType: enemy type, int: enemy level
 
     void Start()
     {
@@ -28,8 +35,9 @@ public class EnemyManager : Singleton<EnemyManager>
 
     void OnGameStarted(int playerCount)
     {
+        this.playerCount = playerCount;
         enemyLevel = 1;
-        OnEnemyReset?.Invoke(normalEnemy, enemyLevel);
+        ResetEnemy();
     }
 
     void OnEnemyHPChanged(float healthPercentage)
@@ -37,19 +45,19 @@ public class EnemyManager : Singleton<EnemyManager>
         if (healthPercentage <= 0)
         {
             enemyLevel++;
-            //prototype reset enemy health after a delay
-            DOVirtual.DelayedCall(delayBeforeReset, () =>
-            {
-                if (enemyLevel % bossFrequency == 0)
-                {
-                    OnEnemyReset?.Invoke(boss, enemyLevel);
-                }
-                else
-                {
-                    OnEnemyReset?.Invoke(normalEnemy, enemyLevel);
-                }
-            });
         }
+    }
+
+    public void ResetEnemy()
+    {
+        EnemyType enemyType = new((enemyLevel % bossFrequency == 0) ? boss : normalEnemy);
+        enemyType.maxHealth += enemyLevel * UnityEngine.Random.Range(enemyHealthIncreasePerLevel / 5, enemyHealthIncreasePerLevel);
+        enemyType.attackDelay = Mathf.Max(minimumReactionTime, enemyType.attackDelay * (1 - ((enemyLevel - 1) * reduceReactionTimePercentagePerLevel)));
+        enemyType.bubbleDuration = Mathf.Max(minimumReactionTime, enemyType.bubbleDuration * (1 - ((enemyLevel - 1) * reduceReactionTimePercentagePerLevel)));
+        enemyType.bubbleFrequency = enemyType.bubbleFrequency * (1 + ((enemyLevel - 1) * bubbleFrequencyDecreasePercentagePerLevel));
+        enemyType.bubbleFrequency /= 1 + (playerCount - 1) * bubbleFrequencyDecreasePercentagePerPlayer;
+
+        OnEnemyReset?.Invoke(enemyType, enemyLevel);
     }
 
 }

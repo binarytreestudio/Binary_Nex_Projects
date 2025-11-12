@@ -72,4 +72,43 @@ public class PlayerManager : Singleton<PlayerManager>
     {
         OnPlayerAvoidedAttack?.Invoke(playerIndex);
     }
+
+    public void AddShieldToPlayer(int playerIndex)
+    {
+        var playerInfo = playerMapping.Find(info => info.playerIndex == playerIndex);
+        if (playerInfo.playerController != null)
+        {
+            playerInfo.playerController.AddShield();
+        }
+    }
+
+    public void RecoverHPForPlayer(int playerIndex, float amount)
+    {
+        var playerInfo = playerMapping.Find(info => info.playerIndex == playerIndex);
+        if (playerInfo.playerController != null)
+        {
+            playerInfo.playerController.RecoverHP(amount);
+        }
+    }
+
+    public void IncreaseMaxHPForPlayer(int playerIndex, float amount)
+    {
+        var playerInfo = playerMapping.Find(info => info.playerIndex == playerIndex);
+        if (playerInfo.playerController != null)
+        {
+            playerInfo.playerController.IncreaseMaxHP(amount);
+        }
+    }
+
+    public bool IsPlayerDamaged()
+    {
+        foreach (var playerInfo in playerMapping)
+        {
+            if (playerInfo.playerController.IsDamaged())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
