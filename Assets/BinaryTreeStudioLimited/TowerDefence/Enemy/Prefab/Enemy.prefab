@@ -125,7 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitParticleEffect: {fileID: 3423635635202935600, guid: 7c8328e5161f6044f85bbf86815122c9, type: 3}
-  hitParticleEffectYOffset: 2
+  hitParticleEffectYOffset: 1
 --- !u!1001 &6738256119195192046
 PrefabInstance:
   m_ObjectHideFlags: 0
