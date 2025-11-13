@@ -7,6 +7,10 @@ namespace TowerDefence
         [Header("Slash Detectors")]
         [SerializeField] SlashDetector leftSlashDetector = null!;
         [SerializeField] SlashDetector rightSlashDetector = null!;
+        [SerializeField] private float leftHookAngle = 45f;
+        [SerializeField] private float rightHookAngle = 135f;
+        [SerializeField] private float upperCutAngle = 90f;
+        [SerializeField] private float hookAngleRange = 60f;
 
         [Header("IK Avatar Controller")]
         [SerializeField] private IKAvatarController ikAvatarController = null!;
@@ -58,19 +62,25 @@ namespace TowerDefence
             PlayerManager.Instance.PlayerSlashDetected(playerIndex, handedness, direction);
             if (!gameStarted)
                 return;
-            if (handedness == Jazz.Handedness.Left && Mathf.Abs(direction.x) > Mathf.Abs(direction.y) && direction.x > 0)
+            float angleDegrees = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            angleDegrees = (angleDegrees + 360) % 360;
+
+            bool leftHookAngleCheck = angleDegrees > leftHookAngle - hookAngleRange / 2 && angleDegrees < leftHookAngle + hookAngleRange / 2;
+            if (handedness == Jazz.Handedness.Left && leftHookAngleCheck)
             {
                 //Left Hook
                 Shoot(1);
                 return;
             }
-            if (handedness == Jazz.Handedness.Right && Mathf.Abs(direction.x) > Mathf.Abs(direction.y) && direction.x < 0)
+            bool rightHookAngleCheck = angleDegrees > rightHookAngle - hookAngleRange / 2 && angleDegrees < rightHookAngle + hookAngleRange / 2;
+            if (handedness == Jazz.Handedness.Right && rightHookAngleCheck)
             {
                 //Right Hook
                 Shoot(-1);
                 return;
             }
-            if (Mathf.Abs(direction.y) > Mathf.Abs(direction.x) && direction.y > 0)
+            bool upperCutAngleCheck = angleDegrees > upperCutAngle - hookAngleRange / 2 && angleDegrees < upperCutAngle + hookAngleRange / 2;
+            if (upperCutAngleCheck)
             {
                 //Uppercut
                 Shoot(0);
