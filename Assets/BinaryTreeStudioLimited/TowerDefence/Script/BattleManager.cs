@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using System.Threading;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using DG.Tweening;
 
 namespace TowerDefence
 {
@@ -64,6 +65,7 @@ namespace TowerDefence
 
         [Header("Game Config")]
         [SerializeField] private GameObject lanePrefab;
+        [SerializeField] private float restartGameDelay = 2f;
 
         private int playerCount = 1;
         private bool gameStarted = false;
@@ -222,6 +224,10 @@ namespace TowerDefence
         public void GameOver()
         {
             UIManager.Instance.ShowGameOverPanel();
+            DOVirtual.DelayedCall(restartGameDelay, () =>
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+            });
         }
     }
 }

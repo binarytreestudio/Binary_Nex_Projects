@@ -111,9 +111,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 2
+  m_Height: 0
   m_Direction: 1
-  m_Center: {x: 0, y: 0.91, z: 0}
+  m_Center: {x: 0, y: 0.45, z: 0}
 --- !u!114 &7769205659461361712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,7 +130,6 @@ MonoBehaviour:
   hitParticleEffectYOffset: 1
   rb: {fileID: 8797173453249791120}
   force: 10
-  timeOutDuration: 5
   animator: {fileID: 5320617336113799790}
 --- !u!54 &8797173453249791120
 Rigidbody:
