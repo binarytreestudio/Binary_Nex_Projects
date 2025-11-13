@@ -4,6 +4,9 @@ namespace TowerDefence
 {
     public class EnemyController : MonoBehaviour
     {
+        [SerializeField] GameObject hitParticleEffect;
+        [SerializeField] float hitParticleEffectYOffset = 2f;
+
         private float health;
         private float speed;
         private float damage = 10f;
@@ -30,6 +33,7 @@ namespace TowerDefence
             health -= dmg;
             if (health <= 0)
             {
+                Instantiate(hitParticleEffect, transform.position + Vector3.up * hitParticleEffectYOffset, Quaternion.identity);
                 Destroy(gameObject);
             }
         }

@@ -65,15 +65,19 @@ namespace TowerDefence
             float angleDegrees = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             angleDegrees = (angleDegrees + 360) % 360;
 
+            float leftHookDifference = Mathf.Abs(angleDegrees - leftHookAngle);
+            float rightHookDifference = Mathf.Abs(angleDegrees - rightHookAngle);
+            float upperCutDifference = Mathf.Abs(angleDegrees - upperCutAngle);
+
             bool leftHookAngleCheck = angleDegrees > leftHookAngle - hookAngleRange / 2 && angleDegrees < leftHookAngle + hookAngleRange / 2;
-            if (handedness == Jazz.Handedness.Left && leftHookAngleCheck)
+            if (handedness == Jazz.Handedness.Left && leftHookAngleCheck && leftHookDifference < upperCutDifference)
             {
                 //Left Hook
                 Shoot(1);
                 return;
             }
             bool rightHookAngleCheck = angleDegrees > rightHookAngle - hookAngleRange / 2 && angleDegrees < rightHookAngle + hookAngleRange / 2;
-            if (handedness == Jazz.Handedness.Right && rightHookAngleCheck)
+            if (handedness == Jazz.Handedness.Right && rightHookAngleCheck && rightHookDifference < upperCutDifference)
             {
                 //Right Hook
                 Shoot(-1);
