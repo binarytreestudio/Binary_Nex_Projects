@@ -73,14 +73,14 @@ namespace TowerDefence
             if (handedness == Jazz.Handedness.Left && leftHookAngleCheck && leftHookDifference < upperCutDifference)
             {
                 //Left Hook
-                Shoot(1);
+                Shoot(-1);
                 return;
             }
             bool rightHookAngleCheck = angleDegrees > rightHookAngle - hookAngleRange / 2 && angleDegrees < rightHookAngle + hookAngleRange / 2;
             if (handedness == Jazz.Handedness.Right && rightHookAngleCheck && rightHookDifference < upperCutDifference)
             {
                 //Right Hook
-                Shoot(-1);
+                Shoot(1);
                 return;
             }
             bool upperCutAngleCheck = angleDegrees > upperCutAngle - hookAngleRange / 2 && angleDegrees < upperCutAngle + hookAngleRange / 2;
