@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GolemEnemyAOC
+  m_Controller: {fileID: 9100000, guid: e2f586137bc73b64c9eb1d3546044d19, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 50e8b6c439b55f545b7243f811a8c3e2, type: 3}
+    m_OverrideClip: {fileID: -4542553262401549784, guid: 1fc050c1682de6548b8e069f730c559e, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: f9b3be355527c784fb6a978429ef4ef0, type: 3}
+    m_OverrideClip: {fileID: 1854593164380556222, guid: b396186ccd0b192418cefba993e47e33, type: 3}

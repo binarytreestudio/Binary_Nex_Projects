@@ -4,7 +4,7 @@ namespace TowerDefence
     public class FireBallController : MonoBehaviour
     {
         float speed;
-        float damage;
+        int damage;
 
         void Update()
         {
@@ -15,7 +15,7 @@ namespace TowerDefence
             }
         }
 
-        public void Init(float speed, float damage)
+        public void Init(float speed, int damage)
         {
             this.speed = speed;
             this.damage = damage;

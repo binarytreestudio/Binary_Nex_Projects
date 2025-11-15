@@ -1,20 +1,24 @@
-using System;
 using UnityEngine;
 
 namespace TowerDefence
 {
     public class EnemyManager : Singleton<EnemyManager>
     {
+        [Header("Enemy Spawn Settings")]
         [SerializeField] private float spawnInterval = 2f;
-        [SerializeField] private GameObject enemyPrefab = null!;
+        [SerializeField] private float intervalDecreasePerLevel = 0.1f;
 
-        [SerializeField] private float enemyHP = 100f;
-        [SerializeField] private float enemySpeed = 2f;
-        [SerializeField] private float enemyDamage = 10f;
+        [Header("Enemy Type")]
+        [SerializeField] private GameObject normalEnemyPrefab;
+        [SerializeField] private GameObject eliteEnemyPrefab;
+        [SerializeField] private GameObject golemEnemyPrefab;
+        [Range(0f, 1f)][SerializeField] private float eliteEnemyChance = 0.1f;
+        [Range(0f, 1f)][SerializeField] private float golemEnemyChance = 0.05f;
 
         float spawnTimer = 0f;
         bool gameStarted = false;
         private int playerCount = 1;
+        private int level = 1;
 
         void Start()
         {
@@ -36,7 +40,7 @@ namespace TowerDefence
             if (spawnTimer <= 0f)
             {
                 SpawnEnemy();
-                spawnTimer = spawnInterval;
+                spawnTimer = spawnInterval - intervalDecreasePerLevel * (level - 1);
             }
         }
 
@@ -56,9 +60,13 @@ namespace TowerDefence
 
             float xPos = startX + randomInt * spacing;
 
+            float random = UnityEngine.Random.value;
+            GameObject enemyPrefab = random < golemEnemyChance ? golemEnemyPrefab :
+                                     random < eliteEnemyChance ? eliteEnemyPrefab :
+                                     normalEnemyPrefab;
             GameObject enemy = Instantiate(enemyPrefab, new Vector3(xPos, 0, 20), Quaternion.identity);
             var enemyController = enemy.GetComponent<EnemyController>();
-            enemyController.Init(enemyHP, enemySpeed, enemyDamage);
+            enemyController.Init(level);
         }
     }
 }

@@ -750,7 +750,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f524704e19f19840b92dfec6215d05e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 1e+17
 --- !u!1 &367878454
 GameObject:
   m_ObjectHideFlags: 0
@@ -1857,6 +1857,7 @@ MonoBehaviour:
     position: {x: 1, y: 2.75, z: -2.2}
     rotation: {x: 0.19509032, y: 0, z: 0, w: 0.98078525}
   lanePrefab: {fileID: 5388462322101484927, guid: ffa0da745ef7fd84baf92d0c5ed1d424, type: 3}
+  restartGameDelay: 2
 --- !u!1 &1079748398
 GameObject:
   m_ObjectHideFlags: 0
@@ -1902,10 +1903,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnInterval: 0.5
-  enemyPrefab: {fileID: 7152585463170146598, guid: 13afbdb1c76ba8b4cab134fe00e62cb1, type: 3}
-  enemyHP: 1
-  enemySpeed: 4
-  enemyDamage: 10
+  intervalDecreasePerLevel: 0.1
+  normalEnemyPrefab: {fileID: 7152585463170146598, guid: 13afbdb1c76ba8b4cab134fe00e62cb1, type: 3}
+  eliteEnemyPrefab: {fileID: 3012939564230402028, guid: 4881ff223a0a31f4faac65f26eccfe6a, type: 3}
+  golemEnemyPrefab: {fileID: 8542615225364193622, guid: 05b9335640dcd5e45b4ccb52e39ea8bf, type: 3}
+  eliteEnemyChance: 0.05
+  golemEnemyChance: 0.01
 --- !u!1 &1081585929
 GameObject:
   m_ObjectHideFlags: 0

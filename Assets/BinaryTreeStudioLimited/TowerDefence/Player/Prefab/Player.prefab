@@ -274,7 +274,8 @@ MonoBehaviour:
   ikAvatarController: {fileID: 6409233852578984}
   fireBallPrefab: {fileID: 1571582882781154879, guid: 53ecfcf186a14054394d0764a8e2adb6, type: 3}
   fireBallSpeed: 10
-  fireBallDamage: 100
+  fireBallDamage: 1
+  laneTimer: 0.5
 --- !u!114 &6409233852578984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1584,8 +1585,8 @@ MonoBehaviour:
   handedness: 0
   bodyPoseController: {fileID: 0}
   slashSpeedThreshold: 60
-  slashDetectionWindow: 0.15
-  slashCooldown: 0.15
+  slashDetectionWindow: 0.2
+  slashCooldown: 0
   requireTriggerFromChest: 0
   chestDistanceThreshold: 10
 --- !u!1 &6168111026954054034
@@ -6595,8 +6596,8 @@ MonoBehaviour:
   handedness: 1
   bodyPoseController: {fileID: 0}
   slashSpeedThreshold: 60
-  slashDetectionWindow: 0.15
-  slashCooldown: 0.15
+  slashDetectionWindow: 0.2
+  slashCooldown: 0
   requireTriggerFromChest: 0
   chestDistanceThreshold: 10
 --- !u!1 &6514670910714016826

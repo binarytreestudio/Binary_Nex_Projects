@@ -18,10 +18,14 @@ namespace TowerDefence
         [Header("Fireball")]
         [SerializeField] private GameObject fireBallPrefab = null!;
         [SerializeField] private float fireBallSpeed = 10f;
-        [SerializeField] private float fireBallDamage = 100f;
+        [SerializeField] private int fireBallDamage = 1;
+        [SerializeField] private float laneTimer = 0.5f;
 
         private bool gameStarted = false;
         int playerIndex;
+        private float leftLaneCooldownTimer = 0;
+        private float rightLaneCooldownTimer = 0;
+        private float middleLaneCooldownTimer = 0;
 
         public void Init(int playerIndex)
         {
@@ -43,6 +47,16 @@ namespace TowerDefence
             rightSlashDetector.OnSlashDetected -= OnRightSlashDetected;
 
             BattleManager.Instance.OnGameStarted -= OnGameStarted;
+        }
+
+        void Update()
+        {
+            if (leftLaneCooldownTimer >= 0)
+                leftLaneCooldownTimer -= Time.deltaTime;
+            if (middleLaneCooldownTimer >= 0)
+                middleLaneCooldownTimer -= Time.deltaTime;
+            if (rightLaneCooldownTimer >= 0)
+                rightLaneCooldownTimer -= Time.deltaTime;
         }
 
         #region Slash Detection
@@ -103,6 +117,25 @@ namespace TowerDefence
         {
             if (!gameStarted)
                 return;
+
+            switch (index)
+            {
+                case -1:
+                    if (leftLaneCooldownTimer > 0)
+                        return;
+                    leftLaneCooldownTimer = laneTimer;
+                    break;
+                case 0:
+                    if (middleLaneCooldownTimer > 0)
+                        return;
+                    middleLaneCooldownTimer = laneTimer;
+                    break;
+                case 1:
+                    if (rightLaneCooldownTimer > 0)
+                        return;
+                    rightLaneCooldownTimer = laneTimer;
+                    break;
+            }
 
             // Instantiate fireball at the lane position
             Vector3 spawnPosition = new Vector3(transform.position.x + 2 * index, 1f, -.5f);
