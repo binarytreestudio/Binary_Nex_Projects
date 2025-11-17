@@ -23,6 +23,7 @@ namespace TowerDefence
         }
 
         [Header("Nex Setup")]
+        [SerializeField] private bool skipNexSetup = false;
         [SerializeField] private SetupConfig setupConfig = null!;
         [SerializeField] private MdkController mdkController = null!;
         [SerializeField] private PlayAreaController playAreaController = null!;
@@ -89,7 +90,8 @@ namespace TowerDefence
 
             await RunMenu(cancellationToken);
 
-            await RunSetup(cancellationToken);
+            if (!skipNexSetup)
+                await RunSetup(cancellationToken);
 
             mdkController.DewarpLocked = true;
             mdkController.EnableConsistency = true;

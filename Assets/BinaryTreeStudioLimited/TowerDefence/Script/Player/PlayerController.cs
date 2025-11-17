@@ -51,6 +51,18 @@ namespace TowerDefence
 
         void Update()
         {
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                Shoot(-1);
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                Shoot(1);
+            }
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                Shoot(0);
+            }
             if (leftLaneCooldownTimer >= 0)
                 leftLaneCooldownTimer -= Time.deltaTime;
             if (middleLaneCooldownTimer >= 0)

@@ -1806,6 +1806,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bae67df60ad63e458f40d6a277478bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skipNexSetup: 1
   setupConfig:
     setupPanel: {fileID: 249448937145813231}
     setupInstruction: {fileID: 2932899993049915083}
