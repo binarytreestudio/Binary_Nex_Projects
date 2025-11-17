@@ -10,6 +10,7 @@ namespace TowerDefence
         [SerializeField] private float particleEffectYOffset = 1f;
 
         [Header("State")]
+        [SerializeField] private EnemyManager.EnemyType enemyType;
         [SerializeField] private int health;
         [SerializeField] private float speed;
         [SerializeField] private float damage;
@@ -28,9 +29,12 @@ namespace TowerDefence
 
         private bool isDead = false;
         private int collidedCount = 0;
+        private int lane;
 
-        public void Init(int level)
+        public void Init(int level, int lane)
         {
+            this.lane = lane;
+
             //health = Mathf.CeilToInt(health * (1 + healthIncreasePerLevel * (level - 1)));
             speed = speed * (1 + speedIncreasePerLevel * (level - 1));
             damage = damage * (1 + damageIncreasePerLevel * (level - 1));
@@ -53,8 +57,7 @@ namespace TowerDefence
                 PlayerManager.Instance.PlayerTakeDamage(damage);
                 AudioManager.Instance.PlayPlayerHurtAudio();
                 Destroy(gameObject);
-                //transform.SetParent(GameObject.Find("Frontground").transform); 
-                //transform.position = GameObject.FindWithTag("MainCamera").transform.position + Vector3.forward * 2f;
+                BreakThroughPanelController.Instance.SpawnBreakThroughEnemies(lane, enemyType);
             }
         }
 

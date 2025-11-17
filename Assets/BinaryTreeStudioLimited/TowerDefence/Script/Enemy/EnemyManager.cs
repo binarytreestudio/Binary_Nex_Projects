@@ -5,6 +5,13 @@ namespace TowerDefence
 {
     public class EnemyManager : Singleton<EnemyManager>
     {
+        public enum EnemyType
+        {
+            Normal = 0,
+            Elite = 1,
+            Golem = 2,
+        }
+
         [Header("Level Settings")]
         [SerializeField] private int levelEnemyCount = 20;
         [SerializeField] private int enemiesPerLevelIncrease = 5;
@@ -73,7 +80,7 @@ namespace TowerDefence
                                      normalEnemyPrefab;
             GameObject enemy = Instantiate(enemyPrefab, new Vector3(xPos, 0, 20), Quaternion.identity);
             var enemyController = enemy.GetComponent<EnemyController>();
-            enemyController.Init(level);
+            enemyController.Init(level, randomInt - 1);
             spawnedEnemies.Add(enemyController);
 
             enemiesSpawnedThisLevel++;
