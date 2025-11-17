@@ -5,8 +5,9 @@ namespace TowerDefence
     public class EnemyController : MonoBehaviour
     {
         [Header("Hit Particle Effect")]
-        [SerializeField] GameObject hitParticleEffect;
-        [SerializeField] float hitParticleEffectYOffset = 2f;
+        [SerializeField] private GameObject hitParticleEffect;
+        [SerializeField] private GameObject deathParticleEffect;
+        [SerializeField] private float particleEffectYOffset = 1f;
 
         [Header("State")]
         [SerializeField] private int health;
@@ -50,7 +51,10 @@ namespace TowerDefence
             if (transform.position.z < 0)
             {
                 PlayerManager.Instance.PlayerTakeDamage(damage);
+                AudioManager.Instance.PlayPlayerHurtAudio();
                 Destroy(gameObject);
+                //transform.SetParent(GameObject.Find("Frontground").transform); 
+                //transform.position = GameObject.FindWithTag("MainCamera").transform.position + Vector3.forward * 2f;
             }
         }
 
@@ -59,43 +63,51 @@ namespace TowerDefence
             if (isDead)
                 return;
             health -= dmg;
-            animator.SetTrigger("Hit");
-            Instantiate(hitParticleEffect, transform.position + Vector3.up * hitParticleEffectYOffset, Quaternion.identity);
             if (health <= 0)
             {
-                FlyAway();
+                isDead = true;
+                gameObject.tag = "Corpse";
+
+                Vector3 randomUpperDirection = Random.onUnitSphere;
+                randomUpperDirection.y = Mathf.Abs(randomUpperDirection.y); // Force y to be positive
+                randomUpperDirection.z = Mathf.Abs(randomUpperDirection.z); // Force z to be positive
+
+                rb.constraints = RigidbodyConstraints.None;
+                rb.AddForce(randomUpperDirection.normalized * force, ForceMode.Impulse);
+                rb.useGravity = true;
+
+                animator.SetTrigger("Die");
+                Instantiate(deathParticleEffect, transform.position + Vector3.up * particleEffectYOffset, Quaternion.identity);
+                AudioManager.Instance.PlayCriticalHitAudio();
+
+                return;
             }
-        }
-
-        private void FlyAway()
-        {
-            isDead = true;
-            gameObject.tag = "Corpse";
-
-            Vector3 randomUpperDirection = Random.onUnitSphere;
-            randomUpperDirection.y = Mathf.Abs(randomUpperDirection.y); // Force y to be positive
-            randomUpperDirection.z = Mathf.Abs(randomUpperDirection.z); // Force z to be positive
-
-            rb.constraints = RigidbodyConstraints.None;
-            rb.AddForce(randomUpperDirection.normalized * force, ForceMode.Impulse);
-            rb.useGravity = true;
-
-            animator.SetTrigger("Die");
+            animator.SetTrigger("Hit");
+            Instantiate(hitParticleEffect, transform.position + Vector3.up * particleEffectYOffset, Quaternion.identity);
+            AudioManager.Instance.PlayNormalHitAudio();
         }
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (collision.gameObject.CompareTag("Corpse"))
+            if (isDead)
             {
-                if (isDead)
+                if (collision.gameObject.CompareTag("Enemy"))
                 {
                     collidedCount++;
                     if (collidedCount >= maxCollisions)
                         Destroy(gameObject);
-                    return;
                 }
+                return;
+            }
+            if (collision.gameObject.CompareTag("Corpse"))
+            {
                 TakeDamage(1);
             }
+        }
+
+        private void OnDestroy()
+        {
+            EnemyManager.Instance.OnEnemyDefeated(this);
         }
     }
 }

@@ -48,8 +48,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f041b3a296496945a152204a130b199, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitParticleEffect: {fileID: 3423635635202935600, guid: 7c8328e5161f6044f85bbf86815122c9, type: 3}
-  hitParticleEffectYOffset: 1
+  hitParticleEffect: {fileID: 3423635635202935600, guid: 9bcbd173efae1e94cad50d2a2a5ab507, type: 3}
+  deathParticleEffect: {fileID: 3423635635202935600, guid: 7c8328e5161f6044f85bbf86815122c9, type: 3}
+  particleEffectYOffset: 1
   health: 1
   speed: 4
   damage: 10

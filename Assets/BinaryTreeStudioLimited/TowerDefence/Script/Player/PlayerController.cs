@@ -154,6 +154,7 @@ namespace TowerDefence
             GameObject fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
             var fireballController = fireball.GetComponent<FireBallController>();
             fireballController.Init(fireBallSpeed, fireBallDamage);
+            AudioManager.Instance.PlayFireBallAudio();
         }
 
     }

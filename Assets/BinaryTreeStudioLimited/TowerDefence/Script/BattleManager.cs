@@ -67,6 +67,7 @@ namespace TowerDefence
         [Header("Game Config")]
         [SerializeField] private GameObject lanePrefab;
         [SerializeField] private float restartGameDelay = 2f;
+        [SerializeField] private float levelCompleteDelay = 2f;
 
         private int playerCount = 1;
         private bool gameStarted = false;
@@ -221,14 +222,27 @@ namespace TowerDefence
 
             gameStarted = true;
             OnGameStarted?.Invoke(playerCount);
+            AudioManager.Instance.PlayGameStartAudio();
         }
 
         public void GameOver()
         {
             UIManager.Instance.ShowGameOverPanel();
+            AudioManager.Instance.PlayGameOverAudio();
             DOVirtual.DelayedCall(restartGameDelay, () =>
             {
                 UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+            });
+        }
+
+        public void LevelComplete()
+        {
+            //UIManager.Instance.ShowLevelCompletePanel();
+            AudioManager.Instance.PlayGameWinAudio();
+            DOVirtual.DelayedCall(levelCompleteDelay, () =>
+            {
+                EnemyManager.Instance.StartNextLevel();
+                AudioManager.Instance.PlayGameStartAudio();
             });
         }
     }
