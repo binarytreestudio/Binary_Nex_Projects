@@ -288,11 +288,12 @@ namespace TowerDefence
         {
             //UIManager.Instance.ShowLevelCompletePanel();
             AudioManager.Instance.PlayGameWinAudio();
-            DOVirtual.DelayedCall(levelCompleteDelay, () =>
-            {
-                EnemyManager.Instance.StartNextLevel();
-                AudioManager.Instance?.PlayGameStartAudio();
-            });
+            UIManager.Instance.ShowPowerUpPanel();
+            //DOVirtual.DelayedCall(levelCompleteDelay, () =>
+            //{
+            //    EnemyManager.Instance.StartNextLevel();
+            //    AudioManager.Instance?.PlayGameStartAudio();
+            //});
         }
     }
 }

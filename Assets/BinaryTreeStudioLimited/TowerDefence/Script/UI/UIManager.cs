@@ -12,7 +12,6 @@ namespace TowerDefence
 
         public void ShowPowerUpPanel() => Show(powerUpPanelController);
         public void HidePowerUpPanel() => Hide(powerUpPanelController);
-        public PowerUpPanelController GetPowerUpPanelController() => powerUpPanelController;
 
         void Show<T>(T ui) where T : MonoBehaviour
         {

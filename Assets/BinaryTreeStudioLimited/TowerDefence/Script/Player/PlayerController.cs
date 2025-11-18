@@ -1,15 +1,20 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TowerDefence
 {
     public class PlayerController : MonoBehaviour
     {
+        public enum HitAngle
+        {
+            LeftHook = 45,
+            RightHook = 135,
+            UpperCut = 90
+        }
+
         [Header("Slash Detectors")]
         [SerializeField] SlashDetector leftSlashDetector = null!;
         [SerializeField] SlashDetector rightSlashDetector = null!;
-        [SerializeField] private float leftHookAngle = 45f;
-        [SerializeField] private float rightHookAngle = 135f;
-        [SerializeField] private float upperCutAngle = 90f;
         [SerializeField] private float hookAngleRange = 60f;
 
         [Header("IK Avatar Controller")]
@@ -28,6 +33,7 @@ namespace TowerDefence
         private float middleLaneCooldownTimer = 0;
         int playerCount;
         private float laneSpace;
+        [SerializeField] private List<PlayerManager.AppliedPowerUp> appliedPowerUps;
 
         public void Init(int playerIndex)
         {
@@ -55,15 +61,15 @@ namespace TowerDefence
         {
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
-                Shoot(-1);
+                SlashDetected(Jazz.Handedness.Left, (Vector2.right + Vector2.up).normalized);
             }
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
-                Shoot(1);
+                SlashDetected(Jazz.Handedness.Right, (Vector2.left + Vector2.up).normalized);
             }
             if (Input.GetKeyDown(KeyCode.UpArrow))
             {
-                Shoot(0);
+                SlashDetected(Jazz.Handedness.Right, Vector2.up);
             }
             if (leftLaneCooldownTimer >= 0)
                 leftLaneCooldownTimer -= Time.deltaTime;
@@ -93,25 +99,25 @@ namespace TowerDefence
             float angleDegrees = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             angleDegrees = (angleDegrees + 360) % 360;
 
-            float leftHookDifference = Mathf.Abs(angleDegrees - leftHookAngle);
-            float rightHookDifference = Mathf.Abs(angleDegrees - rightHookAngle);
-            float upperCutDifference = Mathf.Abs(angleDegrees - upperCutAngle);
+            float leftHookDifference = Mathf.Abs(angleDegrees - (float)HitAngle.LeftHook);
+            float rightHookDifference = Mathf.Abs(angleDegrees - (float)HitAngle.RightHook);
+            float upperCutDifference = Mathf.Abs(angleDegrees - (float)HitAngle.UpperCut);
 
-            bool leftHookAngleCheck = angleDegrees > leftHookAngle - hookAngleRange / 2 && angleDegrees < leftHookAngle + hookAngleRange / 2;
+            bool leftHookAngleCheck = angleDegrees > (float)HitAngle.LeftHook - hookAngleRange / 2 && angleDegrees < (float)HitAngle.LeftHook + hookAngleRange / 2;
             if (handedness == Jazz.Handedness.Left && leftHookAngleCheck && leftHookDifference < upperCutDifference)
             {
                 //Left Hook
                 Shoot(-1);
                 return;
             }
-            bool rightHookAngleCheck = angleDegrees > rightHookAngle - hookAngleRange / 2 && angleDegrees < rightHookAngle + hookAngleRange / 2;
+            bool rightHookAngleCheck = angleDegrees > (float)HitAngle.RightHook - hookAngleRange / 2 && angleDegrees < (float)HitAngle.RightHook + hookAngleRange / 2;
             if (handedness == Jazz.Handedness.Right && rightHookAngleCheck && rightHookDifference < upperCutDifference)
             {
                 //Right Hook
                 Shoot(1);
                 return;
             }
-            bool upperCutAngleCheck = angleDegrees > upperCutAngle - hookAngleRange / 2 && angleDegrees < upperCutAngle + hookAngleRange / 2;
+            bool upperCutAngleCheck = angleDegrees > (float)HitAngle.UpperCut - hookAngleRange / 2 && angleDegrees < (float)HitAngle.UpperCut + hookAngleRange / 2;
             if (upperCutAngleCheck)
             {
                 //Uppercut
@@ -163,5 +169,14 @@ namespace TowerDefence
             AudioManager.Instance.PlayFireBallAudio();
         }
 
+        public List<PlayerManager.AppliedPowerUp> GetAppliedPowerUps()
+        {
+            return appliedPowerUps;
+        }
+
+        public void SetAppliedPowerUps(List<PlayerManager.AppliedPowerUp> appliedPowerUps)
+        {
+            this.appliedPowerUps = appliedPowerUps;
+        }
     }
 }
