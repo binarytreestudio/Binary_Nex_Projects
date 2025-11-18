@@ -1,14 +1,15 @@
+using System;
 using UnityEngine;
 namespace TowerDefence
 {
     public class FireBallController : MonoBehaviour
     {
-        float speed;
-        int damage;
+        [SerializeField] DamageObject damageSetting;
+        [SerializeField] private float travelSpeed = 1;
 
         void Update()
         {
-            transform.Translate(Vector3.back * speed * Time.deltaTime);
+            transform.Translate(Vector3.back * travelSpeed * Time.deltaTime);
             if (transform.position.z <= -100f)
             {
                 Destroy(gameObject);
@@ -17,8 +18,8 @@ namespace TowerDefence
 
         public void Init(float speed, int damage)
         {
-            this.speed = speed;
-            this.damage = damage;
+            damageSetting.damage = damage;
+            travelSpeed = speed;
         }
 
         void OnCollisionEnter(Collision collision)
@@ -28,10 +29,20 @@ namespace TowerDefence
                 EnemyController enemy = collision.gameObject.GetComponent<EnemyController>();
                 if (enemy != null)
                 {
-                    enemy.TakeDamage(damage);
+                    enemy.TakeDamage(damageSetting);
                 }
                 Destroy(gameObject);
             }
         }
+    }
+    [Serializable]
+    public struct DamageObject
+    {
+        public DamageObject(int damage)
+        {
+            this.damage = damage;
+        }
+
+        public int damage;
     }
 }

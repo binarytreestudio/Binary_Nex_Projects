@@ -1,3 +1,4 @@
+// AreaOfEffectBase.cs（完整取代舊版）
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,48 +6,55 @@ namespace TowerDefence
 {
     public abstract class AreaOfEffectBase : MonoBehaviour
     {
-        [Header("Target & List")]
-        [SerializeField] protected List<EnemyController> enemiesInRange = new List<EnemyController>();
-
-        [Header("Tick Settings")]
+        [Header("=== 基礎設定 ===")]
         [SerializeField, Range(0.05f, 5f)] private float tickRate = 0.5f;
+        [SerializeField, Tooltip("效果持續時間，<=0 表示永久")] private float duration = 5f;
+        [SerializeField, Tooltip("最大 Tick 次數，<=0 表示無限制")] private int maxTickCount = 0;
 
-        [Header("Duration Settings")]
-        [SerializeField, Tooltip("效果持續時間，0 或負數代表永久存在")]
-        private float duration = 5f;
+        [Header("=== 狀態效果設定（支援多種同時存在）===")]
+        [SerializeField]
+        protected StatusEffectData[] statusEffects = new StatusEffectData[]
+        {
+            new StatusEffectData { type = StatusEffectType.Slow, value = 0.4f, duration = 2f, tickRate = 0.5f }
+        };
 
-        [Header("Tick Count Limit")] 
-        [SerializeField, Tooltip("最大生效次數（每次 Tick 算一次），0 或負數代表無限制")]
-        private int maxTickCount = 0; // 0 或負數 = 不限制
-
-        [Header("Real-time Data")]
-        [SerializeField] private float tickTimer = 0f;
+        [Header("=== 即時資料（僅供除錯）===")]
+        [SerializeField] private List<EnemyController> enemiesInRange = new();
         [SerializeField] private float lifetimeTimer = 0f;
-        [SerializeField] private int currentTickCount = 0;     // 目前已觸發次數
+        [SerializeField] private float tickTimer = 0f;
+        [SerializeField] private int currentTickCount = 0;
         [SerializeField] private bool isInitialized = false;
 
-        protected virtual void OnEnemyEnter(EnemyController enemy) { }
-        protected virtual void OnEnemyTick(EnemyController enemy) { }
-        protected virtual void OnEnemyExit(EnemyController enemy) { }
+        // ============================================================
+        protected virtual void OnEffectStart() { }
         protected virtual void OnEffectEnd() { }
 
         private void OnEnable()
         {
             Initialize();
+            OnEffectStart();
         }
 
-        public virtual void Initialize(float customDuration = -1f, int customMaxTickCount = 0)
+        private void OnDisable()
+        {
+            ClearAllEnemies();
+        }
+
+        private void OnDestroy()
+        {
+            ClearAllEnemies();
+            OnEffectEnd();
+        }
+
+        public virtual void Initialize(float customDuration = -1f, int customMaxTickCount = -1)
         {
             lifetimeTimer = 0f;
             tickTimer = 0f;
             currentTickCount = 0;
             enemiesInRange.Clear();
 
-            if (customDuration > 0f)
-                duration = customDuration;
-
-            if (customMaxTickCount > 0)
-                maxTickCount = customMaxTickCount;
+            if (customDuration > 0f) duration = customDuration;
+            if (customMaxTickCount > 0) maxTickCount = customMaxTickCount;
 
             isInitialized = true;
         }
@@ -60,7 +68,7 @@ namespace TowerDefence
                 if (enemy != null && !enemiesInRange.Contains(enemy))
                 {
                     enemiesInRange.Add(enemy);
-                    OnEnemyEnter(enemy);
+                    ApplyEffectsTo(enemy);
                 }
             }
         }
@@ -73,7 +81,7 @@ namespace TowerDefence
             {
                 if (enemy != null && enemiesInRange.Remove(enemy))
                 {
-                    OnEnemyExit(enemy);
+                    RemoveEffectsFrom(enemy);
                 }
             }
         }
@@ -82,78 +90,131 @@ namespace TowerDefence
         {
             if (!isInitialized) return;
 
-            tickTimer += Time.deltaTime;
-
-            if (tickTimer >= tickRate)
-            {
-                tickTimer -= tickRate;
-                PerformTick();
-
-                // 每次 Tick 完畢就累計一次
-                currentTickCount++;
-
-                // 檢查是否達到次數上限
-                if (maxTickCount > 0 && currentTickCount >= maxTickCount)
-                {
-                    Expire();
-                    return; // 直接結束，避免後續時間判斷又重複觸發
-                }
-            }
-
-            // 原有的時間到期機制
             if (duration > 0f)
             {
                 lifetimeTimer += Time.deltaTime;
                 if (lifetimeTimer >= duration)
                 {
                     Expire();
+                    return;
                 }
             }
-        }
 
-        protected virtual void PerformTick()
-        {
-            for (int i = enemiesInRange.Count - 1; i >= 0; i--)
+            tickTimer += Time.deltaTime;
+            if (tickTimer >= tickRate)
             {
-                var enemy = enemiesInRange[i];
-                if (enemy != null)
+                tickTimer -= tickRate;
+                PerformTick();
+                currentTickCount++;
+
+                if (maxTickCount > 0 && currentTickCount >= maxTickCount)
                 {
-                    OnEnemyTick(enemy);
+                    Expire();
                 }
             }
         }
 
         private void LateUpdate()
         {
-            // 清理已死亡的敵人（null）
-            enemiesInRange.RemoveAll(e => e == null);
+            enemiesInRange.RemoveAll(e => e == null || e.IsDead);
         }
 
-        private void Expire()
+        private void PerformTick()
         {
-            OnEffectEnd();
-            Destroy(gameObject);
+            foreach (var enemy in enemiesInRange)
+            {
+                if (enemy != null)
+                {
+                    ApplyEffectsTo(enemy); // 🔥 每 Tick 都重新 Apply → 持續刷新時間
+                }
+            }
         }
 
-        // 外部強制結束
+        // 在 AreaOfEffectBase.cs 的 ApplyEffectsTo() 方法內，取代原本的 if (is SlowEffect) 那坨
+        private void ApplyEffectsTo(EnemyController enemy)
+        {
+            foreach (var data in statusEffects)
+            {
+                var newEffect = CreateEffectInstance(data, gameObject); // 傳入來源
+                if (newEffect == null) continue;
+
+                // 通用刷新邏輯：只要 SupportsRefresh == true 就檢查同來源
+                if (newEffect.SupportsRefresh)
+                {
+                    bool refreshed = false;
+
+                    if (enemy.activeEffects.TryGetValue(newEffect.Type, out var existingList))
+                    {
+                        foreach (var existing in existingList)
+                        {
+                            if (existing is IStatusEffect existingEffect &&
+                                existingEffect.SupportsRefresh &&
+                                existingEffect.Source == gameObject)
+                            {
+                                existingEffect.RefreshDuration();
+                                refreshed = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!refreshed)
+                    {
+                        enemy.ApplyStatusEffect(newEffect);
+                    }
+                }
+                else
+                {
+                    // 不支援刷新的效果直接套（例如一次性護盾、瞬間治療）
+                    enemy.ApplyStatusEffect(newEffect);
+                }
+            }
+        }
+
+        private void RemoveEffectsFrom(EnemyController enemy)
+        {
+            // 不主動移除，讓效果自然過期（更彈性）
+            // 如果需要「離開立刻解除」，可在子類覆寫
+        }
+
+        protected virtual IStatusEffect CreateEffectInstance(StatusEffectData data, GameObject source)
+        {
+            return data.type switch
+            {
+                StatusEffectType.Slow => new SlowEffect(data, gameObject),
+                StatusEffectType.Poison => new PoisonEffect(data, gameObject),
+                StatusEffectType.Stun => new StunEffect(data, gameObject),
+
+                _ => null
+            };
+        }
+
         public void ForceExpire()
         {
             Expire();
         }
 
-        // 外部強制清除敵人列表
-        protected void ClearEnemies()
+        private void Expire()
+        {
+            ClearAllEnemies();
+            Destroy(gameObject);
+        }
+
+        private void ClearAllEnemies()
         {
             foreach (var enemy in enemiesInRange)
             {
                 if (enemy != null)
-                    OnEnemyExit(enemy);
+                {
+                    // 可選：特效消失時強制清除效果
+                    // enemy.ClearStatusEffect();
+                }
             }
             enemiesInRange.Clear();
         }
 
-        // 提供給子類或外部查詢目前次數與上限
         public int CurrentTickCount => currentTickCount;
         public int MaxTickCount => maxTickCount;
+        public float RemainingTime => duration > 0f ? duration - lifetimeTimer : -1f;
     }
 }
