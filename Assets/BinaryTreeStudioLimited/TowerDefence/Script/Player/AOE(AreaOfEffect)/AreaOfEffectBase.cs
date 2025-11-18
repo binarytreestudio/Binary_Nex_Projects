@@ -1,23 +1,55 @@
 using System.Collections.Generic;
 using UnityEngine;
+
 namespace TowerDefence
 {
-    public enum EnemyStats
-    {
-        Speed,
-    }
     public abstract class AreaOfEffectBase : MonoBehaviour
     {
+        [Header("Target & List")]
         [SerializeField] protected List<EnemyController> enemiesInRange = new List<EnemyController>();
 
         [Header("Tick Settings")]
-        [SerializeField] private float tickRate = 0.5f;
+        [SerializeField, Range(0.05f, 5f)] private float tickRate = 0.5f;
+
+        [Header("Duration Settings")]
+        [SerializeField, Tooltip("æ•ˆæžœæŒçºŒæ™‚é–“ï¼Œ0 æˆ–è² æ•¸ä»£è¡¨æ°¸ä¹…å­˜åœ¨")]
+        private float duration = 5f;
+
+        [Header("Tick Count Limit")] 
+        [SerializeField, Tooltip("æœ€å¤§ç”Ÿæ•ˆæ¬¡æ•¸ï¼ˆæ¯æ¬¡ Tick ç®—ä¸€æ¬¡ï¼‰ï¼Œ0 æˆ–è² æ•¸ä»£è¡¨ç„¡é™åˆ¶")]
+        private int maxTickCount = 0; // 0 æˆ–è² æ•¸ = ä¸é™åˆ¶
+
+        [Header("Real-time Data")]
         [SerializeField] private float tickTimer = 0f;
+        [SerializeField] private float lifetimeTimer = 0f;
+        [SerializeField] private int currentTickCount = 0;     // ç›®å‰å·²è§¸ç™¼æ¬¡æ•¸
+        [SerializeField] private bool isInitialized = false;
 
         protected virtual void OnEnemyEnter(EnemyController enemy) { }
         protected virtual void OnEnemyTick(EnemyController enemy) { }
         protected virtual void OnEnemyExit(EnemyController enemy) { }
+        protected virtual void OnEffectEnd() { }
 
+        private void OnEnable()
+        {
+            Initialize();
+        }
+
+        public virtual void Initialize(float customDuration = -1f, int customMaxTickCount = 0)
+        {
+            lifetimeTimer = 0f;
+            tickTimer = 0f;
+            currentTickCount = 0;
+            enemiesInRange.Clear();
+
+            if (customDuration > 0f)
+                duration = customDuration;
+
+            if (customMaxTickCount > 0)
+                maxTickCount = customMaxTickCount;
+
+            isInitialized = true;
+        }
 
         private void OnTriggerEnter(Collider other)
         {
@@ -25,7 +57,7 @@ namespace TowerDefence
 
             if (other.TryGetComponent<EnemyController>(out var enemy))
             {
-                if (!enemiesInRange.Contains(enemy))
+                if (enemy != null && !enemiesInRange.Contains(enemy))
                 {
                     enemiesInRange.Add(enemy);
                     OnEnemyEnter(enemy);
@@ -39,7 +71,7 @@ namespace TowerDefence
 
             if (other.TryGetComponent<EnemyController>(out var enemy))
             {
-                if (enemiesInRange.Remove(enemy))
+                if (enemy != null && enemiesInRange.Remove(enemy))
                 {
                     OnEnemyExit(enemy);
                 }
@@ -48,42 +80,80 @@ namespace TowerDefence
 
         private void Update()
         {
+            if (!isInitialized) return;
+
             tickTimer += Time.deltaTime;
 
             if (tickTimer >= tickRate)
             {
                 tickTimer -= tickRate;
                 PerformTick();
+
+                // æ¯æ¬¡ Tick å®Œç•¢å°±ç´¯è¨ˆä¸€æ¬¡
+                currentTickCount++;
+
+                // æª¢æŸ¥æ˜¯å¦é”åˆ°æ¬¡æ•¸ä¸Šé™
+                if (maxTickCount > 0 && currentTickCount >= maxTickCount)
+                {
+                    Expire();
+                    return; // ç›´æŽ¥çµæŸï¼Œé¿å…å¾ŒçºŒæ™‚é–“åˆ¤æ–·åˆé‡è¤‡è§¸ç™¼
+                }
+            }
+
+            // åŽŸæœ‰çš„æ™‚é–“åˆ°æœŸæ©Ÿåˆ¶
+            if (duration > 0f)
+            {
+                lifetimeTimer += Time.deltaTime;
+                if (lifetimeTimer >= duration)
+                {
+                    Expire();
+                }
             }
         }
 
-        /// <summary>
-        /// ¨C¹j tickRate ¬í·|©I¥s¤@¦¸¡A¹ï½d³ò¤º©Ò¦³¼Ä¤H°õ¦æ Tick ®ÄªG
-        /// </summary>
-        protected void PerformTick()
+        protected virtual void PerformTick()
         {
-            print(enemiesInRange.Count);
             for (int i = enemiesInRange.Count - 1; i >= 0; i--)
             {
                 var enemy = enemiesInRange[i];
                 if (enemy != null)
                 {
                     OnEnemyTick(enemy);
-                    print(enemy.name);
                 }
             }
         }
 
-        // ²M²z¤w¦º¤`¡]null¡^ªº¼Ä¤H¡A«ØÄ³¥Î LateUpdate ©Î¦b¦º¤`¨Æ¥ó¤¤¥D°Ê²¾°£
         private void LateUpdate()
         {
-            enemiesInRange.RemoveAll(enemy => enemy == null);
+            // æ¸…ç†å·²æ­»äº¡çš„æ•µäººï¼ˆnullï¼‰
+            enemiesInRange.RemoveAll(e => e == null);
         }
 
-        // ¥i¿ï¡G´£¨Ñ¤½¶}¤èªkÅý¥~³¡±j¨î²M°£©Î­«·s­pºâ¡]¨Ò¦p¯S®Ä­«¸m®É¡^
+        private void Expire()
+        {
+            OnEffectEnd();
+            Destroy(gameObject);
+        }
+
+        // å¤–éƒ¨å¼·åˆ¶çµæŸ
+        public void ForceExpire()
+        {
+            Expire();
+        }
+
+        // å¤–éƒ¨å¼·åˆ¶æ¸…é™¤æ•µäººåˆ—è¡¨
         protected void ClearEnemies()
         {
+            foreach (var enemy in enemiesInRange)
+            {
+                if (enemy != null)
+                    OnEnemyExit(enemy);
+            }
             enemiesInRange.Clear();
         }
+
+        // æä¾›çµ¦å­é¡žæˆ–å¤–éƒ¨æŸ¥è©¢ç›®å‰æ¬¡æ•¸èˆ‡ä¸Šé™
+        public int CurrentTickCount => currentTickCount;
+        public int MaxTickCount => maxTickCount;
     }
 }
