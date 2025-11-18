@@ -51,6 +51,7 @@ MonoBehaviour:
   hitParticleEffect: {fileID: 3423635635202935600, guid: 9bcbd173efae1e94cad50d2a2a5ab507, type: 3}
   deathParticleEffect: {fileID: 3423635635202935600, guid: 7c8328e5161f6044f85bbf86815122c9, type: 3}
   particleEffectYOffset: 1
+  enemyType: 0
   health: 1
   speed: 4
   damage: 10
@@ -137,7 +138,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3325280722496840288, guid: f513a4cd52fbb5e44aaa4c13892a74c6, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3325280722496840288, guid: f513a4cd52fbb5e44aaa4c13892a74c6, type: 3}
       propertyPath: m_LocalRotation.x
@@ -145,7 +146,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3325280722496840288, guid: f513a4cd52fbb5e44aaa4c13892a74c6, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3325280722496840288, guid: f513a4cd52fbb5e44aaa4c13892a74c6, type: 3}
       propertyPath: m_LocalRotation.z
@@ -157,7 +158,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3325280722496840288, guid: f513a4cd52fbb5e44aaa4c13892a74c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 180
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3325280722496840288, guid: f513a4cd52fbb5e44aaa4c13892a74c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z

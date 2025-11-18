@@ -8,8 +8,8 @@ namespace TowerDefence
 
         void Update()
         {
-            transform.Translate(Vector3.forward * speed * Time.deltaTime);
-            if (transform.position.z >= 100f)
+            transform.Translate(Vector3.back * speed * Time.deltaTime);
+            if (transform.position.z <= -100f)
             {
                 Destroy(gameObject);
             }

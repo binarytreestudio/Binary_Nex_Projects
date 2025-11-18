@@ -78,6 +78,8 @@ namespace TowerDefence
 
         void Start()
         {
+            Jazz.GlobalOptions.shared.enableMultiWindowDVP = false;
+
             mdkController.StartRunning().Forget();
 
             Run(destroyCancellationToken).Forget();
@@ -197,32 +199,79 @@ namespace TowerDefence
             float startX = -spacing * Mathf.Floor((totalLanes - 1) / 2f);
 
             // Instantiate and position all lanes
-            for (int i = 0; i < totalLanes; i++)
-            {
-                GameObject lane = Instantiate(lanePrefab, Vector3.zero, Quaternion.identity);
-                float xPos = startX + i * spacing;
-                lane.transform.position = new Vector3(xPos, 0, 10);
-                spawnedLanes.Add(lane);
-            }
+            //for (int i = 0; i < totalLanes; i++)
+            //{
+            //    GameObject lane = Instantiate(lanePrefab, Vector3.zero, Quaternion.identity);
+            //    float xPos = startX + i * spacing;
+            //    lane.transform.position = new Vector3(xPos, 0, 10);
+            //    spawnedLanes.Add(lane);
+            //}
+
+            //First lane
+            GameObject lane = Instantiate(lanePrefab, Vector3.zero, Quaternion.Euler(0, 90, 0));
+            lane.transform.localScale = new Vector3(1, 1, 0.5f);
+            lane.transform.position = new Vector3(0, 0, 20);
+            spawnedLanes.Add(lane);
+
+            //Second lane
+            lane = Instantiate(lanePrefab, spawnedLanes[0].transform.Find("Destination").position, Quaternion.identity);
+            lane.transform.localScale = new Vector3(1, 1, 0.25f);
+            Transform startPosition = lane.transform.Find("Start");
+            Vector3 difference = spawnedLanes[0].transform.Find("Destination").position - startPosition.position;
+            lane.transform.position += difference;
+            spawnedLanes.Add(lane);
+
+            //Third lane
+            lane = Instantiate(lanePrefab, spawnedLanes[1].transform.Find("Destination").position, Quaternion.Euler(0, 270, 0));
+            lane.transform.localScale = new Vector3(1, 1, 0.5f);
+            startPosition = lane.transform.Find("Start");
+            difference = spawnedLanes[1].transform.Find("Destination").position - startPosition.position;
+            lane.transform.position += difference;
+            spawnedLanes.Add(lane);
+
+            //Fourth lane
+            lane = Instantiate(lanePrefab, spawnedLanes[2].transform.Find("Destination").position, Quaternion.identity);
+            lane.transform.localScale = new Vector3(1, 1, 0.25f);
+            startPosition = lane.transform.Find("Start");
+            difference = spawnedLanes[2].transform.Find("Destination").position - startPosition.position;
+            lane.transform.position += difference;
+            spawnedLanes.Add(lane);
+
+            //Fifth lane
+            lane = Instantiate(lanePrefab, spawnedLanes[3].transform.Find("Destination").position, Quaternion.Euler(0, 90, 0));
+            lane.transform.localScale = new Vector3(1, 1, 0.5f);
+            startPosition = lane.transform.Find("Start");
+            difference = spawnedLanes[3].transform.Find("Destination").position - startPosition.position;
+            lane.transform.position += difference;
+            spawnedLanes.Add(lane);
 
             // Configure camera based on player count
-            var cameraConfig = cameraConfigs.Find(config => config.playerCount == playerCount);
-            mainCamera.fieldOfView = cameraConfig.fieldOfView;
-            mainCamera.transform.position = cameraConfig.position;
-            mainCamera.transform.rotation = cameraConfig.rotation;
+            //var cameraConfig = cameraConfigs.Find(config => config.playerCount == playerCount);
+            //mainCamera.fieldOfView = cameraConfig.fieldOfView;
+            //mainCamera.transform.position = cameraConfig.position;
+            //mainCamera.transform.rotation = cameraConfig.rotation;
+            mainCamera.transform.position = spawnedLanes[spawnedLanes.Count - 1].transform.position + new Vector3(0, 3f, 3f);
+            mainCamera.transform.rotation = Quaternion.Euler(30, 180, 0);
 
+            //spawnedLanes.Reverse();
+
+            float laneLength = 10;
+            float secment = laneLength / (playerCount + 1);
             // Instantiate players
             for (int i = 0; i < playerCount; i++)
             {
                 var playerObj = Instantiate(playerPrefab);
-                playerObj.transform.position = new Vector3(spawnedLanes[i + 1].transform.position.x, 0, 0);
+                playerObj.transform.position = new Vector3(spawnedLanes[spawnedLanes.Count - 1].transform.position.x - 5 + secment * (i + 1), 0, spawnedLanes[spawnedLanes.Count - 1].transform.position.z + 1f);
+                playerObj.transform.rotation = Quaternion.Euler(0, 180, 0);
                 var playerController = playerObj.GetComponent<PlayerController>();
                 PlayerManager.Instance.RegisterPlayerController(playerController);
             }
 
+            EnemyManager.Instance.SetLanes(spawnedLanes);
             gameStarted = true;
             OnGameStarted?.Invoke(playerCount);
             AudioManager.Instance.PlayGameStartAudio();
+            GameplayHUDController.Instance.SetLevelText(1);
         }
 
         public void GameOver()
@@ -242,7 +291,7 @@ namespace TowerDefence
             DOVirtual.DelayedCall(levelCompleteDelay, () =>
             {
                 EnemyManager.Instance.StartNextLevel();
-                AudioManager.Instance.PlayGameStartAudio();
+                AudioManager.Instance?.PlayGameStartAudio();
             });
         }
     }

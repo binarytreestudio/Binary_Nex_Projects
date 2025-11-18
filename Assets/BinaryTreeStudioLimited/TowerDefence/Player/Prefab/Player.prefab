@@ -276,6 +276,7 @@ MonoBehaviour:
   fireBallSpeed: 10
   fireBallDamage: 1
   laneTimer: 0.5
+  laneSpace: 5
 --- !u!114 &6409233852578984
 MonoBehaviour:
   m_ObjectHideFlags: 0

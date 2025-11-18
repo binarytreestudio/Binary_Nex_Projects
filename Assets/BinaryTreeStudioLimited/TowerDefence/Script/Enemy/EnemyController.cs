@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TowerDefence
@@ -10,7 +11,6 @@ namespace TowerDefence
         [SerializeField] private float particleEffectYOffset = 1f;
 
         [Header("State")]
-        [SerializeField] private EnemyManager.EnemyType enemyType;
         [SerializeField] private int health;
         [SerializeField] private float speed;
         [SerializeField] private float damage;
@@ -29,15 +29,17 @@ namespace TowerDefence
 
         private bool isDead = false;
         private int collidedCount = 0;
-        private int lane;
+        private bool brokeThrough = false;
+        private List<GameObject> lanes;
+        private int laneIndex = 0;
 
-        public void Init(int level, int lane)
+        public void Init(int level, List<GameObject> lanes)
         {
-            this.lane = lane;
-
             //health = Mathf.CeilToInt(health * (1 + healthIncreasePerLevel * (level - 1)));
             speed = speed * (1 + speedIncreasePerLevel * (level - 1));
             damage = damage * (1 + damageIncreasePerLevel * (level - 1));
+
+            this.lanes = lanes;
         }
 
         void Update()
@@ -51,13 +53,26 @@ namespace TowerDefence
                 return;
             }
 
-            transform.Translate(Vector3.back * speed * Time.deltaTime);
-            if (transform.position.z < 0)
+            Vector3 destination = lanes[laneIndex].transform.Find("Destination").position;
+            transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime);
+            transform.LookAt(destination);
+            if (Vector3.Distance(transform.position, destination) < 0.1f)
+            {
+                laneIndex++;
+                if (laneIndex >= lanes.Count)
+                    laneIndex = lanes.Count - 1;
+            }
+
+
+            if (Vector3.Distance(transform.position, lanes[lanes.Count - 1].transform.Find("Destination").position) < 0.1f && !brokeThrough)
             {
                 PlayerManager.Instance.PlayerTakeDamage(damage);
                 AudioManager.Instance.PlayPlayerHurtAudio();
-                Destroy(gameObject);
-                BreakThroughPanelController.Instance.SpawnBreakThroughEnemies(lane, enemyType);
+                animator.SetTrigger("Jump");
+                Destroy(gameObject, 1f);
+
+                brokeThrough = true;
+                //BreakThroughPanelController.Instance.SpawnBreakThroughEnemies(lane, enemyType);
             }
         }
 
@@ -85,7 +100,6 @@ namespace TowerDefence
 
                 return;
             }
-            animator.SetTrigger("Hit");
             Instantiate(hitParticleEffect, transform.position + Vector3.up * particleEffectYOffset, Quaternion.identity);
             AudioManager.Instance.PlayNormalHitAudio();
         }

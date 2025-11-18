@@ -33,6 +33,7 @@ namespace TowerDefence
         private int level = 1;
         private int enemiesSpawnedThisLevel = 0;
         List<EnemyController> spawnedEnemies = new();
+        private List<GameObject> lanes;
 
         void Start()
         {
@@ -58,6 +59,11 @@ namespace TowerDefence
             }
         }
 
+        public void SetLanes(List<GameObject> lanes)
+        {
+            this.lanes = lanes;
+        }
+
         void OnGameStarted(int playerCount)
         {
             this.playerCount = playerCount;
@@ -78,9 +84,9 @@ namespace TowerDefence
             GameObject enemyPrefab = random < golemEnemyChance ? golemEnemyPrefab :
                                      random < eliteEnemyChance ? eliteEnemyPrefab :
                                      normalEnemyPrefab;
-            GameObject enemy = Instantiate(enemyPrefab, new Vector3(xPos, 0, 20), Quaternion.identity);
+            GameObject enemy = Instantiate(enemyPrefab, lanes[0].transform.Find("Start").position, Quaternion.identity);
             var enemyController = enemy.GetComponent<EnemyController>();
-            enemyController.Init(level, randomInt - 1);
+            enemyController.Init(level, lanes);
             spawnedEnemies.Add(enemyController);
 
             enemiesSpawnedThisLevel++;
@@ -101,6 +107,7 @@ namespace TowerDefence
         {
             level++;
             enemiesSpawnedThisLevel = 0;
+            GameplayHUDController.Instance.SetLevelText(level);
         }
     }
 }

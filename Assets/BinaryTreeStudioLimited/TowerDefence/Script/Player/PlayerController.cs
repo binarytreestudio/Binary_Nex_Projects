@@ -26,6 +26,8 @@ namespace TowerDefence
         private float leftLaneCooldownTimer = 0;
         private float rightLaneCooldownTimer = 0;
         private float middleLaneCooldownTimer = 0;
+        int playerCount;
+        private float laneSpace;
 
         public void Init(int playerIndex)
         {
@@ -122,6 +124,10 @@ namespace TowerDefence
 
         void OnGameStarted(int playerCount)
         {
+            this.playerCount = playerCount;
+
+            laneSpace = 5f / playerCount;
+
             gameStarted = true;
         }
 
@@ -150,7 +156,7 @@ namespace TowerDefence
             }
 
             // Instantiate fireball at the lane position
-            Vector3 spawnPosition = new Vector3(transform.position.x + 2 * index, 1f, -.5f);
+            Vector3 spawnPosition = new Vector3(transform.position.x + laneSpace * -index, transform.position.y, transform.position.z);
             GameObject fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
             var fireballController = fireball.GetComponent<FireBallController>();
             fireballController.Init(fireBallSpeed, fireBallDamage);
