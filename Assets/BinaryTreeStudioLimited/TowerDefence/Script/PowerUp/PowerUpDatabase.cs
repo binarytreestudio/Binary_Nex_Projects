@@ -42,11 +42,11 @@ namespace TowerDefence
                 var randomPowerUpType = UnityEngine.Random.Range(0, Enum.GetNames(typeof(PowerUpType)).Length);
                 bool fullHealthButRecovery = !PlayerManager.Instance.IsPlayerDamaged() && (PowerUpType)randomPowerUpType == PowerUpType.RecoverHP;
 
-                //while (randomPowerUpTypes.Contains((PowerUpType)randomPowerUpType) || fullHealthButRecovery)
-                //{
-                //    randomPowerUpType = UnityEngine.Random.Range(0, Enum.GetNames(typeof(PowerUpType)).Length);
-                //    fullHealthButRecovery = !PlayerManager.Instance.IsPlayerDamaged() && (PowerUpType)randomPowerUpType == PowerUpType.RecoverHP;
-                //}
+                while (randomPowerUpTypes.Contains((PowerUpType)randomPowerUpType) || fullHealthButRecovery)
+                {
+                    randomPowerUpType = UnityEngine.Random.Range(0, Enum.GetNames(typeof(PowerUpType)).Length);
+                    fullHealthButRecovery = !PlayerManager.Instance.IsPlayerDamaged() && (PowerUpType)randomPowerUpType == PowerUpType.RecoverHP;
+                }
                 randomPowerUpTypes.Add((PowerUpType)randomPowerUpType);
             }
             return randomPowerUpTypes;

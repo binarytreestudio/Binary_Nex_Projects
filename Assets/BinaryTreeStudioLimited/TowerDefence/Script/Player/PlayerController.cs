@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using DG.Tweening;
 using UnityEngine;
 
 namespace TowerDefence
@@ -161,12 +163,53 @@ namespace TowerDefence
                     break;
             }
 
+            int power = -1;
+            if (appliedPowerUps.Count > 0)
+            {
+                float totalNotPowerUpChance = 1f;
+                appliedPowerUps.ForEach(powerUp =>
+                {
+                    totalNotPowerUpChance *= 1 - (20 + 5 * (powerUp.stackCount - 1)) / 100f;
+                });
+                float randomValue = Random.value;
+                if (randomValue > totalNotPowerUpChance)
+                {
+                    List<float> powerUpChances = new List<float>();
+                    appliedPowerUps.ForEach(powerUp =>
+                    {
+                        powerUpChances.Add((20 + 5f * (powerUp.stackCount - 1)) / 100f);
+                    });
+                    randomValue = Random.Range(0, powerUpChances.Sum());
+                    for (int i = 0; i < powerUpChances.Count; i++)
+                    {
+                        if (randomValue > powerUpChances.GetRange(0, i + 1).Sum())
+                        {
+                            continue;
+                        }
+                        power = (int)appliedPowerUps[i].powerUpType;
+                        break;
+                    }
+                }
+            }
+
             // Instantiate fireball at the lane position
-            Vector3 spawnPosition = new Vector3(transform.position.x + laneSpace * -index, transform.position.y, transform.position.z);
+            Vector3 spawnPosition = new Vector3(transform.position.x + laneSpace * index, transform.position.y, transform.position.z);
             GameObject fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
             var fireballController = fireball.GetComponent<FireBallController>();
-            fireballController.Init(fireBallSpeed, fireBallDamage);
+            fireballController.Init(fireBallSpeed, fireBallDamage, power);
             AudioManager.Instance.PlayFireBallAudio();
+
+            if (power == (int)PowerUpDatabase.PowerUpType.FireballCount)
+            {
+                DOVirtual.DelayedCall(0.2f, () =>
+                {
+                    // Instantiate fireball at the lane position
+                    fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
+                    fireballController = fireball.GetComponent<FireBallController>();
+                    fireballController.Init(fireBallSpeed, fireBallDamage, power);
+                    AudioManager.Instance.PlayFireBallAudio();
+                });
+            }
         }
 
         public List<PlayerManager.AppliedPowerUp> GetAppliedPowerUps()

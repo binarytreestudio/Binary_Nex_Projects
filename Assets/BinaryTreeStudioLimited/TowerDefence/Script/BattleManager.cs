@@ -214,7 +214,7 @@ namespace TowerDefence
             spawnedLanes.Add(lane);
 
             //Second lane
-            lane = Instantiate(lanePrefab, spawnedLanes[0].transform.Find("Destination").position, Quaternion.identity);
+            lane = Instantiate(lanePrefab, spawnedLanes[0].transform.Find("Destination").position, Quaternion.Euler(0, 180, 0));
             lane.transform.localScale = new Vector3(1, 1, 0.25f);
             Transform startPosition = lane.transform.Find("Start");
             Vector3 difference = spawnedLanes[0].transform.Find("Destination").position - startPosition.position;
@@ -230,7 +230,7 @@ namespace TowerDefence
             spawnedLanes.Add(lane);
 
             //Fourth lane
-            lane = Instantiate(lanePrefab, spawnedLanes[2].transform.Find("Destination").position, Quaternion.identity);
+            lane = Instantiate(lanePrefab, spawnedLanes[2].transform.Find("Destination").position, Quaternion.Euler(0, 180, 0));
             lane.transform.localScale = new Vector3(1, 1, 0.25f);
             startPosition = lane.transform.Find("Start");
             difference = spawnedLanes[2].transform.Find("Destination").position - startPosition.position;
@@ -250,8 +250,7 @@ namespace TowerDefence
             //mainCamera.fieldOfView = cameraConfig.fieldOfView;
             //mainCamera.transform.position = cameraConfig.position;
             //mainCamera.transform.rotation = cameraConfig.rotation;
-            mainCamera.transform.position = spawnedLanes[spawnedLanes.Count - 1].transform.position + new Vector3(0, 3f, 3f);
-            mainCamera.transform.rotation = Quaternion.Euler(30, 180, 0);
+            mainCamera.transform.position = spawnedLanes[spawnedLanes.Count - 1].transform.position + new Vector3(0, 3f, -3f);
 
             //spawnedLanes.Reverse();
 
@@ -261,8 +260,7 @@ namespace TowerDefence
             for (int i = 0; i < playerCount; i++)
             {
                 var playerObj = Instantiate(playerPrefab);
-                playerObj.transform.position = new Vector3(spawnedLanes[spawnedLanes.Count - 1].transform.position.x - 5 + secment * (i + 1), 0, spawnedLanes[spawnedLanes.Count - 1].transform.position.z + 1f);
-                playerObj.transform.rotation = Quaternion.Euler(0, 180, 0);
+                playerObj.transform.position = new Vector3(spawnedLanes[spawnedLanes.Count - 1].transform.position.x - 5 + secment * (i + 1), 0, spawnedLanes[spawnedLanes.Count - 1].transform.position.z - 1f);
                 var playerController = playerObj.GetComponent<PlayerController>();
                 PlayerManager.Instance.RegisterPlayerController(playerController);
             }

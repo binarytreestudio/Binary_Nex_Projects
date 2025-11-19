@@ -26,7 +26,6 @@ namespace TowerDefence
         {
             for (int i = 0; i < powerUpItemControllers.Count; i++)
             {
-                Debug.Log("Init PowerUp Item: " + powerUpTypes[i]);
                 powerUpItemControllers[i].Init(powerUpTypes[i]);
             }
         }

@@ -1,6 +1,6 @@
 using TowerDefence;
 using UnityEngine;
 
-public class PosionAOE : AreaOfEffectBase
+public class PoisonAOE : AreaOfEffectBase
 {
 }

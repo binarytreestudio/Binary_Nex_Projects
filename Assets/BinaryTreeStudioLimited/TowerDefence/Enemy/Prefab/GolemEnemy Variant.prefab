@@ -1006,6 +1006,18 @@ PrefabInstance:
       propertyPath: enemyType
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 7769205659461361712, guid: 13afbdb1c76ba8b4cab134fe00e62cb1, type: 3}
+      propertyPath: baseStats.speed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769205659461361712, guid: 13afbdb1c76ba8b4cab134fe00e62cb1, type: 3}
+      propertyPath: baseStats.damage
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769205659461361712, guid: 13afbdb1c76ba8b4cab134fe00e62cb1, type: 3}
+      propertyPath: baseStats.health
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8727671585732214624, guid: 13afbdb1c76ba8b4cab134fe00e62cb1, type: 3}
       propertyPath: m_Radius
       value: 0.64

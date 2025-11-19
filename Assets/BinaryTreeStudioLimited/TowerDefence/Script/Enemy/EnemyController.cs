@@ -46,11 +46,11 @@ namespace TowerDefence
         [Header("Animation")]
         [SerializeField] private Animator animator;
 
-        // ==================== ª¬ºA®ÄªG¨t²Î ====================
+        // ==================== ç‹€æ…‹æ•ˆæœç³»çµ± ====================
         public SerializedDictionary<StatusEffectType, List<IStatusEffect>> activeEffects = new();
         [SerializeField] private float statusEffectTickTimer = 0f;
 
-        // ==================== ¤º³¡ª¬ºA ====================
+        // ==================== å…§éƒ¨ç‹€æ…‹ ====================
         private bool isDead = false;
         private int collidedCount = 0;
         private bool brokeThrough = false;
@@ -59,13 +59,13 @@ namespace TowerDefence
         private int laneIndex = 0;
 
         // =========================================================
-        // ªì©l¤Æ¡]¥Ñ EnemyManager ©I¥s¡^
+        // åˆå§‹åŒ–ï¼ˆç”± EnemyManager å‘¼å«ï¼‰
         // =========================================================
         public void Init(int level, List<GameObject> lanes)
         {
             this.lanes = lanes;
 
-            // ­pºâµ¥¯Å¥[¦¨
+            // è¨ˆç®—ç­‰ç´šåŠ æˆ
             float levelMultiplier = level - 1;
 
             baseStats.health = Mathf.CeilToInt(baseStats.health * (1f + healthIncreasePerLevel * levelMultiplier));
@@ -77,13 +77,13 @@ namespace TowerDefence
 
         private void ResetModifiedStats()
         {
-            int currentHealth = modifiedStats.health; // «O¯d·í«e¦å¶q
+            int currentHealth = modifiedStats.health; // ä¿ç•™ç•¶å‰è¡€é‡
             modifiedStats = baseStats.DeepClone();
             modifiedStats.health = currentHealth > 0 ? currentHealth : modifiedStats.health;
         }
 
         // =========================================================
-        // Unity ¥Í©R©P´Á
+        // Unity ç”Ÿå‘½å‘¨æœŸ
         // =========================================================
         private void Update()
         {
@@ -94,10 +94,10 @@ namespace TowerDefence
                 return;
             }
 
-            // ª¬ºA®ÄªG Tick
+            // ç‹€æ…‹æ•ˆæœ Tick
             UpdateStatusEffects();
 
-            // ²¾°ÊÅŞ¿è
+            // ç§»å‹•é‚è¼¯
             if (lanes == null || lanes.Count == 0) return;
 
             Vector3 destination = lanes[Mathf.Min(laneIndex, lanes.Count - 1)]
@@ -115,7 +115,7 @@ namespace TowerDefence
                 laneIndex++;
             }
 
-            // ©è¹F²×ÂI
+            // æŠµé”çµ‚é»
             var finalDest = lanes[lanes.Count - 1].transform.Find("Destination").position;
             if (Vector3.Distance(transform.position, finalDest) < 0.1f && !brokeThrough)
             {
@@ -144,7 +144,7 @@ namespace TowerDefence
             if (activeEffects.Count == 0) return;
 
             statusEffectTickTimer += Time.deltaTime;
-            if (statusEffectTickTimer < 0.1f) return; // ¨C 0.1 ¬í²Î¤@ Tick ¤@¦¸
+            if (statusEffectTickTimer < 0.1f) return; // æ¯ 0.1 ç§’çµ±ä¸€ Tick ä¸€æ¬¡
 
             float delta = statusEffectTickTimer;
             statusEffectTickTimer = 0f;
@@ -170,7 +170,7 @@ namespace TowerDefence
                 effect.Tick(this, delta);
             }
 
-            // ²M²zªÅªº¦Cªí¡]¥i¿ï¡A«O«ù°®²b¡^
+            // æ¸…ç†ç©ºçš„åˆ—è¡¨ï¼ˆå¯é¸ï¼Œä¿æŒä¹¾æ·¨ï¼‰
             var emptyKeys = new List<StatusEffectType>();
             foreach (var kvp in activeEffects)
             {
@@ -315,7 +315,7 @@ namespace TowerDefence
         }
 
         // =========================================================
-        // ¤½¶}Äİ©Ê¡]µ¹¨ä¥L¨t²ÎÅª¨ú¡^
+        // å…¬é–‹å±¬æ€§ï¼ˆçµ¦å…¶ä»–ç³»çµ±è®€å–ï¼‰
         // =========================================================
         public bool IsDead => isDead;
         public EnemyStats BaseStats { get => baseStats; }
