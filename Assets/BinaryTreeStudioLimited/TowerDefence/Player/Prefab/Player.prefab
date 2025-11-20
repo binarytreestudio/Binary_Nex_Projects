@@ -493,7 +493,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftSlashDetector: {fileID: 3486613275963532363}
   rightSlashDetector: {fileID: 7530956068512947508}
-  hookAngleRange: 60
+  hookAngleRange: 90
   ikAvatarController: {fileID: 6409233852578984}
   fireBallPrefab: {fileID: 1571582882781154879, guid: 53ecfcf186a14054394d0764a8e2adb6, type: 3}
   fireBallSpeed: 10
@@ -2144,8 +2144,8 @@ MonoBehaviour:
   handedness: 0
   bodyPoseController: {fileID: 0}
   slashSpeedThreshold: 60
-  slashDetectionWindow: 0.2
-  slashCooldown: 0.2
+  slashDetectionWindow: 0.1
+  slashCooldown: 0.1
   requireTriggerFromChest: 0
   chestDistanceThreshold: 10
 --- !u!1 &6168111026954054034
@@ -7155,8 +7155,8 @@ MonoBehaviour:
   handedness: 1
   bodyPoseController: {fileID: 0}
   slashSpeedThreshold: 60
-  slashDetectionWindow: 0.2
-  slashCooldown: 0.2
+  slashDetectionWindow: 0.1
+  slashCooldown: 0.1
   requireTriggerFromChest: 0
   chestDistanceThreshold: 10
 --- !u!1 &6514670910714016826
