@@ -17,6 +17,7 @@ namespace TowerDefence
         [SerializeField] private AudioSource normalHit;
         [SerializeField] private AudioSource criticalHit;
         [SerializeField] private AudioSource playerHurt;
+        [SerializeField] private AudioSource collectPowerup;
 
         [Header("Attack")]
         [SerializeField] private AudioSource fireBall;
@@ -48,6 +49,7 @@ namespace TowerDefence
         public void PlayNormalHitAudio() => normalHit.Play();
         public void PlayCriticalHitAudio() => criticalHit.Play();
         public void PlayPlayerHurtAudio() => playerHurt.Play();
+        public void PlayCollectPowerup() => collectPowerup.Play();
 
         #endregion
 
