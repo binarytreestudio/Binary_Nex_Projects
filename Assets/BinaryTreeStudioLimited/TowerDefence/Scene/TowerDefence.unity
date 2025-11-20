@@ -1093,7 +1093,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f524704e19f19840b92dfec6215d05e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1e+17
+  maxHealth: 200
 --- !u!1 &367878454
 GameObject:
   m_ObjectHideFlags: 0
@@ -3062,7 +3062,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bae67df60ad63e458f40d6a277478bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skipNexSetup: 1
+  skipNexSetup: 0
   setupConfig:
     setupPanel: {fileID: 1560336239}
     setupInstruction: {fileID: 1123257251}
@@ -3228,9 +3228,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8de063270d7c7b549b95f6aed452a015, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelEnemyCount: 20
+  levelEnemyCount: 25
   enemiesPerLevelIncrease: 5
-  spawnInterval: 0.5
+  spawnInterval: 1
   intervalDecreasePercentagePerLevel: 0.05
   normalEnemyPrefab: {fileID: 7152585463170146598, guid: 13afbdb1c76ba8b4cab134fe00e62cb1, type: 3}
   eliteEnemyPrefab: {fileID: 3012939564230402028, guid: 4881ff223a0a31f4faac65f26eccfe6a, type: 3}
