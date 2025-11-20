@@ -53,13 +53,13 @@ namespace TowerDefence
 
         void Update()
         {
-            if (!gameStarted || enemiesSpawnedThisLevel >= levelEnemyCount * Mathf.Exp(enemiesPerLevelIncrease * (level - 1)))
+            if (!gameStarted || enemiesSpawnedThisLevel >= levelEnemyCount * Mathf.Exp(enemiesPerLevelIncrease * (level - 1)) * playerCount)
                 return;
             spawnTimer -= Time.deltaTime;
             if (spawnTimer <= 0f)
             {
                 SpawnEnemy();
-                spawnTimer = spawnInterval * Mathf.Exp(-intervalDecreasePercentagePerLevel * (level - 1));
+                spawnTimer = spawnInterval * Mathf.Exp(-intervalDecreasePercentagePerLevel * (level - 1)) / playerCount;
             }
 
             if (Input.GetKeyDown(KeyCode.Space))
@@ -128,7 +128,7 @@ namespace TowerDefence
         {
             spawnedEnemies.Remove(enemy);
 
-            if (enemiesSpawnedThisLevel >= levelEnemyCount * Mathf.Exp(enemiesPerLevelIncrease * (level - 1)) &&
+            if (enemiesSpawnedThisLevel >= levelEnemyCount * Mathf.Exp(enemiesPerLevelIncrease * (level - 1)) * playerCount &&
                 spawnedEnemies.Count == 0)
             {
                 BattleManager.Instance.LevelComplete();

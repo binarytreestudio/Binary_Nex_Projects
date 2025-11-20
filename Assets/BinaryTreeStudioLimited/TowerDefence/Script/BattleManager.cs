@@ -220,10 +220,10 @@ namespace TowerDefence
                     }
 
                     // Configure camera based on player count
-                    //var cameraConfig = cameraConfigs.Find(config => config.playerCount == playerCount);
-                    //mainCamera.fieldOfView = cameraConfig.fieldOfView;
-                    //mainCamera.transform.position = cameraConfig.position;
-                    //mainCamera.transform.rotation = cameraConfig.rotation;
+                    var cameraConfig = cameraConfigs.Find(config => config.playerCount == playerCount);
+                    mainCamera.fieldOfView = cameraConfig.fieldOfView;
+                    mainCamera.transform.position = cameraConfig.position;
+                    mainCamera.transform.rotation = cameraConfig.rotation;
 
                     break;
                 case LaneSetting.SShape:
