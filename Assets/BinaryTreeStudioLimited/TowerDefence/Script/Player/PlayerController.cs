@@ -48,6 +48,7 @@ namespace TowerDefence
         private float laneSpace;
         [SerializeField] private List<AppliedPowerUp> appliedPowerUps = new();
         //int nextPower = -1;
+        private bool levelStarted = false;
 
         public void Init(int playerIndex)
         {
@@ -161,11 +162,12 @@ namespace TowerDefence
                     break;
             }
             gameStarted = true;
+            levelStarted = true;
         }
 
         void Shoot(int index)   //-1: left, 0: middle, 1: right
         {
-            if (!gameStarted)
+            if (!gameStarted || !levelStarted)
                 return;
 
             switch (index)
@@ -321,6 +323,19 @@ namespace TowerDefence
                     powerUpIconImages[i].sprite = null;
                 }
             }
+        }
+
+        public void LevelComplete()
+        {
+            levelStarted = false;
+        }
+
+        public void LevelStart()
+        {
+            DOVirtual.DelayedCall(1f, () =>
+            {
+                levelStarted = true;
+            });
         }
     }
 }

@@ -14,7 +14,7 @@ namespace TowerDefence
 
         [Header("Level Settings")]
         [SerializeField] private int levelEnemyCount = 20;
-        [SerializeField] private int enemiesPerLevelIncrease = 5;
+        [SerializeField][Range(0f, 1f)] private float enemiesPerLevelIncrease = 0.1f;
 
         [Header("Enemy Spawn Settings")]
         [SerializeField] private float spawnInterval = 2f;
@@ -51,13 +51,13 @@ namespace TowerDefence
 
         void Update()
         {
-            if (!gameStarted || enemiesSpawnedThisLevel >= levelEnemyCount + enemiesPerLevelIncrease * (level - 1))
+            if (!gameStarted || enemiesSpawnedThisLevel >= levelEnemyCount * Mathf.Exp(enemiesPerLevelIncrease * (level - 1)))
                 return;
             spawnTimer -= Time.deltaTime;
             if (spawnTimer <= 0f)
             {
                 SpawnEnemy();
-                spawnTimer = spawnInterval * (1f - intervalDecreasePercentagePerLevel * (level - 1));
+                spawnTimer = spawnInterval * Mathf.Exp(-intervalDecreasePercentagePerLevel * (level - 1));
             }
         }
 
@@ -121,7 +121,7 @@ namespace TowerDefence
         {
             spawnedEnemies.Remove(enemy);
 
-            if (enemiesSpawnedThisLevel >= levelEnemyCount + enemiesPerLevelIncrease * (level - 1) &&
+            if (enemiesSpawnedThisLevel >= levelEnemyCount * Mathf.Exp(enemiesPerLevelIncrease * (level - 1)) &&
                 spawnedEnemies.Count == 0)
             {
                 BattleManager.Instance.LevelComplete();

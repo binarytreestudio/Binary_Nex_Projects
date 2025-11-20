@@ -3229,9 +3229,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelEnemyCount: 20
-  enemiesPerLevelIncrease: 5
-  spawnInterval: 0.5
-  intervalDecreasePercentagePerLevel: 0.05
+  enemiesPerLevelIncrease: 0.2
+  spawnInterval: 1.5
+  intervalDecreasePercentagePerLevel: 0.1
   normalEnemyPrefab: {fileID: 7152585463170146598, guid: 13afbdb1c76ba8b4cab134fe00e62cb1, type: 3}
   eliteEnemyPrefab: {fileID: 3012939564230402028, guid: 4881ff223a0a31f4faac65f26eccfe6a, type: 3}
   golemEnemyPrefab: {fileID: 8542615225364193622, guid: 05b9335640dcd5e45b4ccb52e39ea8bf, type: 3}

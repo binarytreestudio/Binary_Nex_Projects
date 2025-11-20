@@ -81,6 +81,7 @@ namespace TowerDefence
             }
             EnemyManager.Instance.StartNextLevel();
             UIManager.Instance.HidePowerUpPanel();
+            LevelStart();
         }
 
         public void ApplyPowerUpToPlayer(int playerIndex, PowerUpDatabase.PowerUpType powerUpType)
@@ -103,6 +104,22 @@ namespace TowerDefence
             //    playerPowerUps.Add(appliedPowerUp);
             //}
             playerMapping.Find(player => player.playerIndex == playerIndex).playerController.SetAppliedPowerUps(powerUpType);
+        }
+
+        public void LevelComplete()
+        {
+            foreach (var player in playerMapping)
+            {
+                player.playerController.LevelComplete();
+            }
+        }
+
+        void LevelStart()
+        {
+            foreach (var player in playerMapping)
+            {
+                player.playerController.LevelStart();
+            }
         }
     }
 

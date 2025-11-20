@@ -311,6 +311,7 @@ namespace TowerDefence
             //UIManager.Instance.ShowLevelCompletePanel();
             AudioManager.Instance.PlayGameWinAudio();
             UIManager.Instance.ShowPowerUpPanel();
+            PlayerManager.Instance.LevelComplete();
             //DOVirtual.DelayedCall(levelCompleteDelay, () =>
             //{
             //    EnemyManager.Instance.StartNextLevel();
