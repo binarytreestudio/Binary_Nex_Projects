@@ -16,6 +16,7 @@ namespace TowerDefence
 
         void OnEnable()
         {
+            init = false;
             PlayerManager.Instance.OnPlayerSlashDetected += OnClickPowerUp;
 
             var randomPowerUps = PowerUpDatabase.RandomPowerUps(powerUpItemControllers.Count);
