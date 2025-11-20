@@ -13,6 +13,8 @@ namespace TowerDefence
         [SerializeField] private Image iconImage;
         [SerializeField] private TextMeshProUGUI descriptionText;
 
+        [SerializeField] private GameObject chooseParticleEffect;
+
         PowerUpDatabase.PowerUpType currentPowerUpType;
 
         public void Init(PowerUpDatabase.PowerUpType powerUpType)
@@ -29,6 +31,8 @@ namespace TowerDefence
             PlayerManager.Instance.ApplyPowerUp(playerIndex, currentPowerUpType);
 
             UIManager.Instance.HidePowerUpPanel();
+            Instantiate(chooseParticleEffect, transform.position, Quaternion.identity);
+            AudioManager.Instance.PlayCollectPowerup();
         }
     }
 }

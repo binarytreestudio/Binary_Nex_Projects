@@ -63,9 +63,11 @@ namespace TowerDefence
             {
                 case PowerUpDatabase.PowerUpType.Ice:
                     Instantiate(iceAOEPrefab, new Vector3(transform.position.x, 0f, transform.position.z), Quaternion.identity);
+                    AudioManager.Instance.PlayIceAreaAudio();
                     break;
                 case PowerUpDatabase.PowerUpType.Poison:
                     Instantiate(poisonAOEPrefab, new Vector3(transform.position.x, 0f, transform.position.z), Quaternion.identity);
+                    AudioManager.Instance.PlayPoisonAreaAudio();
                     break;
             }
             if (powerUp != PowerUpDatabase.PowerUpType.Stone || enemy.BaseStats.health > 3)

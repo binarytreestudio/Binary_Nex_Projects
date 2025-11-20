@@ -61,6 +61,11 @@ namespace TowerDefence
                 SpawnEnemy();
                 spawnTimer = spawnInterval * Mathf.Exp(-intervalDecreasePercentagePerLevel * (level - 1));
             }
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                enemiesSpawnedThisLevel = 999999999;
+            }
         }
 
         public void SetLanes(List<GameObject> lanes)

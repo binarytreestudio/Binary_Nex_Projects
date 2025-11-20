@@ -478,3 +478,4 @@ MonoBehaviour:
   nameText: {fileID: 5747933561658825934}
   iconImage: {fileID: 8524009883934716529}
   descriptionText: {fileID: 1965600052166043517}
+  chooseParticleEffect: {fileID: 8227956847650666050, guid: 05bc0d3b09676e045b40fda9c4058956, type: 3}

@@ -258,7 +258,22 @@ namespace TowerDefence
             int damage = appliedPowerUps[0] != null && appliedPowerUps[0].powerUpType == PowerUpDatabase.PowerUpType.Stone ? fireBallDamage * 3 : fireBallDamage;
             var power = appliedPowerUps[0] != null ? appliedPowerUps[0].powerUpType : (PowerUpDatabase.PowerUpType)(-1);
             fireballController.Init(fireBallSpeed, damage, power);
-            AudioManager.Instance.PlayFireBallAudio();
+            switch (power)
+            {
+                case PowerUpDatabase.PowerUpType.Ice:
+                    AudioManager.Instance.PlayIceBallAudio();
+                    break;
+                case PowerUpDatabase.PowerUpType.Poison:
+                    AudioManager.Instance.PlayPoisonBallAudio();
+                    break;
+                case PowerUpDatabase.PowerUpType.Stone:
+                    AudioManager.Instance.PlayRockBallAudio();
+                    break;
+                default:
+                    AudioManager.Instance.PlayFireBallAudio();
+                    break;
+            }
+
             if (power == PowerUpDatabase.PowerUpType.FireballCount)
             {
                 DOVirtual.DelayedCall(0.2f, () =>
