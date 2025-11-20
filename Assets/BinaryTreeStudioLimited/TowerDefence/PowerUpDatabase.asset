@@ -14,27 +14,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   powerUpDataList:
   - powerUpType: 0
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 69e66dbbe3594444db56d55aec438f7b, type: 3}
     powerUpName: Heal
     description: Recover 50 HP
     maxStack: -1
   - powerUpType: 1
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: c752c7afdd37d2a428f74258c405db0d, type: 3}
     powerUpName: Ice Punch
-    description: Have a chance to slow down enemy in an area
+    description: Punches have a small chance to create an ice zone.
     maxStack: -1
   - powerUpType: 2
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: d4a6da6dee9f750488048bc1dca5f9aa, type: 3}
     powerUpName: Poison Punch
-    description: Have a chance to poison enemy in an area
+    description: Punches have a small chance to createa poison zone.
     maxStack: -1
   - powerUpType: 3
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 0f5a3ae9277fa6f4895cc329c1cd9358, type: 3}
     powerUpName: Fireball+
-    description: Have a chance to punch 2 fire ball at once
+    description: Punches have a small chance to spawn 2 fireballs.
     maxStack: -1
   - powerUpType: 4
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 9b228985c1cdb704d8d64f8f82d815f4, type: 3}
     powerUpName: Rock Punch
-    description: Have a chance to punch a rock that can go through enemys.
+    description: Punches have a small chance to spawn massive rock.
     maxStack: -1
