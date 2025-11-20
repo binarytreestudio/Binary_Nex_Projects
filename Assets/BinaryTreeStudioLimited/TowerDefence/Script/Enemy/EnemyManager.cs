@@ -25,8 +25,10 @@ namespace TowerDefence
         [SerializeField] private GameObject eliteEnemyPrefab;
         [SerializeField] private GameObject golemEnemyPrefab;
         [Range(0f, 1f)][SerializeField] private float eliteEnemyChance = 0.1f;
+        [SerializeField][Range(0f, 1f)] private float eliteEnemyChanceIncreasePerLevel = 0.2f;
         [SerializeField] private int eliteEnemyQuotaCost = 3;
         [Range(0f, 1f)][SerializeField] private float golemEnemyChance = 0.05f;
+        [SerializeField][Range(0f, 1f)] private float golemEnemyChanceIncreasePerLevel = 0.1f;
         [SerializeField] private int golemEnemyQuotaCost = 8;
 
         float spawnTimer = 0f;
@@ -83,8 +85,8 @@ namespace TowerDefence
             float xPos = startX + randomInt * spacing;
 
             float random = UnityEngine.Random.value;
-            GameObject enemyPrefab = random < golemEnemyChance ? golemEnemyPrefab :
-                                     random < eliteEnemyChance ? eliteEnemyPrefab :
+            GameObject enemyPrefab = random < golemEnemyChance * Mathf.Exp(golemEnemyChanceIncreasePerLevel * (level - 1)) ? golemEnemyPrefab :
+                                     random < eliteEnemyChance * Mathf.Exp(eliteEnemyChanceIncreasePerLevel * (level - 1)) ? eliteEnemyPrefab :
                                      normalEnemyPrefab;
 
             switch (BattleManager.Instance.LaneType)
