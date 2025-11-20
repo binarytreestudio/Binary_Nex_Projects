@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using Jazz;
 using UnityEngine;
 
@@ -6,7 +7,12 @@ namespace TowerDefence
 {
     public class PowerUpPanelController : MonoBehaviour
     {
+        [Header("Positions")]
+        [SerializeField] private Vector3 animationStartPosition = new Vector3(0f, 1000f, 1000f);
+        [SerializeField] private Vector3 animationEndPosition = new Vector3(0f, 0f, -400f);
         [SerializeField] private List<PowerUpItemController> powerUpItemControllers = new();
+
+        bool init;
 
         void OnEnable()
         {
@@ -14,6 +20,11 @@ namespace TowerDefence
 
             var randomPowerUps = PowerUpDatabase.RandomPowerUps(powerUpItemControllers.Count);
             ShownPowerUp(randomPowerUps);
+            transform.localPosition = animationStartPosition;
+            transform.DOLocalMove(animationEndPosition, 1f).OnComplete(() =>
+            {
+                init = true;
+            });
         }
 
         void OnDisable()
@@ -32,6 +43,9 @@ namespace TowerDefence
 
         public void OnClickPowerUp(int playerIndex, Handedness handedness, Vector2 direction)
         {
+            if (!init)
+                return;
+
             float angleDegrees = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             angleDegrees = (angleDegrees + 360) % 360;
 

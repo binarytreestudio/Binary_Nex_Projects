@@ -112,7 +112,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6347600653840836308
 MonoBehaviour:
@@ -133,7 +133,8 @@ MonoBehaviour:
   iceEffect: {fileID: 4546705165475038765}
   poisonEffect: {fileID: 4480816824761092109}
   rockEffect: {fileID: 5101123756164396387}
-  powerUpAOEPrefab: {fileID: 1244731911217101557, guid: 34a4a53e36880c8468e66a810d48178d, type: 3}
+  iceAOEPrefab: {fileID: 6110230772042272458, guid: 1d8bcee73792fcd43ac1e97565618a0c, type: 3}
+  poisonAOEPrefab: {fileID: 8515068248454929658, guid: 7dfe93b29678fe843b09177616902af9, type: 3}
 --- !u!54 &6470771625633723694
 Rigidbody:
   m_ObjectHideFlags: 0

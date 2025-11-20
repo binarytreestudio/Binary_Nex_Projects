@@ -6,13 +6,6 @@ namespace TowerDefence
 {
     public class PlayerManager : Singleton<PlayerManager>
     {
-        [Serializable]
-        public struct AppliedPowerUp
-        {
-            public PowerUpDatabase.PowerUpType powerUpType;
-            public int stackCount;
-        }
-
         [Header("player health")]
         [SerializeField] private float maxHealth = 100f;
         private float currentHealth;
@@ -45,6 +38,7 @@ namespace TowerDefence
         {
             currentHealth -= damage;
             GameplayHUDController.Instance.SetPlayerHealthBarValue(currentHealth / maxHealth);
+            AudioManager.Instance.PlayPlayerHurtAudio();
             if (currentHealth <= 0)
             {
                 BattleManager.Instance.GameOver();
@@ -67,10 +61,10 @@ namespace TowerDefence
             GameplayHUDController.Instance.SetPlayerHealthBarValue(currentHealth / maxHealth);
         }
 
-        public List<AppliedPowerUp> GetPlayerPowerUps(int playerIndex)
-        {
-            return playerMapping.Find(player => player.playerIndex == playerIndex).playerController.GetAppliedPowerUps();
-        }
+        //public List<AppliedPowerUp> GetPlayerPowerUps(int playerIndex)
+        //{
+        //    return playerMapping.Find(player => player.playerIndex == playerIndex).playerController.GetAppliedPowerUps();
+        //}
 
         public void ApplyPowerUp(int playerIndex, PowerUpDatabase.PowerUpType powerUpType)
         {
@@ -91,24 +85,24 @@ namespace TowerDefence
 
         public void ApplyPowerUpToPlayer(int playerIndex, PowerUpDatabase.PowerUpType powerUpType)
         {
-            var playerPowerUps = GetPlayerPowerUps(playerIndex);
-            var appliedPowerUpIndex = playerPowerUps.FindIndex(p => p.powerUpType == powerUpType);
-            if (appliedPowerUpIndex >= 0)
-            {
-                var existing = playerPowerUps[appliedPowerUpIndex];
-                existing.stackCount++;
-                playerPowerUps[appliedPowerUpIndex] = existing;
-            }
-            else
-            {
-                AppliedPowerUp appliedPowerUp = new AppliedPowerUp
-                {
-                    powerUpType = powerUpType,
-                    stackCount = 1
-                };
-                playerPowerUps.Add(appliedPowerUp);
-            }
-            playerMapping.Find(player => player.playerIndex == playerIndex).playerController.SetAppliedPowerUps(playerPowerUps);
+            //var playerPowerUps = GetPlayerPowerUps(playerIndex);
+            //var appliedPowerUpIndex = playerPowerUps.FindIndex(p => p.powerUpType == powerUpType);
+            //if (appliedPowerUpIndex >= 0)
+            //{
+            //    var existing = playerPowerUps[appliedPowerUpIndex];
+            //    existing.stackCount++;
+            //    playerPowerUps[appliedPowerUpIndex] = existing;
+            //}
+            //else
+            //{
+            //    AppliedPowerUp appliedPowerUp = new AppliedPowerUp
+            //    {
+            //        powerUpType = powerUpType,
+            //        stackCount = 1
+            //    };
+            //    playerPowerUps.Add(appliedPowerUp);
+            //}
+            playerMapping.Find(player => player.playerIndex == playerIndex).playerController.SetAppliedPowerUps(powerUpType);
         }
     }
 

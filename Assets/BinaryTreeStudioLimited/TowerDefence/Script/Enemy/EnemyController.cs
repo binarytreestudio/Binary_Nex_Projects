@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -29,7 +30,7 @@ namespace TowerDefence
 
         [Header("Level Scaling")]
         [Tooltip("Value between 0 and 1 representing percentage increase")]
-        [Range(0f, 1f)][SerializeField] private float healthIncreasePerLevel = 0.15f;
+        //[Range(0f, 1f)][SerializeField] private float healthIncreasePerLevel = 0.15f;
         [Range(0f, 1f)][SerializeField] private float speedIncreasePerLevel = 0.05f;
         [Range(0f, 1f)][SerializeField] private float damageIncreasePerLevel = 0.1f;
 
@@ -57,9 +58,28 @@ namespace TowerDefence
 
         private List<GameObject> lanes;
         private int laneIndex = 0;
+        private Transform laneDestination;
 
         // =========================================================
-        // 初始化（由 EnemyManager 呼叫）
+        // 初始化（由 EnemyManager 呼叫）straight lane logic
+        // =========================================================
+        public void Init(int level, GameObject lane)
+        {
+            laneDestination = lane.transform.Find("Destination");
+
+            // 計算等級加成
+            float levelMultiplier = level - 1;
+
+            //baseStats.health = Mathf.CeilToInt(baseStats.health * (1f + healthIncreasePerLevel * levelMultiplier));
+            baseStats.speed = baseStats.speed * (1f + speedIncreasePerLevel * levelMultiplier);
+            baseStats.damage = baseStats.damage * (1f + damageIncreasePerLevel * levelMultiplier);
+
+            ResetModifiedStats();
+        }
+
+
+        // =========================================================
+        // 初始化（由 EnemyManager 呼叫）S lane logic
         // =========================================================
         public void Init(int level, List<GameObject> lanes)
         {
@@ -68,7 +88,7 @@ namespace TowerDefence
             // 計算等級加成
             float levelMultiplier = level - 1;
 
-            baseStats.health = Mathf.CeilToInt(baseStats.health * (1f + healthIncreasePerLevel * levelMultiplier));
+            //baseStats.health = Mathf.CeilToInt(baseStats.health * (1f + healthIncreasePerLevel * levelMultiplier));
             baseStats.speed = baseStats.speed * (1f + speedIncreasePerLevel * levelMultiplier);
             baseStats.damage = baseStats.damage * (1f + damageIncreasePerLevel * levelMultiplier);
 
@@ -98,32 +118,53 @@ namespace TowerDefence
             UpdateStatusEffects();
 
             // 移動邏輯
-            if (lanes == null || lanes.Count == 0) return;
 
-            Vector3 destination = lanes[Mathf.Min(laneIndex, lanes.Count - 1)]
-                .transform.Find("Destination").position;
+            switch (BattleManager.Instance.LaneType)
+            {
+                case BattleManager.LaneSetting.Straight:
+                    break;
+                case BattleManager.LaneSetting.SShape:
+                    laneDestination = lanes[Mathf.Min(laneIndex, lanes.Count - 1)]
+                    .transform.Find("Destination");
+                    break;
+            }
 
             transform.position = Vector3.MoveTowards(
                 transform.position,
-                destination,
+                laneDestination.position,
                 modifiedStats.speed * Time.deltaTime);
 
-            transform.LookAt(destination);
+            if (!brokeThrough)
+                transform.LookAt(laneDestination);
 
-            if (Vector3.Distance(transform.position, destination) < 0.1f)
+            switch (BattleManager.Instance.LaneType)
             {
-                laneIndex++;
-            }
-
-            // 抵達終點
-            var finalDest = lanes[lanes.Count - 1].transform.Find("Destination").position;
-            if (Vector3.Distance(transform.position, finalDest) < 0.1f && !brokeThrough)
-            {
-                brokeThrough = true;
-                PlayerManager.Instance.PlayerTakeDamage(modifiedStats.damage);
-                AudioManager.Instance.PlayPlayerHurtAudio();
-                animator?.SetTrigger("Jump");
-                Destroy(gameObject, 1f);
+                case BattleManager.LaneSetting.Straight:
+                    if (Vector3.Distance(transform.position, laneDestination.position) < 0.1f && !brokeThrough)
+                    {
+                        brokeThrough = true;
+                        PlayerManager.Instance.PlayerTakeDamage(modifiedStats.damage);
+                        animator?.SetTrigger("Jump");
+                        transform.DOMove(transform.position + transform.forward * 2f, 1f).OnComplete(() =>
+                        {
+                            Destroy(gameObject);
+                        });
+                    }
+                    break;
+                case BattleManager.LaneSetting.SShape:
+                    if (Vector3.Distance(transform.position, laneDestination.position) < 0.1f)
+                    {
+                        laneIndex++;
+                    }
+                    var finalDest = lanes[lanes.Count - 1].transform.Find("Destination").position;
+                    if (Vector3.Distance(transform.position, finalDest) < 0.1f && !brokeThrough)
+                    {
+                        brokeThrough = true;
+                        PlayerManager.Instance.PlayerTakeDamage(modifiedStats.damage);
+                        animator?.SetTrigger("Jump");
+                        Destroy(gameObject, 1f);
+                    }
+                    break;
             }
         }
 

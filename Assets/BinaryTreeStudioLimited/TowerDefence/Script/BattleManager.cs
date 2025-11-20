@@ -22,6 +22,12 @@ namespace TowerDefence
             public float canvasWidth = 1920;
         }
 
+        public enum LaneSetting
+        {
+            Straight = 0,
+            SShape = 1,
+        }
+
         [Header("Nex Setup")]
         [SerializeField] private bool skipNexSetup = false;
         [SerializeField] private SetupConfig setupConfig = null!;
@@ -68,6 +74,8 @@ namespace TowerDefence
         [SerializeField] private GameObject lanePrefab;
         [SerializeField] private float restartGameDelay = 2f;
         [SerializeField] private float levelCompleteDelay = 2f;
+        [SerializeField] private LaneSetting laneSetting = LaneSetting.Straight;
+        public LaneSetting LaneType => laneSetting;
 
         private int playerCount = 1;
         private bool gameStarted = false;
@@ -198,61 +206,69 @@ namespace TowerDefence
             float spacing = 2f;
             float startX = -spacing * Mathf.Floor((totalLanes - 1) / 2f);
 
-            // Instantiate and position all lanes
-            //for (int i = 0; i < totalLanes; i++)
-            //{
-            //    GameObject lane = Instantiate(lanePrefab, Vector3.zero, Quaternion.identity);
-            //    float xPos = startX + i * spacing;
-            //    lane.transform.position = new Vector3(xPos, 0, 10);
-            //    spawnedLanes.Add(lane);
-            //}
+            GameObject lane;
+            switch (LaneType)
+            {
+                case LaneSetting.Straight:
+                    // Instantiate and position all lanes
+                    for (int i = 0; i < totalLanes; i++)
+                    {
+                        lane = Instantiate(lanePrefab, Vector3.zero, Quaternion.Euler(0, 180, 0));
+                        float xPos = startX + i * spacing;
+                        lane.transform.position = new Vector3(xPos, 0, 10);
+                        spawnedLanes.Add(lane);
+                    }
 
-            //First lane
-            GameObject lane = Instantiate(lanePrefab, Vector3.zero, Quaternion.Euler(0, 90, 0));
-            lane.transform.localScale = new Vector3(1, 1, 0.5f);
-            lane.transform.position = new Vector3(0, 0, 20);
-            spawnedLanes.Add(lane);
+                    // Configure camera based on player count
+                    //var cameraConfig = cameraConfigs.Find(config => config.playerCount == playerCount);
+                    //mainCamera.fieldOfView = cameraConfig.fieldOfView;
+                    //mainCamera.transform.position = cameraConfig.position;
+                    //mainCamera.transform.rotation = cameraConfig.rotation;
 
-            //Second lane
-            lane = Instantiate(lanePrefab, spawnedLanes[0].transform.Find("Destination").position, Quaternion.Euler(0, 180, 0));
-            lane.transform.localScale = new Vector3(1, 1, 0.25f);
-            Transform startPosition = lane.transform.Find("Start");
-            Vector3 difference = spawnedLanes[0].transform.Find("Destination").position - startPosition.position;
-            lane.transform.position += difference;
-            spawnedLanes.Add(lane);
+                    break;
+                case LaneSetting.SShape:
+                    //First lane
+                    lane = Instantiate(lanePrefab, Vector3.zero, Quaternion.Euler(0, 90, 0));
+                    lane.transform.localScale = new Vector3(1, 1, 0.5f);
+                    lane.transform.position = new Vector3(0, 0, 20);
+                    spawnedLanes.Add(lane);
 
-            //Third lane
-            lane = Instantiate(lanePrefab, spawnedLanes[1].transform.Find("Destination").position, Quaternion.Euler(0, 270, 0));
-            lane.transform.localScale = new Vector3(1, 1, 0.5f);
-            startPosition = lane.transform.Find("Start");
-            difference = spawnedLanes[1].transform.Find("Destination").position - startPosition.position;
-            lane.transform.position += difference;
-            spawnedLanes.Add(lane);
+                    //Second lane
+                    lane = Instantiate(lanePrefab, spawnedLanes[0].transform.Find("Destination").position, Quaternion.Euler(0, 180, 0));
+                    lane.transform.localScale = new Vector3(1, 1, 0.25f);
+                    Transform startPosition = lane.transform.Find("Start");
+                    Vector3 difference = spawnedLanes[0].transform.Find("Destination").position - startPosition.position;
+                    lane.transform.position += difference;
+                    spawnedLanes.Add(lane);
 
-            //Fourth lane
-            lane = Instantiate(lanePrefab, spawnedLanes[2].transform.Find("Destination").position, Quaternion.Euler(0, 180, 0));
-            lane.transform.localScale = new Vector3(1, 1, 0.25f);
-            startPosition = lane.transform.Find("Start");
-            difference = spawnedLanes[2].transform.Find("Destination").position - startPosition.position;
-            lane.transform.position += difference;
-            spawnedLanes.Add(lane);
+                    //Third lane
+                    lane = Instantiate(lanePrefab, spawnedLanes[1].transform.Find("Destination").position, Quaternion.Euler(0, 270, 0));
+                    lane.transform.localScale = new Vector3(1, 1, 0.5f);
+                    startPosition = lane.transform.Find("Start");
+                    difference = spawnedLanes[1].transform.Find("Destination").position - startPosition.position;
+                    lane.transform.position += difference;
+                    spawnedLanes.Add(lane);
 
-            //Fifth lane
-            lane = Instantiate(lanePrefab, spawnedLanes[3].transform.Find("Destination").position, Quaternion.Euler(0, 90, 0));
-            lane.transform.localScale = new Vector3(1, 1, 0.5f);
-            startPosition = lane.transform.Find("Start");
-            difference = spawnedLanes[3].transform.Find("Destination").position - startPosition.position;
-            lane.transform.position += difference;
-            spawnedLanes.Add(lane);
+                    //Fourth lane
+                    lane = Instantiate(lanePrefab, spawnedLanes[2].transform.Find("Destination").position, Quaternion.Euler(0, 180, 0));
+                    lane.transform.localScale = new Vector3(1, 1, 0.25f);
+                    startPosition = lane.transform.Find("Start");
+                    difference = spawnedLanes[2].transform.Find("Destination").position - startPosition.position;
+                    lane.transform.position += difference;
+                    spawnedLanes.Add(lane);
 
-            // Configure camera based on player count
-            //var cameraConfig = cameraConfigs.Find(config => config.playerCount == playerCount);
-            //mainCamera.fieldOfView = cameraConfig.fieldOfView;
-            //mainCamera.transform.position = cameraConfig.position;
-            //mainCamera.transform.rotation = cameraConfig.rotation;
-            mainCamera.transform.position = spawnedLanes[spawnedLanes.Count - 1].transform.position + new Vector3(0, 3f, -3f);
+                    //Fifth lane
+                    lane = Instantiate(lanePrefab, spawnedLanes[3].transform.Find("Destination").position, Quaternion.Euler(0, 90, 0));
+                    lane.transform.localScale = new Vector3(1, 1, 0.5f);
+                    startPosition = lane.transform.Find("Start");
+                    difference = spawnedLanes[3].transform.Find("Destination").position - startPosition.position;
+                    lane.transform.position += difference;
+                    spawnedLanes.Add(lane);
 
-            //spawnedLanes.Reverse();
+                    mainCamera.transform.position = spawnedLanes[spawnedLanes.Count - 1].transform.position + new Vector3(0, 3f, -3f);
+
+                    break;
+            }
 
             float laneLength = 10;
             float secment = laneLength / (playerCount + 1);
@@ -260,7 +276,15 @@ namespace TowerDefence
             for (int i = 0; i < playerCount; i++)
             {
                 var playerObj = Instantiate(playerPrefab);
-                playerObj.transform.position = new Vector3(spawnedLanes[spawnedLanes.Count - 1].transform.position.x - 5 + secment * (i + 1), 0, spawnedLanes[spawnedLanes.Count - 1].transform.position.z - 1f);
+                switch (LaneType)
+                {
+                    case LaneSetting.Straight:
+                        playerObj.transform.position = new Vector3(spawnedLanes[i + 1].transform.position.x, 0, 0);
+                        break;
+                    case LaneSetting.SShape:
+                        playerObj.transform.position = new Vector3(spawnedLanes[spawnedLanes.Count - 1].transform.position.x - 5 + secment * (i + 1), 0, spawnedLanes[spawnedLanes.Count - 1].transform.position.z - 1f);
+                        break;
+                }
                 var playerController = playerObj.GetComponent<PlayerController>();
                 PlayerManager.Instance.RegisterPlayerController(playerController);
             }

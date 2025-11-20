@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace TowerDefence
 {
@@ -12,6 +14,13 @@ namespace TowerDefence
             LeftHook = 45,
             RightHook = 135,
             UpperCut = 90
+        }
+
+        [Serializable]
+        public class AppliedPowerUp
+        {
+            public PowerUpDatabase.PowerUpType powerUpType;
+            public int stackCount;
         }
 
         [Header("Slash Detectors")]
@@ -27,6 +36,8 @@ namespace TowerDefence
         [SerializeField] private float fireBallSpeed = 10f;
         [SerializeField] private int fireBallDamage = 1;
         [SerializeField] private float laneTimer = 0.5f;
+        [SerializeField] private List<Image> powerUpIconImages;
+        [SerializeField] private PowerUpDatabase powerUpDatabase;
 
         private bool gameStarted = false;
         int playerIndex;
@@ -35,7 +46,8 @@ namespace TowerDefence
         private float middleLaneCooldownTimer = 0;
         int playerCount;
         private float laneSpace;
-        [SerializeField] private List<PlayerManager.AppliedPowerUp> appliedPowerUps;
+        [SerializeField] private List<AppliedPowerUp> appliedPowerUps = new();
+        //int nextPower = -1;
 
         public void Init(int playerIndex)
         {
@@ -49,6 +61,11 @@ namespace TowerDefence
             rightSlashDetector.OnSlashDetected += OnRightSlashDetected;
 
             BattleManager.Instance.OnGameStarted += OnGameStarted;
+
+            powerUpIconImages.ForEach(image => image.sprite = null);
+
+            for (int i = 0; i < 6; i++)
+                appliedPowerUps.Add(null);
         }
 
         void OnDestroy()
@@ -134,8 +151,15 @@ namespace TowerDefence
         {
             this.playerCount = playerCount;
 
-            laneSpace = 5f / playerCount;
-
+            switch (BattleManager.Instance.LaneType)
+            {
+                case BattleManager.LaneSetting.Straight:
+                    laneSpace = 2;
+                    break;
+                case BattleManager.LaneSetting.SShape:
+                    laneSpace = 5f / playerCount;
+                    break;
+            }
             gameStarted = true;
         }
 
@@ -163,63 +187,140 @@ namespace TowerDefence
                     break;
             }
 
-            int power = -1;
-            if (appliedPowerUps.Count > 0)
-            {
-                float totalNotPowerUpChance = 1f;
-                appliedPowerUps.ForEach(powerUp =>
-                {
-                    totalNotPowerUpChance *= 1 - (20 + 5 * (powerUp.stackCount - 1)) / 100f;
-                });
-                float randomValue = Random.value;
-                if (randomValue > totalNotPowerUpChance)
-                {
-                    List<float> powerUpChances = new List<float>();
-                    appliedPowerUps.ForEach(powerUp =>
-                    {
-                        powerUpChances.Add((20 + 5f * (powerUp.stackCount - 1)) / 100f);
-                    });
-                    randomValue = Random.Range(0, powerUpChances.Sum());
-                    for (int i = 0; i < powerUpChances.Count; i++)
-                    {
-                        if (randomValue > powerUpChances.GetRange(0, i + 1).Sum())
-                        {
-                            continue;
-                        }
-                        power = (int)appliedPowerUps[i].powerUpType;
-                        break;
-                    }
-                }
-            }
+            //// Instantiate fireball at the lane position
+            //Vector3 spawnPosition = new Vector3(transform.position.x + laneSpace * index, transform.position.y + 1f, transform.position.z);
+            //GameObject fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
+            //var fireballController = fireball.GetComponent<FireBallController>();
+            //fireballController.Init(fireBallSpeed, nextPower == (int)PowerUpDatabase.PowerUpType.Stone ? fireBallDamage * 3 : fireBallDamage, nextPower);
+            //AudioManager.Instance.PlayFireBallAudio();
+            //
+            //if (nextPower == (int)PowerUpDatabase.PowerUpType.FireballCount)
+            //{
+            //    DOVirtual.DelayedCall(0.2f, () =>
+            //    {
+            //        // Instantiate fireball at the lane position
+            //        fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
+            //        fireballController = fireball.GetComponent<FireBallController>();
+            //        fireballController.Init(fireBallSpeed, fireBallDamage, nextPower);
+            //        AudioManager.Instance.PlayFireBallAudio();
+            //    });
+            //}
+
+            ////Randomly determine next power-up based on applied power-ups
+            //if (appliedPowerUps.Count > 0)
+            //{
+            //    float totalNotPowerUpChance = 1f;
+            //    appliedPowerUps.ForEach(powerUp =>
+            //    {
+            //        totalNotPowerUpChance *= 1 - (20 + 5 * (powerUp.stackCount - 1)) / 100f;
+            //    });
+            //    float randomValue = Random.value;
+            //    if (randomValue > totalNotPowerUpChance)
+            //    {
+            //        List<float> powerUpChances = new List<float>();
+            //        appliedPowerUps.ForEach(powerUp =>
+            //        {
+            //            powerUpChances.Add((20 + 5f * (powerUp.stackCount - 1)) / 100f);
+            //        });
+            //        randomValue = Random.Range(0, powerUpChances.Sum());
+            //        for (int i = 0; i < powerUpChances.Count; i++)
+            //        {
+            //            if (randomValue > powerUpChances.GetRange(0, i + 1).Sum())
+            //            {
+            //                continue;
+            //            }
+            //            nextPower = (int)appliedPowerUps[i].powerUpType;
+            //            break;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        nextPower = -1;
+            //    }
+            //}
+            //if (nextPower != -1)
+            //{
+            //    var powerUpData = powerUpDatabase.GetPowerUpData((PowerUpDatabase.PowerUpType)nextPower);
+            //    powerUpIconImage.sprite = powerUpData.icon;
+            //    powerUpIconImage.gameObject.SetActive(true);
+            //}
+            //else
+            //{
+            //    powerUpIconImage.gameObject.SetActive(false);
+            //}
 
             // Instantiate fireball at the lane position
-            Vector3 spawnPosition = new Vector3(transform.position.x + laneSpace * index, transform.position.y, transform.position.z);
+            Vector3 spawnPosition = new Vector3(transform.position.x + laneSpace * index, transform.position.y + 1f, transform.position.z);
             GameObject fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
             var fireballController = fireball.GetComponent<FireBallController>();
-            fireballController.Init(fireBallSpeed, fireBallDamage, power);
+            int damage = appliedPowerUps[0] != null && appliedPowerUps[0].powerUpType == PowerUpDatabase.PowerUpType.Stone ? fireBallDamage * 3 : fireBallDamage;
+            var power = appliedPowerUps[0] != null ? appliedPowerUps[0].powerUpType : (PowerUpDatabase.PowerUpType)(-1);
+            fireballController.Init(fireBallSpeed, damage, power);
             AudioManager.Instance.PlayFireBallAudio();
-
-            if (power == (int)PowerUpDatabase.PowerUpType.FireballCount)
+            if (power == PowerUpDatabase.PowerUpType.FireballCount)
             {
                 DOVirtual.DelayedCall(0.2f, () =>
                 {
                     // Instantiate fireball at the lane position
                     fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
                     fireballController = fireball.GetComponent<FireBallController>();
-                    fireballController.Init(fireBallSpeed, fireBallDamage, power);
+                    fireballController.Init(fireBallSpeed, fireBallDamage, PowerUpDatabase.PowerUpType.FireballCount);
                     AudioManager.Instance.PlayFireBallAudio();
                 });
             }
+
+            var usedPowerUp = appliedPowerUps[0];
+            appliedPowerUps.RemoveAt(0);
+            appliedPowerUps.Add(usedPowerUp);
+            UpdatePowerUpIcons();
         }
 
-        public List<PlayerManager.AppliedPowerUp> GetAppliedPowerUps()
+        public List<AppliedPowerUp> GetAppliedPowerUps()
         {
             return appliedPowerUps;
         }
 
-        public void SetAppliedPowerUps(List<PlayerManager.AppliedPowerUp> appliedPowerUps)
+        public void SetAppliedPowerUps(PowerUpDatabase.PowerUpType powerUp)
         {
-            this.appliedPowerUps = appliedPowerUps;
+            //var existingPowerUp = appliedPowerUps.Find(p => p != null && p.powerUpType == powerUp);
+            //if (existingPowerUp != null)
+            //{
+            //    existingPowerUp.stackCount++;
+            //}
+            //else
+            var newPowerUp = new AppliedPowerUp
+            {
+                powerUpType = powerUp,
+                stackCount = 1
+            };
+            var nullSlotIndex = appliedPowerUps.FindIndex(p => p == null || p.powerUpType == PowerUpDatabase.PowerUpType.RecoverHP);
+            if (nullSlotIndex != -1)
+            {
+                appliedPowerUps.RemoveAt(nullSlotIndex);
+                appliedPowerUps.Add(newPowerUp);
+            }
+            else
+            {
+                appliedPowerUps.RemoveAt(0);
+                appliedPowerUps.Add(newPowerUp);
+            }
+
+            UpdatePowerUpIcons();
+        }
+
+        private void UpdatePowerUpIcons()
+        {
+            for (int i = 0; i < appliedPowerUps.Count; i++)
+            {
+                if (appliedPowerUps[i] != null && appliedPowerUps[i].powerUpType != PowerUpDatabase.PowerUpType.RecoverHP)
+                {
+                    powerUpIconImages[i].sprite = powerUpDatabase.GetPowerUpData(appliedPowerUps[i].powerUpType).icon;
+                }
+                else
+                {
+                    powerUpIconImages[i].sprite = null;
+                }
+            }
         }
     }
 }

@@ -25,7 +25,9 @@ namespace TowerDefence
         [SerializeField] private GameObject eliteEnemyPrefab;
         [SerializeField] private GameObject golemEnemyPrefab;
         [Range(0f, 1f)][SerializeField] private float eliteEnemyChance = 0.1f;
+        [SerializeField] private int eliteEnemyQuotaCost = 3;
         [Range(0f, 1f)][SerializeField] private float golemEnemyChance = 0.05f;
+        [SerializeField] private int golemEnemyQuotaCost = 8;
 
         float spawnTimer = 0f;
         bool gameStarted = false;
@@ -84,12 +86,35 @@ namespace TowerDefence
             GameObject enemyPrefab = random < golemEnemyChance ? golemEnemyPrefab :
                                      random < eliteEnemyChance ? eliteEnemyPrefab :
                                      normalEnemyPrefab;
-            GameObject enemy = Instantiate(enemyPrefab, lanes[0].transform.Find("Start").position, Quaternion.identity);
-            var enemyController = enemy.GetComponent<EnemyController>();
-            enemyController.Init(level, lanes);
-            spawnedEnemies.Add(enemyController);
 
-            enemiesSpawnedThisLevel++;
+            switch (BattleManager.Instance.LaneType)
+            {
+                case BattleManager.LaneSetting.Straight:
+                    GameObject enemy = Instantiate(enemyPrefab, lanes[randomInt].transform.Find("Start").position, Quaternion.identity);
+                    var enemyController = enemy.GetComponent<EnemyController>();
+                    enemyController.Init(level, lanes[randomInt]);
+                    spawnedEnemies.Add(enemyController);
+                    break;
+                case BattleManager.LaneSetting.SShape:
+                    enemy = Instantiate(enemyPrefab, lanes[0].transform.Find("Start").position, Quaternion.identity);
+                    enemyController = enemy.GetComponent<EnemyController>();
+                    enemyController.Init(level, lanes);
+                    spawnedEnemies.Add(enemyController);
+                    break;
+            }
+
+            if (enemyPrefab == golemEnemyPrefab)
+            {
+                enemiesSpawnedThisLevel += golemEnemyQuotaCost;
+            }
+            else if (enemyPrefab == eliteEnemyPrefab)
+            {
+                enemiesSpawnedThisLevel += eliteEnemyQuotaCost;
+            }
+            else
+            {
+                enemiesSpawnedThisLevel += 1;
+            }
         }
 
         public void OnEnemyDefeated(EnemyController enemy)

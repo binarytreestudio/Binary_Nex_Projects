@@ -15,9 +15,10 @@ namespace TowerDefence
         [SerializeField] private GameObject rockEffect;
 
         [Header("Power Up AOE")]
-        [SerializeField] private GameObject powerUpAOEPrefab;
+        [SerializeField] private GameObject iceAOEPrefab;
+        [SerializeField] private GameObject poisonAOEPrefab;
 
-        private int powerUp;
+        private PowerUpDatabase.PowerUpType powerUp;
 
         void Update()
         {
@@ -28,20 +29,20 @@ namespace TowerDefence
             }
         }
 
-        public void Init(float speed, int damage, int power)
+        public void Init(float speed, int damage, PowerUpDatabase.PowerUpType power)
         {
             damageSetting.damage = damage;
             travelSpeed = speed;
             powerUp = power;
             switch (powerUp)
             {
-                case (int)PowerUpDatabase.PowerUpType.Ice:
+                case PowerUpDatabase.PowerUpType.Ice:
                     iceEffect.SetActive(true);
                     break;
-                case (int)PowerUpDatabase.PowerUpType.Poison:
+                case PowerUpDatabase.PowerUpType.Poison:
                     poisonEffect.SetActive(true);
                     break;
-                case (int)PowerUpDatabase.PowerUpType.Stone:
+                case PowerUpDatabase.PowerUpType.Stone:
                     rockEffect.SetActive(true);
                     break;
                 default:
@@ -58,14 +59,16 @@ namespace TowerDefence
             if (enemy == null)
                 return;
             enemy.TakeDamage(damageSetting);
-            if (powerUp != -1)
+            switch (powerUp)
             {
-                GameObject aoeObject = Instantiate(powerUpAOEPrefab, transform.position, Quaternion.identity);
-                aoeObject.transform.position = new Vector3(aoeObject.transform.position.x, 0f, aoeObject.transform.position.z);
-                AOEController aoeController = aoeObject.GetComponent<AOEController>();
-                aoeController.Init((PowerUpDatabase.PowerUpType)powerUp);
+                case PowerUpDatabase.PowerUpType.Ice:
+                    Instantiate(iceAOEPrefab, new Vector3(transform.position.x, 0f, transform.position.z), Quaternion.identity);
+                    break;
+                case PowerUpDatabase.PowerUpType.Poison:
+                    Instantiate(poisonAOEPrefab, new Vector3(transform.position.x, 0f, transform.position.z), Quaternion.identity);
+                    break;
             }
-            if (powerUp != (int)PowerUpDatabase.PowerUpType.Stone)
+            if (powerUp != PowerUpDatabase.PowerUpType.Stone || enemy.BaseStats.health > 3)
             {
                 Destroy(gameObject);
             }
