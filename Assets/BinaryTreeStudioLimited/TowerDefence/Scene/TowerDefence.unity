@@ -228,7 +228,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -250, y: 0}
+  m_AnchoredPosition: {x: 250, y: 0}
   m_SizeDelta: {x: 50, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &23165052
@@ -782,9 +782,9 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 93946194}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1.547578}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: -739.8}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 611630781}
   - {fileID: 2055507151}
@@ -1094,6 +1094,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 200
+  healthRecoveryPercent: 0.3
 --- !u!1 &367878454
 GameObject:
   m_ObjectHideFlags: 0
@@ -3767,7 +3768,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 250, y: 0}
+  m_AnchoredPosition: {x: -250, y: 0}
   m_SizeDelta: {x: 50, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1314325816
@@ -4170,12 +4171,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 270667cbfea5fb04eb1b4d65da57a38a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftEnemySpawnPoint: {fileID: 1362712346}
-  centerEnemySpawnPoint: {fileID: 509224037}
-  rightEnemySpawnPoint: {fileID: 641799265}
-  breakThroughEnemyPrefab: {fileID: 280376651051048960, guid: 8321a7d8a4497ef4a9cd3d769f33e740, type: 3}
-  breakThroughY: {fileID: 290321658}
-  breakThroughDestination: {fileID: 927931515}
+  pilar1Object: {fileID: 1314325814}
+  pilar2Object: {fileID: 23165050}
 --- !u!222 &1431114365
 CanvasRenderer:
   m_ObjectHideFlags: 0

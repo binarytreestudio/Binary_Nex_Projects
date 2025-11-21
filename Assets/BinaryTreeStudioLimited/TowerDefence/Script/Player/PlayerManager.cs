@@ -8,6 +8,7 @@ namespace TowerDefence
     {
         [Header("player health")]
         [SerializeField] private float maxHealth = 100f;
+        [SerializeField] private float healthRecoveryPercent = .3f;
         private float currentHealth;
 
         private struct PlayerMapping
@@ -72,7 +73,7 @@ namespace TowerDefence
             {
                 //Global effects
                 case PowerUpDatabase.PowerUpType.RecoverHP:
-                    RecoverHP(20);
+                    RecoverHP(healthRecoveryPercent * maxHealth);
                     break;
                 //player specific effects
                 default:

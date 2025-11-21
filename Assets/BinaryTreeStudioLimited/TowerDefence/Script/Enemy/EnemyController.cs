@@ -145,7 +145,7 @@ namespace TowerDefence
                         brokeThrough = true;
                         PlayerManager.Instance.PlayerTakeDamage(modifiedStats.damage);
                         animator?.SetTrigger("Jump");
-                        transform.DOMove(transform.position + transform.forward * 2f, 1f).OnComplete(() =>
+                        transform.DOJump(transform.position + transform.forward * 2f, 1.5f, 1, 1f).OnComplete(() =>
                         {
                             Destroy(gameObject);
                         });
