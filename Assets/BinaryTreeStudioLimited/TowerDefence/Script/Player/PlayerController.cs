@@ -37,7 +37,6 @@ namespace TowerDefence
         [SerializeField] private int fireBallDamage = 1;
         [SerializeField] private float laneTimer = 0.5f;
         [SerializeField] private List<Image> powerUpIconImages;
-        [SerializeField] private PowerUpDatabase powerUpDatabase;
 
         private bool gameStarted = false;
         int playerIndex;
@@ -63,7 +62,7 @@ namespace TowerDefence
 
             BattleManager.Instance.OnGameStarted += OnGameStarted;
 
-            powerUpIconImages.ForEach(image => image.sprite = null);
+            powerUpIconImages.ForEach(image => image.sprite = DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(PowerUpDatabase.PowerUpType.NormalPunch).icon);
 
             for (int i = 0; i < 6; i++)
                 appliedPowerUps.Add(null);
@@ -331,11 +330,11 @@ namespace TowerDefence
             {
                 if (appliedPowerUps[i] != null && appliedPowerUps[i].powerUpType != PowerUpDatabase.PowerUpType.RecoverHP)
                 {
-                    powerUpIconImages[i].sprite = powerUpDatabase.GetPowerUpData(appliedPowerUps[i].powerUpType).icon;
+                    powerUpIconImages[i].sprite = DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(appliedPowerUps[i].powerUpType).icon;
                 }
                 else
                 {
-                    powerUpIconImages[i].sprite = null;
+                    powerUpIconImages[i].sprite = DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(PowerUpDatabase.PowerUpType.NormalPunch).icon;
                 }
             }
         }

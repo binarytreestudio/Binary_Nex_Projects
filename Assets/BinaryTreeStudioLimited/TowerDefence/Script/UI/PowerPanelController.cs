@@ -19,7 +19,7 @@ namespace TowerDefence
             init = false;
             PlayerManager.Instance.OnPlayerSlashDetected += OnClickPowerUp;
 
-            var randomPowerUps = PowerUpDatabase.RandomPowerUps(powerUpItemControllers.Count);
+            var randomPowerUps = DatabaseManager.Instance.powerUpDatabase.RandomPowerUps(powerUpItemControllers.Count);
             ShownPowerUp(randomPowerUps);
             transform.localPosition = animationStartPosition;
             transform.DOLocalMove(animationEndPosition, 1f).OnComplete(() =>
