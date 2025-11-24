@@ -85,7 +85,7 @@ MonoBehaviour:
   maxTickCount: 0
   statusEffects:
   - type: 1
-    value: 0.4
+    value: 0.9
     duration: 2
     tickRate: 0.5
   enemiesInRange: []

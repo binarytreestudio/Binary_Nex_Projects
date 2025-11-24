@@ -6,16 +6,16 @@ namespace TowerDefence
     {
         None = 0,
 
-        // Debuff¡]­t­±®ÄªG¡^
-        Slow = 1,      // ´î³t
-        Burn = 2,      // ¨`¿N¡]«ùÄò¦©¦å¡^
-        Poison = 3,    // ¤¤¬r¡]«ùÄò¦©¦å¡^
-        Stun = 4,      // ·w¯t¡]°±¤î²¾°Ê¡^
+        // Debuffï¼ˆè² é¢æ•ˆæœï¼‰
+        Slow = 1,      // æ¸›é€Ÿ
+        Burn = 2,      // ç¼ç‡’ï¼ˆæŒçºŒæ‰£è¡€ï¼‰
+        Poison = 3,    // ä¸­æ¯’ï¼ˆæŒçºŒæ‰£è¡€ï¼‰
+        Stun = 4,      // æšˆçœ©ï¼ˆåœæ­¢ç§»å‹•ï¼‰
 
-        // Buff¡]¥¿­±®ÄªG¡^
+        // Buffï¼ˆæ­£é¢æ•ˆæœï¼‰
 
 
-        // ¨ä¥L
+        // å…¶ä»–
         AllDebuffs = 100,
         AllBuffs = 101
     }
@@ -24,8 +24,8 @@ namespace TowerDefence
     public struct StatusEffectData
     {
         public StatusEffectType type;
-        public float value;      // ®ÄªG¼Æ­È¡]´î³t40% = 0.4f¡^
-        public float duration;   // «ùÄò®É¶¡
-        public float tickRate;   // Tick ÀW²v¡]¨`¿N¨C¬í¦©¦å¡^
+        public float value;      // æ•ˆæœæ•¸å€¼ï¼ˆæ¸›é€Ÿ40% = 0.4fï¼‰
+        public float duration;   // æŒçºŒæ™‚é–“
+        public float tickRate;   // Tick é »ç‡ï¼ˆç¼ç‡’æ¯ç§’æ‰£è¡€ï¼‰
     }
 }
