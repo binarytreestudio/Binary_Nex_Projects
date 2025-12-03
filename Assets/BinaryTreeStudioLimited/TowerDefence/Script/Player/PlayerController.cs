@@ -115,7 +115,7 @@ namespace TowerDefence
 
         void SlashDetected(Jazz.Handedness handedness, Vector2 direction)
         {
-            Debug.Log($"Player {playerIndex} {handedness} slash detected with direction {direction}");
+            Debug.Log($"Player Controller {playerIndex} {handedness} slash detected");
             PlayerManager.Instance.PlayerSlashDetected(playerIndex, handedness, direction);
             if (!gameStarted)
                 return;

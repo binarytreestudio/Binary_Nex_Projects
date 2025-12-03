@@ -33,6 +33,7 @@ namespace TowerDefence
 
         public void Init(float speed, int damage, PowerUpDatabase.PowerUpType power)
         {
+            Debug.Log("Fireball!");
             damageSetting.damage = damage;
             travelSpeed = speed;
             powerUp = power;

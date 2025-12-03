@@ -88,6 +88,7 @@ public class SlashDetector : MonoBehaviour
             // Handle a valid slash gesture
             handPositionHistory.Clear();
             OnSlashDetected?.Invoke(newVector - oldVector);
+            Debug.Log($"slash detector {poseIndex} {handedness} slash detected ");
             await UniTask.Delay(TimeSpan.FromSeconds(slashCooldown), cancellationToken: cancellationToken);
         }
     }
