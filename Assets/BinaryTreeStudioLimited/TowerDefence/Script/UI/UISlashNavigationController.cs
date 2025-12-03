@@ -23,9 +23,6 @@ namespace TowerDefence
             }
             else
             {
-                defaultLeftSlashDetector.gameObject.SetActive(true);
-                defaultRightSlashDetector.gameObject.SetActive(true);
-
                 defaultLeftSlashDetector.OnSlashDetected += LeftSlashDetected;
                 defaultRightSlashDetector.OnSlashDetected += RightSlashDetected;
             }
@@ -42,10 +39,6 @@ namespace TowerDefence
                 defaultLeftSlashDetector.OnSlashDetected -= LeftSlashDetected;
                 defaultRightSlashDetector.OnSlashDetected -= RightSlashDetected;
             }
-            if(defaultLeftSlashDetector.gameObject.activeSelf)
-            defaultLeftSlashDetector.gameObject.SetActive(false);
-            if(defaultRightSlashDetector.gameObject.activeSelf)
-            defaultRightSlashDetector.gameObject.SetActive(false);
             gameStarted = false;
         }
 

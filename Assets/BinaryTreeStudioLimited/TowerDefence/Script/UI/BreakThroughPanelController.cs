@@ -15,7 +15,8 @@ namespace TowerDefence
 
         private void OnDestroy()
         {
-            BattleManager.Instance.OnGameStarted -= SetPilarXPositions;
+            if (BattleManager.Instance != null)
+                BattleManager.Instance.OnGameStarted -= SetPilarXPositions;
         }
 
         private void SetPilarXPositions(int playerCount)

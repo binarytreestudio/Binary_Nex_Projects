@@ -352,7 +352,7 @@ namespace TowerDefence
 
         private void OnDestroy()
         {
-            EnemyManager.Instance.OnEnemyDefeated(this);
+            EnemyManager.Instance?.OnEnemyDefeated(this);
         }
 
         // =========================================================

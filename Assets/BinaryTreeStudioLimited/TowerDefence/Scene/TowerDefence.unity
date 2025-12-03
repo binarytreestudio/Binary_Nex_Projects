@@ -1111,7 +1111,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &367878455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1127,7 +1127,7 @@ MonoBehaviour:
   poseIndex: 1
   handedness: 0
   bodyPoseController: {fileID: 529520463}
-  slashSpeedThreshold: 80
+  slashSpeedThreshold: 60
   slashDetectionWindow: 0.3
   slashCooldown: 0.3
   requireTriggerFromChest: 0
@@ -3064,7 +3064,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bae67df60ad63e458f40d6a277478bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skipNexSetup: 1
+  skipNexSetup: 0
   setupConfig:
     setupPanel: {fileID: 1560336239}
     setupInstruction: {fileID: 1123257251}
@@ -3624,7 +3624,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1252647748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3640,7 +3640,7 @@ MonoBehaviour:
   poseIndex: 1
   handedness: 1
   bodyPoseController: {fileID: 529520463}
-  slashSpeedThreshold: 80
+  slashSpeedThreshold: 60
   slashDetectionWindow: 0.3
   slashCooldown: 0.3
   requireTriggerFromChest: 0

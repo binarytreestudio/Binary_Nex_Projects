@@ -70,10 +70,13 @@ namespace TowerDefence
 
         void OnDestroy()
         {
-            leftSlashDetector.OnSlashDetected -= OnLeftSlashDetected;
-            rightSlashDetector.OnSlashDetected -= OnRightSlashDetected;
+            if (leftSlashDetector != null)
+                leftSlashDetector.OnSlashDetected -= OnLeftSlashDetected;
+            if (rightSlashDetector != null)
+                rightSlashDetector.OnSlashDetected -= OnRightSlashDetected;
 
-            BattleManager.Instance.OnGameStarted -= OnGameStarted;
+            if (BattleManager.Instance != null)
+                BattleManager.Instance.OnGameStarted -= OnGameStarted;
         }
 
         void Update()
@@ -112,6 +115,7 @@ namespace TowerDefence
 
         void SlashDetected(Jazz.Handedness handedness, Vector2 direction)
         {
+            Debug.Log($"Player {playerIndex} {handedness} slash detected with direction {direction}");
             PlayerManager.Instance.PlayerSlashDetected(playerIndex, handedness, direction);
             if (!gameStarted)
                 return;
