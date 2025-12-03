@@ -7,6 +7,7 @@ namespace TowerDefence
         [Header("Damage Setting")]
         [SerializeField] DamageObject damageSetting;
         [SerializeField] private float travelSpeed = 1;
+        [SerializeField] private float limitZ = 12;
 
         [Header("Effects")]
         [SerializeField] private GameObject fireballEffect;
@@ -23,8 +24,9 @@ namespace TowerDefence
         void Update()
         {
             transform.Translate(Vector3.forward * travelSpeed * Time.deltaTime);
-            if (transform.position.z >= 100f)
+            if (transform.position.z >= limitZ)
             {
+                PowerUpAOE();
                 Destroy(gameObject);
             }
         }
@@ -44,6 +46,7 @@ namespace TowerDefence
                     break;
                 case PowerUpDatabase.PowerUpType.Stone:
                     rockEffect.SetActive(true);
+                    limitZ = 100f;
                     break;
                 default:
                     fireballEffect.SetActive(true);
@@ -59,6 +62,15 @@ namespace TowerDefence
             if (enemy == null)
                 return;
             enemy.TakeDamage(damageSetting);
+            PowerUpAOE();
+            if (powerUp != PowerUpDatabase.PowerUpType.Stone || enemy.BaseStats.health > 3)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        private void PowerUpAOE()
+        {
             switch (powerUp)
             {
                 case PowerUpDatabase.PowerUpType.Ice:
@@ -69,10 +81,6 @@ namespace TowerDefence
                     Instantiate(poisonAOEPrefab, new Vector3(transform.position.x, 0f, transform.position.z), Quaternion.identity);
                     AudioManager.Instance.PlayPoisonAreaAudio();
                     break;
-            }
-            if (powerUp != PowerUpDatabase.PowerUpType.Stone || enemy.BaseStats.health > 3)
-            {
-                Destroy(gameObject);
             }
         }
     }
