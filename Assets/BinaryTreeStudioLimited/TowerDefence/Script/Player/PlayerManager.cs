@@ -37,6 +37,7 @@ namespace TowerDefence
 
         public void PlayerTakeDamage(float damage)
         {
+            if (currentHealth <= 0) return;
             currentHealth -= damage;
             GameplayHUDController.Instance.SetPlayerHealthBarValue(currentHealth / maxHealth);
             AudioManager.Instance.PlayPlayerHurtAudio();

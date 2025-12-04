@@ -374,7 +374,7 @@
       "url": "https://packages.nex.inc"
     },
     "team.nex.mdk": {
-      "version": "2.7.1",
+      "version": "2.7.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -382,7 +382,7 @@
         "team.nex.app-support": "1.13.3",
         "team.nex.tflite": "2.10.0",
         "team.nex.tflite.common": "2.10.0",
-        "team.nex.mdk.dcl": "2.7.1",
+        "team.nex.mdk.dcl": "2.7.2",
         "com.unity.textmeshpro": "3.0.6",
         "team.nex.barracuda": "3.0.0-nex.1",
         "team.nex.nex-camera": "0.10.10",
@@ -394,16 +394,16 @@
       "url": "https://packages.nex.inc"
     },
     "team.nex.mdk.body": {
-      "version": "2.7.1",
+      "version": "2.7.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "team.nex.mdk": "2.7.1"
+        "team.nex.mdk": "2.7.2"
       },
       "url": "https://packages.nex.inc"
     },
     "team.nex.mdk.dcl": {
-      "version": "2.7.1",
+      "version": "2.7.2",
       "depth": 2,
       "source": "registry",
       "dependencies": {},
@@ -435,16 +435,16 @@
       "url": "https://packages.nex.inc"
     },
     "team.nex.nex-opencv-for-unity": {
-      "version": "2.7.1",
+      "version": "2.7.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "team.nex.nex-opencv-for-unity.native": "2.7.1"
+        "team.nex.nex-opencv-for-unity.native": "2.7.2"
       },
       "url": "https://packages.nex.inc"
     },
     "team.nex.nex-opencv-for-unity.native": {
-      "version": "2.7.1",
+      "version": "2.7.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
