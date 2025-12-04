@@ -18,7 +18,7 @@ using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 namespace Nex.Starter
 {
     // Provide setup tips for MDK usages.
-    public class NexStarter : EditorWindow
+    internal class NexStarter : EditorWindow
     {
         // Presenting NexStarter.
         [MenuItem("Nex/Nex Starter")]
@@ -65,6 +65,7 @@ namespace Nex.Starter
             root.Add(CreateMdkVerificationStep(ref stepIndex));
             root.Add(CreateConfigureProjectSettingsStep(ref stepIndex));
             root.Add(CreateAddHandPoseStep(ref stepIndex));
+            root.Add(CreateAddFaceLandmarkStep(ref stepIndex));
         }
 
         #region Package Manager
@@ -102,19 +103,19 @@ namespace Nex.Starter
                     switch (prevRequest)
                     {
                         case null:
-                        {
-                            return manager.getRegistriesMethod.Invoke(manager.clientType, null) as Request;
-                        }
-                        case Request<RegistryInfo[]> typedRequest:
-                        {
-                            var registries = typedRequest.Result;
-                            foreach (var registry in registries)
                             {
-                                Debug.Log($"{registry.name} {registry.url}");
+                                return manager.getRegistriesMethod.Invoke(manager.clientType, null) as Request;
                             }
+                        case Request<RegistryInfo[]> typedRequest:
+                            {
+                                var registries = typedRequest.Result;
+                                foreach (var registry in registries)
+                                {
+                                    Debug.Log($"{registry.name} {registry.url}");
+                                }
 
-                            break;
-                        }
+                                break;
+                            }
                         default:
                             return null;
                     }
@@ -166,7 +167,8 @@ namespace Nex.Starter
                             }
                         }
 
-                        if (existed) {
+                        if (existed)
+                        {
                             Debug.Log($"Registry already registered: {spec.url}");
                             continue;  // Search for the next one.
                         }
@@ -196,20 +198,20 @@ namespace Nex.Starter
                     switch (prevRequest)
                     {
                         case null:
-                        {
-                            return manager.getRegistriesMethod.Invoke(manager.clientType, null) as Request;
-                        }
+                            {
+                                return manager.getRegistriesMethod.Invoke(manager.clientType, null) as Request;
+                            }
                         case Request<RegistryInfo[]> registriesRequest:
-                        {
-                            existingRegistries = registriesRequest.Result;
-                            return TryAddRegistry();
-                        }
+                            {
+                                existingRegistries = registriesRequest.Result;
+                                return TryAddRegistry();
+                            }
                         case Request<RegistryInfo> addRequest:
-                        {
-                            var registered = addRequest.Result!;
-                            Debug.Log($"Registered {registered.name}");
-                            return TryAddRegistry();
-                        }
+                            {
+                                var registered = addRequest.Result!;
+                                Debug.Log($"Registered {registered.name}");
+                                return TryAddRegistry();
+                            }
                     }
 
                     return null;
@@ -230,16 +232,16 @@ namespace Nex.Starter
                     switch (prevRequest)
                     {
                         case null:
-                        {
-                            return Client.AddAndRemove(packageNames, Array.Empty<string>());
-                        }
+                            {
+                                return Client.AddAndRemove(packageNames, Array.Empty<string>());
+                            }
                         case AddAndRemoveRequest addAndRemoveRequest:
-                        {
-                            var result = addAndRemoveRequest.Result!;
-                            Debug.Log($"Added {result.Count()} packages.");
-                            Client.Resolve();
-                            return null;
-                        }
+                            {
+                                var result = addAndRemoveRequest.Result!;
+                                Debug.Log($"Added {result.Count()} packages.");
+                                Client.Resolve();
+                                return null;
+                            }
                     }
 
                     return null;
@@ -636,7 +638,7 @@ namespace Nex.Starter
             var container = foldout.contentContainer;
             container.Add(new Label("Add/Update hand pose packages to this project."));
             container.Add(new HelpBox(
-                "Enabling hand pose features globally will restrict this game to PlayOS 1.8+ only. \n" +
+                "Enabling hand pose features globally will restrict this game to PlayOS 1.8+ only.\n" +
                 "If you prefer, you may install and configure the dependencies manually instead. " +
                 "Please refer to the <a href=\"https://developer.nex.inc/docs/tutorials/hand-pose/#installation\">Hand Pose Documentation</a> for more details. " +
                 "Otherwise, we recommend installing via the button below.",
@@ -652,7 +654,7 @@ namespace Nex.Starter
         private static void AddHandPose()
         {
             var manager = PackageManager.Instance;
-            if (IsMinApiLevelReadyForHandPose())
+            if (IsMinApiLevelReadyForHandPoseAndFaceLandmark())
             {
                 manager.AddPackages("team.nex.mdk.hand");
             }
@@ -662,7 +664,7 @@ namespace Nex.Starter
             }
         }
 
-        private static bool IsMinApiLevelReadyForHandPose()
+        private static bool IsMinApiLevelReadyForHandPoseAndFaceLandmark()
         {
             PackageInfo[] packages = PackageInfo.GetAllRegisteredPackages();
             var package = packages.FirstOrDefault(p => p.name == "team.nex.min-playos-api-level");
@@ -677,6 +679,42 @@ namespace Nex.Starter
             if (!int.TryParse(versionSplit[2], out var patch) || patch < 1) return false;
 
             return true;
+        }
+
+        #endregion
+
+        #region Add Face Landmark
+
+        private VisualElement CreateAddFaceLandmarkStep(ref int stepIndex)
+        {
+            var foldout = new Foldout
+            {
+                text = $"{++stepIndex}. (Optional) Add/Update Face Landmark Support.",
+                value = false
+            };
+            var container = foldout.contentContainer;
+            container.Add(new Label("Add/Update face landmark packages to this project."));
+            container.Add(new HelpBox(
+                "Enabling face landmark features globally will restrict this game to PlayOS 1.8+ only.\n" +
+                "If you prefer, you may install and configure the dependencies manually instead. " +
+                "Please refer to the <a href=\"https://developer.nex.inc/docs/tutorials/face-landmark/#installation\">Face Landmark Documentation</a> for more details. " +
+                "Otherwise, we recommend installing via the button below.", HelpBoxMessageType.Warning));
+            var button = new Button(AddFaceLandmark) { text = "Install face landmark packages" };
+            container.Add(button);
+            return foldout;
+        }
+
+        private static void AddFaceLandmark()
+        {
+            var manager = PackageManager.Instance;
+            if (IsMinApiLevelReadyForHandPoseAndFaceLandmark())
+            {
+                manager.AddPackages("team.nex.mdk.face");
+            }
+            else
+            {
+                manager.AddPackages("team.nex.min-playos-api-level@1.2.1", "team.nex.mdk.face");
+            }
         }
 
         #endregion

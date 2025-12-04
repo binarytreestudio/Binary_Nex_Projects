@@ -38,7 +38,7 @@ namespace Nex.Starter
     public class AutoNexStarter
     {
         private const string CONFIG_KEY = "AutoNexStarter_Completed_v3"; // 用來檢查是否已執行過
-        private const string PACKAGE_PATH = "Assets/NexPackages/2.PlaygroundSDKEssentials-20251016.unitypackage"; // 目標 .unitypackage 路徑
+        private const string PACKAGE_PATH = "Assets/NexPackages/2.PlaygroundSDKEssentials-20251124.unitypackage"; // 目標 .unitypackage 路徑
 
         static AutoNexStarter()
         {

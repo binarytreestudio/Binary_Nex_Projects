@@ -250,7 +250,7 @@ public class BattleManager : Singleton<BattleManager>
 
             // Initialize setup controller, pass controllers and params dynamically
             var setupController = obj.GetComponent<OnePlayerSetupDetector>();
-            setupController.Initialize(playAreaController, bodyPoseController, playerIndex, framePosition);
+            //setupController.Initialize(playAreaController, bodyPoseController, playerIndex, framePosition);
             playerSetupDetectors[playerIndex] = setupController;
 
             // Initialize preview frame provider
