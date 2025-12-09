@@ -47,8 +47,8 @@ public class PlayerController : MonoBehaviour
     public void Init(int playerIndex)
     {
         this.playerIndex = playerIndex;
-        leftSlashDetector.Init(playerIndex);
-        rightSlashDetector.Init(playerIndex);
+        //leftSlashDetector.Init(playerIndex);
+        //rightSlashDetector.Init(playerIndex);
         leanSignalProducer.Init(playerIndex);
         ikAvatarController.Init(playerIndex);
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Nex.Essentials;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,8 +25,8 @@ namespace TowerDefence
         }
 
         [Header("Slash Detectors")]
-        [SerializeField] SlashDetector leftSlashDetector = null!;
-        [SerializeField] SlashDetector rightSlashDetector = null!;
+        [SerializeField] Nex.Essentials.SlashDetector leftSlashDetector = null!;
+        [SerializeField] Nex.Essentials.SlashDetector rightSlashDetector = null!;
         [SerializeField] private float hookAngleRange = 60f;
 
         [Header("IK Avatar Controller")]
@@ -53,8 +54,12 @@ namespace TowerDefence
         {
             this.playerIndex = playerIndex;
 
-            leftSlashDetector.Init(playerIndex);
-            rightSlashDetector.Init(playerIndex);
+            //leftSlashDetector.Init(playerIndex);
+            //rightSlashDetector.Init(playerIndex);
+
+            leftSlashDetector = FindObjectsByType<Nex.Essentials.SlashDetector>(FindObjectsSortMode.None)[playerIndex * 2];
+            rightSlashDetector = FindObjectsByType<Nex.Essentials.SlashDetector>(FindObjectsSortMode.None)[playerIndex * 2 + 1];
+
             ikAvatarController.Init(playerIndex);
 
             leftSlashDetector.OnSlashDetected += OnLeftSlashDetected;
@@ -153,6 +158,7 @@ namespace TowerDefence
 
         void OnGameStarted(int playerCount)
         {
+            Debug.Log("PlayerController Game Started");
             this.playerCount = playerCount;
 
             switch (BattleManager.Instance.LaneType)

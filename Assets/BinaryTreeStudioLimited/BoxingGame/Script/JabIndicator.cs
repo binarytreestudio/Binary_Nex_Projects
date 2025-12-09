@@ -1,7 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using Nex.Essentials;
-using Microsoft.Unity.VisualStudio.Editor;
 
 public class JabIndicator : MonoBehaviour
 {

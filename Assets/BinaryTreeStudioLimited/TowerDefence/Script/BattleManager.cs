@@ -75,6 +75,7 @@ namespace TowerDefence
         [SerializeField] private float restartGameDelay = 2f;
         [SerializeField] private float levelCompleteDelay = 2f;
         [SerializeField] private LaneSetting laneSetting = LaneSetting.Straight;
+        [SerializeField] private List<Nex.Essentials.SlashDetector> slashDetectors;
         public LaneSetting LaneType => laneSetting;
 
         private int playerCount = 1;
@@ -272,6 +273,12 @@ namespace TowerDefence
                     break;
             }
 
+            for(int i = 0; i < playerCount; i++)
+            {
+                slashDetectors[i * 2].gameObject.SetActive(true);
+                slashDetectors[i * 2 + 1].gameObject.SetActive(true);
+            }
+
             float laneLength = 10;
             float secment = laneLength / (playerCount + 1);
             // Instantiate players
@@ -293,9 +300,10 @@ namespace TowerDefence
 
             EnemyManager.Instance.SetLanes(spawnedLanes);
             gameStarted = true;
+            EnemyManager.Instance.OnGameStarted(playerCount);
             OnGameStarted?.Invoke(playerCount);
             AudioManager.Instance.PlayGameStartAudio();
-            GameplayHUDController.Instance.SetLevelText(1);
+            GameplayHUDController.Instance?.SetLevelText(1);
         }
 
         public void GameOver()
@@ -312,7 +320,7 @@ namespace TowerDefence
         {
             //UIManager.Instance.ShowLevelCompletePanel();
             AudioManager.Instance.PlayGameWinAudio();
-            UIManager.Instance.ShowPowerUpPanel();
+            UIManager.Instance?.ShowPowerUpPanel();
             PlayerManager.Instance.LevelComplete();
             //DOVirtual.DelayedCall(levelCompleteDelay, () =>
             //{

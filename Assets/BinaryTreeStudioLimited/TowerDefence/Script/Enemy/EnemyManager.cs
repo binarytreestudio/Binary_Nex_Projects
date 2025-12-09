@@ -34,37 +34,26 @@ namespace TowerDefence
         float spawnTimer = 0f;
         bool gameStarted = false;
         private int playerCount = 1;
-        private int level = 1;
+        private int level = 0;
         private int enemiesSpawnedThisLevel = 0;
         List<EnemyController> spawnedEnemies = new();
         private List<GameObject> lanes;
 
-        void Start()
-        {
-            BattleManager.Instance.OnGameStarted += OnGameStarted;
-        }
-
-        protected override void OnDestroy()
-        {
-            BattleManager.Instance.OnGameStarted -= OnGameStarted;
-
-            base.OnDestroy();
-        }
-
         void Update()
         {
-            if (!gameStarted || enemiesSpawnedThisLevel >= levelEnemyCount * Mathf.Exp(enemiesPerLevelIncrease * (level - 1)) * playerCount)
+            if (!gameStarted || spawnedEnemies.Count <= 0 || !spawnedEnemies.Find(enemy => enemy.gameObject.activeSelf == false))
                 return;
             spawnTimer -= Time.deltaTime;
             if (spawnTimer <= 0f)
             {
-                SpawnEnemy();
+                spawnedEnemies.Find(enemy => enemy.gameObject.activeSelf == false).gameObject.SetActive(true);
                 spawnTimer = spawnInterval * Mathf.Exp(-intervalDecreasePercentagePerLevel * (level - 1)) / playerCount;
             }
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                enemiesSpawnedThisLevel = 999999999;
+                spawnedEnemies.ForEach(enemy => Destroy(enemy.gameObject));
+                spawnedEnemies.Clear();
             }
         }
 
@@ -73,9 +62,13 @@ namespace TowerDefence
             this.lanes = lanes;
         }
 
-        void OnGameStarted(int playerCount)
+        public void OnGameStarted(int playerCount)
         {
             this.playerCount = playerCount;
+
+            Debug.Log("Enemy Manager Game Started");
+
+            StartNextLevel();
 
             gameStarted = true;
         }
@@ -110,6 +103,8 @@ namespace TowerDefence
                     break;
             }
 
+            Debug.Log(enemyPrefab);
+
             if (enemyPrefab == golemEnemyPrefab)
             {
                 enemiesSpawnedThisLevel += golemEnemyQuotaCost;
@@ -139,7 +134,16 @@ namespace TowerDefence
         {
             level++;
             enemiesSpawnedThisLevel = 0;
-            GameplayHUDController.Instance.SetLevelText(level);
+            Debug.Log("Spawn enemy");
+            while(enemiesSpawnedThisLevel < levelEnemyCount * Mathf.Exp(enemiesPerLevelIncrease * (level - 1)) * playerCount)
+            {
+                SpawnEnemy();
+            }
+            Debug.Log(enemiesSpawnedThisLevel);
+            Debug.Log(spawnedEnemies.Count);
+            spawnedEnemies.ForEach(enemy => {enemy.gameObject.SetActive(false); });
+
+            GameplayHUDController.Instance?.SetLevelText(level);
         }
     }
 }

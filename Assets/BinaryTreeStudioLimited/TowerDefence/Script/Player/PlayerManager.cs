@@ -23,7 +23,7 @@ namespace TowerDefence
         void Start()
         {
             currentHealth = maxHealth;
-            GameplayHUDController.Instance.SetPlayerHealthBarValue(1f);
+            GameplayHUDController.Instance?.SetPlayerHealthBarValue(1f);
         }
 
         public void RegisterPlayerController(PlayerController playerController)
@@ -39,7 +39,7 @@ namespace TowerDefence
         {
             if (currentHealth <= 0) return;
             currentHealth -= damage;
-            GameplayHUDController.Instance.SetPlayerHealthBarValue(currentHealth / maxHealth);
+            GameplayHUDController.Instance?.SetPlayerHealthBarValue(currentHealth / maxHealth);
             AudioManager.Instance.PlayPlayerHurtAudio();
             if (currentHealth <= 0)
             {
@@ -60,7 +60,7 @@ namespace TowerDefence
         public void RecoverHP(float amount)
         {
             currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-            GameplayHUDController.Instance.SetPlayerHealthBarValue(currentHealth / maxHealth);
+            GameplayHUDController.Instance?.SetPlayerHealthBarValue(currentHealth / maxHealth);
         }
 
         //public List<AppliedPowerUp> GetPlayerPowerUps(int playerIndex)

@@ -9,49 +9,40 @@ using Nex.Essentials;
 
 public class SlashDetector : MonoBehaviour
 {
-    private enum Handedness
-    {
-        Left,
-        Right
-    }
-
     [Tooltip("Player index (0 for Player 1, 1 for Player 2, etc.)")]
     [SerializeField]
-    private int poseIndex;
+    private int playerIndex;
 
-    [SerializeField] private Handedness handedness = Handedness.Left;
+    [SerializeField] private NodeIndex nodeIndex;
     [SerializeField] private BodyPoseController bodyPoseController = null!;
 
     [Tooltip("Minimum speed to consider a slash gesture in inches/second")]
     [SerializeField]
-    private float slashSpeedThreshold = 60f; // Minimum speed to consider a slash gesture
+    private float slashSpeedThreshold = 70f;
 
     [Tooltip("Time window to detect the slash gesture in seconds")]
     [SerializeField]
-    private float slashDetectionWindow = 0.2f; // Time window to detect the slash gesture
+    private float slashDetectionWindow = 0.3f;
 
     [Tooltip("Cooldown time after a slash is detected in seconds")]
     [SerializeField]
-    public float slashCooldown = 0.5f;
+    public float slashCooldown = 1f;
 
-    [Tooltip("Identify a slash only if the hand starts within chestDistanceThreshold inches from chest")]
+    [Tooltip("Identify a slash only if the hand starts within chestDistanceLimit inches from chest")]
     [SerializeField]
-    private bool requireTriggerFromChest = false;
+    [HideInInspector]
+    private bool requireTriggerFromChest;
 
     [Tooltip("If requireTriggerFromChest is true, this is the max distance from chest in inches to consider the slash valid.")]
     [SerializeField]
-    private float chestDistanceThreshold = 10f;
+    [HideInInspector]
+    private float chestDistanceLimit = 10f;
 
     public event Action<Vector2>? OnSlashDetected;
 
-    private History<Vector2> handPositionHistory = null!; // Slash detection window in seconds
+    private History<Vector2> handPositionHistory = null!;
 
-
-    private void OnEnable()
-    {
-        handPositionHistory = new History<Vector2>(slashDetectionWindow);
-        SlashDetectionLoop(destroyCancellationToken).Forget();
-    }
+    private DateTime lastDetectionTime = DateTime.MinValue;
 
     private async UniTaskVoid SlashDetectionLoop(CancellationToken cancellationToken)
     {
@@ -61,42 +52,70 @@ public class SlashDetector : MonoBehaviour
             await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: cancellationToken);
 
             // Get the latest hand and chest positions
-            bodyPoseController.TryGetBodyPose(poseIndex, BodyPoseController.PoseFlavor.Raw, out var bodyPose);
-            var handPosition = bodyPose[handedness == Handedness.Left ? NodeIndex.LeftWrist : NodeIndex.RightWrist];
-            var chestPosition = bodyPose[NodeIndex.Chest];
-            if (!handPosition.HasValue) continue; // No hand position available
-            if (!chestPosition.HasValue) continue; // No chest position available
+            bodyPoseController.TryGetBodyPose(playerIndex, BodyPoseController.PoseFlavor.Raw, out var bodyPose);
+            var trackNode = bodyPose[nodeIndex];
+            var chestNode = bodyPose[NodeIndex.Chest];
+
+            // Skip if either node is missing
+            if (!trackNode.HasValue) continue;
+            if (!chestNode.HasValue) continue;
 
             // Store the hand position relative to the chest
-            var referencedHandPosition = handPosition.Value - chestPosition.Value;
-            handPositionHistory.Add(referencedHandPosition, Time.time);
-            if (handPositionHistory.Count < 2) continue; // Not enough data points yet
+            handPositionHistory.Add(trackNode.Value - chestNode.Value, Time.time);
+            Debug.Log(gameObject.name + " " + (trackNode.Value - chestNode.Value));
 
-            // Calculate the slash speed
+            if (handPositionHistory.Count < 2)
+            {
+                //Debug.Log("Not enough data yet");
+                continue; // Not enough data yet
+            }
+                
+
+            if ((DateTime.Now - lastDetectionTime).TotalSeconds < slashCooldown)
+            {
+                //Debug.Log("Still in cooldown");
+                continue; // Still in cooldown
+            }
+                
+            // Calculate the slash vector
             Vector2 oldVector = handPositionHistory.EarliestItem;
             Vector2 newVector = handPositionHistory.LatestItem;
             var deltaTime = handPositionHistory.LatestItem.timestamp - handPositionHistory.EarliestItem.timestamp;
-            if (deltaTime <= 0.9f * slashDetectionWindow) continue; // Not enough time elapsed
+            if (deltaTime <= 0.9f * slashDetectionWindow)
+            {
+                //Debug.Log("Not enough time elapsed");
+                continue; // Not enough time elapsed
+            }
+                
+            var slashVector = (newVector - oldVector) / deltaTime / bodyPose.pixelsPerInch;
 
-            var slashSpeed = Vector2.Distance(oldVector, newVector) / deltaTime / bodyPose.pixelsPerInch;
-
-            if (slashSpeed < slashSpeedThreshold) continue; // Not a fast enough slash
-
-            if (requireTriggerFromChest && oldVector.magnitude / bodyPose.pixelsPerInch > chestDistanceThreshold)
-                continue;   // Not a slash starting from chest area
+            if (slashVector.magnitude < slashSpeedThreshold)
+            {
+                //Debug.Log("Not enough time elapsed");
+                continue; // Not a fast enough slash
+            }
+              
+            // If required, check that the slash started close enough to the chest
+            if (requireTriggerFromChest && oldVector.magnitude / bodyPose.pixelsPerInch > chestDistanceLimit)
+            {
+                //Debug.Log("Not enough time elapsed");
+                continue;
+            }
 
             // Handle a valid slash gesture
             handPositionHistory.Clear();
-            OnSlashDetected?.Invoke(newVector - oldVector);
-            Debug.Log($"slash detector {poseIndex} {handedness} slash detected ");
-            await UniTask.Delay(TimeSpan.FromSeconds(slashCooldown), cancellationToken: cancellationToken);
+            lastDetectionTime = DateTime.Now;
+            OnSlashDetected?.Invoke(slashVector);
+            //Debug.Log("Slash Detected");
         }
     }
-
     public void Init(int index)
     {
-        poseIndex = index;
+        playerIndex = index;
 
         bodyPoseController = FindFirstObjectByType<BodyPoseController>();
+
+        handPositionHistory = new History<Vector2>(slashDetectionWindow);
+        SlashDetectionLoop(destroyCancellationToken).Forget();
     }
 }

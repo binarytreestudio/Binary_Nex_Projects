@@ -498,7 +498,7 @@ MonoBehaviour:
   fireBallPrefab: {fileID: 1571582882781154879, guid: 53ecfcf186a14054394d0764a8e2adb6, type: 3}
   fireBallSpeed: 10
   fireBallDamage: 1
-  laneTimer: 0.5
+  laneTimer: 0
   powerUpIconImages:
   - {fileID: 6456117564533509316}
   - {fileID: 1662247642042391524}
@@ -506,7 +506,6 @@ MonoBehaviour:
   - {fileID: 3228792198515096}
   - {fileID: 6129510693290245112}
   - {fileID: 2446842013845371882}
-  powerUpDatabase: {fileID: 11400000, guid: a0e2e5b9ca177aa47b3f5e81b427fd75, type: 2}
   appliedPowerUps: []
 --- !u!114 &6409233852578984
 MonoBehaviour:
@@ -2112,7 +2111,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4578485643245609807
 Transform:
   m_ObjectHideFlags: 0
@@ -2140,14 +2139,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5257f4fb10ea5bb409b754a48e8e7003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  poseIndex: 0
-  handedness: 0
+  playerIndex: 0
+  nodeIndex: 4
   bodyPoseController: {fileID: 0}
-  slashSpeedThreshold: 60
-  slashDetectionWindow: 0.1
-  slashCooldown: 0.1
+  slashSpeedThreshold: 1
+  slashDetectionWindow: 0.01
+  slashCooldown: 0.01
   requireTriggerFromChest: 0
-  chestDistanceThreshold: 10
+  chestDistanceLimit: 10
 --- !u!1 &6168111026954054034
 GameObject:
   m_ObjectHideFlags: 0
@@ -7123,7 +7122,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3711158203499581822
 Transform:
   m_ObjectHideFlags: 0
@@ -7151,14 +7150,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5257f4fb10ea5bb409b754a48e8e7003, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  poseIndex: 0
-  handedness: 1
+  playerIndex: 0
+  nodeIndex: 7
   bodyPoseController: {fileID: 0}
-  slashSpeedThreshold: 60
-  slashDetectionWindow: 0.1
-  slashCooldown: 0.1
+  slashSpeedThreshold: 1
+  slashDetectionWindow: 0.01
+  slashCooldown: 0.01
   requireTriggerFromChest: 0
-  chestDistanceThreshold: 10
+  chestDistanceLimit: 10
 --- !u!1 &6514670910714016826
 GameObject:
   m_ObjectHideFlags: 0
