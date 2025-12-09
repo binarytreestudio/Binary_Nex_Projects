@@ -273,7 +273,7 @@ namespace TowerDefence
                     break;
             }
 
-            for(int i = 0; i < playerCount; i++)
+            for (int i = 0; i < playerCount; i++)
             {
                 slashDetectors[i * 2].gameObject.SetActive(true);
                 slashDetectors[i * 2 + 1].gameObject.SetActive(true);
@@ -296,6 +296,9 @@ namespace TowerDefence
                 }
                 var playerController = playerObj.GetComponent<PlayerController>();
                 PlayerManager.Instance.RegisterPlayerController(playerController);
+                ObjectPoolManager.Instance.PreloadFireBalls();
+                ObjectPoolManager.Instance.PreloadIceAOEs();
+                ObjectPoolManager.Instance.PreloadPoisonAOEs();
             }
 
             EnemyManager.Instance.SetLanes(spawnedLanes);

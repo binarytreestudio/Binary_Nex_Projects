@@ -38,6 +38,8 @@ namespace TowerDefence
         private void OnDisable()
         {
             ClearAllEnemies();
+            OnEffectEnd();
+            isInitialized = false;
         }
 
         private void OnDestroy()
@@ -197,7 +199,8 @@ namespace TowerDefence
         private void Expire()
         {
             ClearAllEnemies();
-            Destroy(gameObject);
+            //Destroy(gameObject);
+            gameObject.SetActive(false);
         }
 
         private void ClearAllEnemies()

@@ -27,16 +27,19 @@ namespace TowerDefence
             if (transform.position.z >= limitZ)
             {
                 PowerUpAOE();
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
         }
 
         public void Init(float speed, int damage, PowerUpDatabase.PowerUpType power)
         {
-            Debug.Log("Fireball!");
             damageSetting.damage = damage;
             travelSpeed = speed;
             powerUp = power;
+            fireballEffect.SetActive(false);
+            iceEffect.SetActive(false);
+            poisonEffect.SetActive(false);
+            rockEffect.SetActive(false);
             switch (powerUp)
             {
                 case PowerUpDatabase.PowerUpType.Ice:
@@ -66,7 +69,7 @@ namespace TowerDefence
             PowerUpAOE();
             if (powerUp != PowerUpDatabase.PowerUpType.Stone || enemy.BaseStats.health > 3)
             {
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
         }
 
@@ -75,11 +78,13 @@ namespace TowerDefence
             switch (powerUp)
             {
                 case PowerUpDatabase.PowerUpType.Ice:
-                    Instantiate(iceAOEPrefab, new Vector3(transform.position.x, 0f, transform.position.z), Quaternion.identity);
+                    //Instantiate(iceAOEPrefab, new Vector3(transform.position.x, 0f, transform.position.z), Quaternion.identity);
+                    ObjectPoolManager.Instance.GetIceAOE().transform.position = new Vector3(transform.position.x, 0f, transform.position.z);
                     AudioManager.Instance.PlayIceAreaAudio();
                     break;
                 case PowerUpDatabase.PowerUpType.Poison:
-                    Instantiate(poisonAOEPrefab, new Vector3(transform.position.x, 0f, transform.position.z), Quaternion.identity);
+                    //Instantiate(poisonAOEPrefab, new Vector3(transform.position.x, 0f, transform.position.z), Quaternion.identity);
+                    ObjectPoolManager.Instance.GetPoisonAOE().transform.position = new Vector3(transform.position.x, 0f, transform.position.z);
                     AudioManager.Instance.PlayPoisonAreaAudio();
                     break;
             }

@@ -12,8 +12,8 @@ namespace TowerDefence
     {
         public enum HitAngle
         {
-            LeftHook = 45,
-            RightHook = 135,
+            LeftHook = 60,
+            RightHook = 120,
             UpperCut = 90
         }
 
@@ -36,14 +36,14 @@ namespace TowerDefence
         [SerializeField] private GameObject fireBallPrefab = null!;
         [SerializeField] private float fireBallSpeed = 10f;
         [SerializeField] private int fireBallDamage = 1;
-        [SerializeField] private float laneTimer = 0.5f;
+        [SerializeField] private float laneFireballCooldown = 0.5f;
         [SerializeField] private List<Image> powerUpIconImages;
 
         private bool gameStarted = false;
-        int playerIndex;
-        private float leftLaneCooldownTimer = 0;
-        private float rightLaneCooldownTimer = 0;
-        private float middleLaneCooldownTimer = 0;
+        private int playerIndex;
+        private float lastLeftLaneShootTime = 0;
+        private float lastRightLaneShootTime = 0;
+        private float lastMiddleLaneShootTime = 0;
         int playerCount;
         private float laneSpace;
         [SerializeField] private List<AppliedPowerUp> appliedPowerUps = new();
@@ -98,12 +98,6 @@ namespace TowerDefence
             {
                 SlashDetected(Jazz.Handedness.Right, Vector2.up);
             }
-            if (leftLaneCooldownTimer >= 0)
-                leftLaneCooldownTimer -= Time.deltaTime;
-            if (middleLaneCooldownTimer >= 0)
-                middleLaneCooldownTimer -= Time.deltaTime;
-            if (rightLaneCooldownTimer >= 0)
-                rightLaneCooldownTimer -= Time.deltaTime;
         }
 
         #region Slash Detection
@@ -120,7 +114,7 @@ namespace TowerDefence
 
         void SlashDetected(Jazz.Handedness handedness, Vector2 direction)
         {
-            Debug.Log($"Player Controller {playerIndex} {handedness} slash detected");
+            Debug.Log($"Player Controller {playerIndex} {handedness} slash detected, direction: {direction}");
             PlayerManager.Instance.PlayerSlashDetected(playerIndex, handedness, direction);
             if (!gameStarted)
                 return;
@@ -182,19 +176,19 @@ namespace TowerDefence
             switch (index)
             {
                 case -1:
-                    if (leftLaneCooldownTimer > 0)
+                    if (Time.time - lastLeftLaneShootTime < laneFireballCooldown)
                         return;
-                    leftLaneCooldownTimer = laneTimer;
+                    lastLeftLaneShootTime = Time.time;
                     break;
                 case 0:
-                    if (middleLaneCooldownTimer > 0)
+                    if (Time.time - lastMiddleLaneShootTime < laneFireballCooldown)
                         return;
-                    middleLaneCooldownTimer = laneTimer;
+                    lastMiddleLaneShootTime = Time.time;
                     break;
                 case 1:
-                    if (rightLaneCooldownTimer > 0)
+                    if (Time.time - lastRightLaneShootTime < laneFireballCooldown)
                         return;
-                    rightLaneCooldownTimer = laneTimer;
+                    lastRightLaneShootTime = Time.time;
                     break;
             }
 
@@ -262,7 +256,9 @@ namespace TowerDefence
 
             // Instantiate fireball at the lane position
             Vector3 spawnPosition = new Vector3(transform.position.x + laneSpace * index, transform.position.y + 1f, transform.position.z);
-            GameObject fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
+            //GameObject fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
+            GameObject fireball = ObjectPoolManager.Instance.GetFireBall();
+            fireball.transform.position = spawnPosition;
             var fireballController = fireball.GetComponent<FireBallController>();
             int damage = appliedPowerUps[0] != null && appliedPowerUps[0].powerUpType == PowerUpDatabase.PowerUpType.Stone ? fireBallDamage * 3 : fireBallDamage;
             var power = appliedPowerUps[0] != null ? appliedPowerUps[0].powerUpType : (PowerUpDatabase.PowerUpType)(-1);
@@ -288,7 +284,9 @@ namespace TowerDefence
                 DOVirtual.DelayedCall(0.2f, () =>
                 {
                     // Instantiate fireball at the lane position
-                    fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
+                    //fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
+                    fireball = ObjectPoolManager.Instance.GetFireBall();
+                    fireball.transform.position = spawnPosition;
                     fireballController = fireball.GetComponent<FireBallController>();
                     fireballController.Init(fireBallSpeed, fireBallDamage, PowerUpDatabase.PowerUpType.FireballCount);
                     AudioManager.Instance.PlayFireBallAudio();
