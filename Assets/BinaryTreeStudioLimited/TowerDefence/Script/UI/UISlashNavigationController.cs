@@ -7,8 +7,8 @@ namespace TowerDefence
     public class UISlashNavigationController : MonoBehaviour
     {
         [SerializeField] private GameObject firstSelected;
-        [SerializeField] private SlashDetector defaultLeftSlashDetector;
-        [SerializeField] private SlashDetector defaultRightSlashDetector;
+        [SerializeField] private Nex.Essentials.SlashDetector defaultLeftSlashDetector;
+        [SerializeField] private Nex.Essentials.SlashDetector defaultRightSlashDetector;
 
         private bool gameStarted = false;
 

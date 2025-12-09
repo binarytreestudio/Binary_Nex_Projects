@@ -75,7 +75,7 @@ namespace TowerDefence
         [SerializeField] private float restartGameDelay = 2f;
         [SerializeField] private float levelCompleteDelay = 2f;
         [SerializeField] private LaneSetting laneSetting = LaneSetting.Straight;
-        [SerializeField] private List<Nex.Essentials.SlashDetector> slashDetectors;
+        public List<Nex.Essentials.SlashDetector> slashDetectors = new();
         public LaneSetting LaneType => laneSetting;
 
         private int playerCount = 1;

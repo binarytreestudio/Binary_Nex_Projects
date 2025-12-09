@@ -11,7 +11,8 @@ Material:
   m_Shader: {fileID: 4800000, guid: 0406db5a14f94604a8c57ccfbc9f3b46, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _EMISSION
   m_InvalidKeywords:
   - _FLIPBOOKBLENDING_OFF
   m_LightmapFlags: 6
@@ -68,7 +69,7 @@ Material:
     - _LightingEnabled: 0
     - _Mode: 0
     - _QueueOffset: 0
-    - _SoftParticlesEnabled: 1
+    - _SoftParticlesEnabled: 0
     - _SoftParticlesFarFadeDistance: 0.2
     - _SoftParticlesNearFadeDistance: 0
     - _SrcBlend: 1

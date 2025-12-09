@@ -57,8 +57,8 @@ namespace TowerDefence
             //leftSlashDetector.Init(playerIndex);
             //rightSlashDetector.Init(playerIndex);
 
-            leftSlashDetector = FindObjectsByType<Nex.Essentials.SlashDetector>(FindObjectsSortMode.None)[playerIndex * 2];
-            rightSlashDetector = FindObjectsByType<Nex.Essentials.SlashDetector>(FindObjectsSortMode.None)[playerIndex * 2 + 1];
+            leftSlashDetector = BattleManager.Instance.slashDetectors[playerIndex * 2];
+            rightSlashDetector = BattleManager.Instance.slashDetectors[playerIndex * 2 + 1];
 
             ikAvatarController.Init(playerIndex);
 

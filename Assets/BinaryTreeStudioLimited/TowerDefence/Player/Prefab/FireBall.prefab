@@ -129,6 +129,7 @@ MonoBehaviour:
   damageSetting:
     damage: 0
   travelSpeed: 1
+  limitZ: 12
   fireballEffect: {fileID: 8699214030378842635}
   iceEffect: {fileID: 4546705165475038765}
   poisonEffect: {fileID: 4480816824761092109}
@@ -173,10 +174,6 @@ PrefabInstance:
     - target: {fileID: 2181733767813755874, guid: d1715a7b0d01e964fbe06d3eb29b52d9, type: 3}
       propertyPath: m_Name
       value: PoisonPunch
-      objectReference: {fileID: 0}
-    - target: {fileID: 2181733767813755874, guid: d1715a7b0d01e964fbe06d3eb29b52d9, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3382852406359700161, guid: d1715a7b0d01e964fbe06d3eb29b52d9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -245,10 +242,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: IcePunch
       objectReference: {fileID: 0}
-    - target: {fileID: 2181733767813755874, guid: 87d950c6ca42e8f48b76069c4be315f1, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3382852406359700161, guid: 87d950c6ca42e8f48b76069c4be315f1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -315,10 +308,6 @@ PrefabInstance:
     - target: {fileID: 1554052670201816, guid: 0a47b1020dead4b4f9299847e920431f, type: 3}
       propertyPath: m_Name
       value: Rock
-      objectReference: {fileID: 0}
-    - target: {fileID: 1554052670201816, guid: 0a47b1020dead4b4f9299847e920431f, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4581485363590150, guid: 0a47b1020dead4b4f9299847e920431f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -387,10 +376,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: FireballPunch
       objectReference: {fileID: 0}
-    - target: {fileID: 2181733767813755874, guid: e5f45589bd0def6428ee137320deab3f, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3382852406359700161, guid: e5f45589bd0def6428ee137320deab3f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -431,8 +416,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 7041430449237908535, guid: e5f45589bd0def6428ee137320deab3f, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
