@@ -62,7 +62,8 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField] private GameObject lanePrefab;
     [SerializeField] private float restartGameDelay = 2f;
     [SerializeField] private LaneSetting laneSetting = LaneSetting.Straight;
-    public List<Nex.Essentials.SlashDetector> slashDetectors = new();
+    [SerializeField] private bool skipTutorial = false;
+    public List<SlashDetector> slashDetectors = new();
     public LaneSetting LaneType => laneSetting;
 
     private int playerCount = 1;
@@ -291,7 +292,14 @@ public class BattleManager : Singleton<BattleManager>
 
         EnemyManager.Instance.SetLanes(spawnedLanes);
         gameStarted = true;
-        EnemyManager.Instance.OnGameStarted(playerCount);
+        if (skipTutorial)
+        {
+            EnemyManager.Instance.OnGameStarted(playerCount);
+        }
+        else
+        {
+            //tutorial
+        }
         OnGameStarted?.Invoke(playerCount);
         PlayerManager.Instance.OnGameStarted(playerCount);
         AudioManager.Instance.PlayGameStartAudio();

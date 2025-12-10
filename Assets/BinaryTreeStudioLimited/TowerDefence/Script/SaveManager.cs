@@ -2,6 +2,6 @@ using UnityEngine;
 
 public class SaveManager : Singleton<SaveManager>
 {
-    bool completedTutorial = false;
+    [SerializeField] private bool completedTutorial = false;
     public bool CompletedTutorial => completedTutorial;
 }
