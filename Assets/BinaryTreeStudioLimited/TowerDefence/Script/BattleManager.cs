@@ -292,7 +292,7 @@ public class BattleManager : Singleton<BattleManager>
 
         EnemyManager.Instance.InitConfigs(playerCount, spawnedLanes);
         gameStarted = true;
-        if (skipTutorial)
+        if (skipTutorial || SaveManager.Instance.CompletedTutorial)
         {
             EnemyManager.Instance.GameStarted();
         }

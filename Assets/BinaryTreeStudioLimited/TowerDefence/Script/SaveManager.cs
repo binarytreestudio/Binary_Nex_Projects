@@ -4,4 +4,9 @@ public class SaveManager : Singleton<SaveManager>
 {
     [SerializeField] private bool completedTutorial = false;
     public bool CompletedTutorial => completedTutorial;
+
+    public void CompleteTutorial()
+    {
+        completedTutorial = true;
+    }
 }

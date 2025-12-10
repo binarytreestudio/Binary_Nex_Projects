@@ -22,6 +22,7 @@ public class TutorialManager : Singleton<TutorialManager>
             PlayerManager.Instance.UnlockLeftFireball();
             PlayerManager.Instance.UnlockMiddleFireball();
             PlayerManager.Instance.UnlockRightFireball();
+            SaveManager.Instance.CompleteTutorial();
             return;
         }
         if (spawnedDummies.Count <= 0)
