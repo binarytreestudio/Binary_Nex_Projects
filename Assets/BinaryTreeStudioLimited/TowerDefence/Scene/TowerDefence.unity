@@ -972,10 +972,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ed8f7fea12fe49f3b991021e9a9626a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerIndex: 0
+  playerIndex: 2
   nodeIndex: 18
   bodyPoseController: {fileID: 529520463}
-  slashSpeedThreshold: 70
+  slashSpeedThreshold: 60
   slashDetectionWindow: 0.3
   slashCooldown: 0
   requireTriggerFromChest: 0
@@ -1194,7 +1194,7 @@ MonoBehaviour:
   playerIndex: 0
   nodeIndex: 18
   bodyPoseController: {fileID: 529520463}
-  slashSpeedThreshold: 70
+  slashSpeedThreshold: 60
   slashDetectionWindow: 0.3
   slashCooldown: 0
   requireTriggerFromChest: 0
@@ -1651,10 +1651,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ed8f7fea12fe49f3b991021e9a9626a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerIndex: 0
+  playerIndex: 1
   nodeIndex: 19
   bodyPoseController: {fileID: 529520463}
-  slashSpeedThreshold: 70
+  slashSpeedThreshold: 60
   slashDetectionWindow: 0.3
   slashCooldown: 0
   requireTriggerFromChest: 0
@@ -2361,10 +2361,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ed8f7fea12fe49f3b991021e9a9626a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerIndex: 0
+  playerIndex: 3
   nodeIndex: 18
   bodyPoseController: {fileID: 529520463}
-  slashSpeedThreshold: 70
+  slashSpeedThreshold: 60
   slashDetectionWindow: 0.3
   slashCooldown: 0
   requireTriggerFromChest: 0
@@ -3201,10 +3201,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ed8f7fea12fe49f3b991021e9a9626a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerIndex: 0
+  playerIndex: 1
   nodeIndex: 18
   bodyPoseController: {fileID: 529520463}
-  slashSpeedThreshold: 70
+  slashSpeedThreshold: 60
   slashDetectionWindow: 0.3
   slashCooldown: 0
   requireTriggerFromChest: 0
@@ -3989,10 +3989,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ed8f7fea12fe49f3b991021e9a9626a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerIndex: 0
+  playerIndex: 3
   nodeIndex: 19
   bodyPoseController: {fileID: 529520463}
-  slashSpeedThreshold: 70
+  slashSpeedThreshold: 60
   slashDetectionWindow: 0.3
   slashCooldown: 0
   requireTriggerFromChest: 0
@@ -4239,7 +4239,7 @@ MonoBehaviour:
   playerIndex: 0
   nodeIndex: 19
   bodyPoseController: {fileID: 529520463}
-  slashSpeedThreshold: 70
+  slashSpeedThreshold: 60
   slashDetectionWindow: 0.3
   slashCooldown: 0
   requireTriggerFromChest: 0
@@ -6370,10 +6370,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ed8f7fea12fe49f3b991021e9a9626a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerIndex: 0
+  playerIndex: 2
   nodeIndex: 19
   bodyPoseController: {fileID: 529520463}
-  slashSpeedThreshold: 70
+  slashSpeedThreshold: 60
   slashDetectionWindow: 0.3
   slashCooldown: 0
   requireTriggerFromChest: 0
