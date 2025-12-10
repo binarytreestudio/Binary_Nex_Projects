@@ -30,14 +30,13 @@ public class PlayerController : MonoBehaviour
     [Header("Fireball")]
     [SerializeField] private float fireBallSpeed = 10f;
     [SerializeField] private int fireBallDamage = 1;
-    [SerializeField] private float laneFireballCooldown = 0.5f;
+    [SerializeField] private float fireballCooldown = 0.5f;
     [SerializeField] private List<Image> powerUpIconImages;
 
     private bool gameStarted = false;
     private int playerIndex;
-    private float lastLeftLaneShootTime = 0;
-    private float lastRightLaneShootTime = 0;
-    private float lastMiddleLaneShootTime = 0;
+    private float lastLeftHandShootTime = 0;
+    private float lastRightHandShootTime = 0;
     private float laneSpace;
     [SerializeField] private List<AppliedPowerUp> appliedPowerUps = new();
     //int nextPower = -1;
@@ -109,6 +108,10 @@ public class PlayerController : MonoBehaviour
         PlayerManager.Instance.PlayerSlashDetected(playerIndex, handedness, direction);
         if (!gameStarted)
             return;
+        if (handedness == Jazz.Handedness.Left && Time.time - lastLeftHandShootTime < fireballCooldown)
+            return;
+        if (handedness == Jazz.Handedness.Right && Time.time - lastRightHandShootTime < fireballCooldown)
+            return;
         float angleDegrees = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         angleDegrees = (angleDegrees + 360) % 360;
 
@@ -119,22 +122,42 @@ public class PlayerController : MonoBehaviour
         bool leftHookAngleCheck = angleDegrees > (float)HitAngle.LeftHook - hookAngleRange / 2 && angleDegrees < (float)HitAngle.LeftHook + hookAngleRange / 2;
         if (handedness == Jazz.Handedness.Left && leftHookAngleCheck && leftHookDifference < upperCutDifference)
         {
+            if (isLeftFireballLocked)
+                return;
+
             //Left Hook
             Shoot(-1);
+            lastLeftHandShootTime = Time.time;
             return;
         }
         bool rightHookAngleCheck = angleDegrees > (float)HitAngle.RightHook - hookAngleRange / 2 && angleDegrees < (float)HitAngle.RightHook + hookAngleRange / 2;
         if (handedness == Jazz.Handedness.Right && rightHookAngleCheck && rightHookDifference < upperCutDifference)
         {
+            if (isRightFireballLocked)
+                return;
+
             //Right Hook
             Shoot(1);
+            lastRightHandShootTime = Time.time;
             return;
         }
         bool upperCutAngleCheck = angleDegrees > (float)HitAngle.UpperCut - hookAngleRange / 2 && angleDegrees < (float)HitAngle.UpperCut + hookAngleRange / 2;
         if (upperCutAngleCheck)
         {
+            if (isMiddleFireballLocked)
+                return;
+
             //Uppercut
             Shoot(0);
+            switch (handedness)
+            {
+                case Jazz.Handedness.Left:
+                    lastLeftHandShootTime = Time.time;
+                    break;
+                case Jazz.Handedness.Right:
+                    lastRightHandShootTime = Time.time;
+                    break;
+            }
             return;
         }
     }
@@ -160,32 +183,6 @@ public class PlayerController : MonoBehaviour
     {
         if (!gameStarted || !levelStarted)
             return;
-
-        switch (index)
-        {
-            case -1:
-                if (isLeftFireballLocked)
-                    return;
-                if (Time.time - lastLeftLaneShootTime < laneFireballCooldown)
-                    return;
-                lastLeftLaneShootTime = Time.time;
-                break;
-            case 0:
-                if (isMiddleFireballLocked)
-                    return;
-                if (Time.time - lastMiddleLaneShootTime < laneFireballCooldown)
-                    return;
-                lastMiddleLaneShootTime = Time.time;
-                break;
-            case 1:
-                if (isRightFireballLocked)
-                    return;
-                if (Time.time - lastRightLaneShootTime < laneFireballCooldown)
-                    return;
-                lastRightLaneShootTime = Time.time;
-                break;
-        }
-
         //// Instantiate fireball at the lane position
         //Vector3 spawnPosition = new Vector3(transform.position.x + laneSpace * index, transform.position.y + 1f, transform.position.z);
         //GameObject fireball = Instantiate(fireBallPrefab, spawnPosition, Quaternion.identity);
