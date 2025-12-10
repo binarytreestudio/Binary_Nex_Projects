@@ -1,9 +1,6 @@
 using UnityEngine;
-
-namespace TowerDefence
+public class IceAOE : AreaOfEffectBase
 {
-    public class IceAOE : AreaOfEffectBase
-    {
 
-    }
 }
+

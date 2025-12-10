@@ -1,8 +1,6 @@
 using UnityEngine;
-namespace TowerDefence
+public class DatabaseManager : Singleton<DatabaseManager>
 {
-    public class DatabaseManager : Singleton<DatabaseManager>
-    {
-        public PowerUpDatabase powerUpDatabase;
-    }
+    public PowerUpDatabase powerUpDatabase;
 }
+

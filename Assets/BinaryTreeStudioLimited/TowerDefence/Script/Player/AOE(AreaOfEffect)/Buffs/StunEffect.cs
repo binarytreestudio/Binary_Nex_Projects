@@ -1,74 +1,71 @@
 using UnityEngine;
-
-namespace TowerDefence
+public class StunEffect : IStatusEffect
 {
-    public class StunEffect : IStatusEffect
+    public StatusEffectType Type => StatusEffectType.Stun;
+    public float Value { get; }
+    public float Duration { get; private set; }
+    public float TickRate => 0.1f;
+
+    public bool SupportsRefresh => true;
+    public GameObject Source { get; }
+
+    private readonly float originalDuration;
+
+    public StunEffect(StatusEffectData data, GameObject source = null)
     {
-        public StatusEffectType Type => StatusEffectType.Stun;
-        public float Value { get; } 
-        public float Duration { get; private set; }
-        public float TickRate => 0.1f; 
+        Value = data.value;
+        originalDuration = data.duration;
+        Duration = data.duration;
+        Source = source;
+    }
 
-        public bool SupportsRefresh => true;      
-        public GameObject Source { get; }    
+    public void Apply(EnemyController target)
+    {
+        target.ModifiedStats.speed = 0f;
+    }
 
-        private readonly float originalDuration;
+    public void Remove(EnemyController target)
+    {
+        RecalculateSpeed(target);
+    }
 
-        public StunEffect(StatusEffectData data, GameObject source = null)
+    public void Tick(EnemyController target, float deltaTime)
+    {
+        if (Duration > 0f)
         {
-            Value = data.value;
-            originalDuration = data.duration;
-            Duration = data.duration;
-            Source = source;
-        }
-
-        public void Apply(EnemyController target)
-        {
-            target.ModifiedStats.speed = 0f;
-        }
-
-        public void Remove(EnemyController target)
-        {
-            RecalculateSpeed(target);
-        }
-
-        public void Tick(EnemyController target, float deltaTime)
-        {
-            if (Duration > 0f)
+            Duration -= deltaTime;
+            if (Duration <= 0f)
             {
-                Duration -= deltaTime;
-                if (Duration <= 0f)
-                {
-                    target.RemoveStatusEffect(this);
-                }
-            }
-        }
-
-        public void RefreshDuration()
-        {
-            Duration = originalDuration;
-        }
-
-        public static void RecalculateSpeed(EnemyController target)
-        {
-            bool hasStun = target.activeEffects.ContainsKey(StatusEffectType.Stun) &&
-                           target.activeEffects[StatusEffectType.Stun].Count > 0;
-
-            if (!hasStun)
-            {
-                // «ì´_­ì©l³t«×¡]·|³Q¨ä¥L SlowEffect µ¥­«·s­pºâ¡^
-                target.ModifiedStats.speed = target.BaseStats.speed;
-
-                // Åý SlowEffect ­«·s­pºâ¡]¦pªG¦³ªº¸Ü¡^
-                if (target.activeEffects.TryGetValue(StatusEffectType.Slow, out var slows))
-                {
-                    SlowEffect.RecalculateSpeed(target); // ©I¥s SlowEffect ªºÀRºA¤èªk
-                }
-            }
-            else
-            {
-                target.ModifiedStats.speed = 0f;
+                target.RemoveStatusEffect(this);
             }
         }
     }
+
+    public void RefreshDuration()
+    {
+        Duration = originalDuration;
+    }
+
+    public static void RecalculateSpeed(EnemyController target)
+    {
+        bool hasStun = target.activeEffects.ContainsKey(StatusEffectType.Stun) &&
+                       target.activeEffects[StatusEffectType.Stun].Count > 0;
+
+        if (!hasStun)
+        {
+            // ï¿½ï¿½_ï¿½ï¿½lï¿½tï¿½×¡]ï¿½|ï¿½Qï¿½ï¿½L SlowEffect ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½pï¿½ï¿½^
+            target.ModifiedStats.speed = target.BaseStats.speed;
+
+            // ï¿½ï¿½ SlowEffect ï¿½ï¿½ï¿½sï¿½pï¿½ï¿½]ï¿½pï¿½Gï¿½ï¿½ï¿½ï¿½ï¿½Ü¡^
+            if (target.activeEffects.TryGetValue(StatusEffectType.Slow, out var slows))
+            {
+                SlowEffect.RecalculateSpeed(target); // ï¿½Iï¿½s SlowEffect ï¿½ï¿½ï¿½Rï¿½Aï¿½ï¿½k
+            }
+        }
+        else
+        {
+            target.ModifiedStats.speed = 0f;
+        }
+    }
 }
+
