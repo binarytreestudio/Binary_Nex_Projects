@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class TutorialManager : Singleton<TutorialManager>
 {
-    [SerializeField] private List<GameObject> spawnedDummies = new();
-    [SerializeField] private bool leftTutorialCompleted = false;
-    [SerializeField] private bool centerTutorialCompleted = false;
-    [SerializeField] private bool rightTutorialCompleted = false;
+    private List<GameObject> spawnedDummies = new();
+    private bool leftTutorialCompleted = false;
+    private bool centerTutorialCompleted = false;
+    private bool rightTutorialCompleted = false;
 
     private float laneSpace = 2f;
     private int playerCount = 1;
@@ -23,6 +23,7 @@ public class TutorialManager : Singleton<TutorialManager>
             PlayerManager.Instance.UnlockMiddleFireball();
             PlayerManager.Instance.UnlockRightFireball();
             SaveManager.Instance.CompleteTutorial();
+            UIManager.Instance?.HideTutorialPanel();
             return;
         }
         if (spawnedDummies.Count <= 0)
@@ -65,7 +66,7 @@ public class TutorialManager : Singleton<TutorialManager>
                 laneSpace = 5f / playerCount;
                 break;
         }
-
+        UIManager.Instance?.ShowTutorialPanel();
         UIManager.Instance?.gameplayHUDController.SetLevelText("Tutorial");
 
         StartLeftTutorial();
@@ -79,6 +80,10 @@ public class TutorialManager : Singleton<TutorialManager>
             dummy.transform.position = new Vector3(PlayerManager.Instance.GetPlayerXPosition(i) - laneSpace, dummy.transform.position.y, 10);
             spawnedDummies.Add(dummy);
         }
+
+        UIManager.Instance?.tutorialPanelController.SetTutorialText("Perform left hook to cast a fireball to your left!");
+        UIManager.Instance?.tutorialPanelController.SetTutorialImageLeftHook();
+
         PlayerManager.Instance.UnlockLeftFireball();
         PlayerManager.Instance.LockMiddleFireball();
         PlayerManager.Instance.LockRightFireball();
@@ -92,6 +97,10 @@ public class TutorialManager : Singleton<TutorialManager>
             dummy.transform.position = new Vector3(PlayerManager.Instance.GetPlayerXPosition(i), dummy.transform.position.y, 10);
             spawnedDummies.Add(dummy);
         }
+
+        UIManager.Instance?.tutorialPanelController.SetTutorialText("Perform uppercut to cast a fireball in front of you!");
+        UIManager.Instance?.tutorialPanelController.SetTutorialImageUppercut();
+
         PlayerManager.Instance.LockLeftFireball();
         PlayerManager.Instance.UnlockMiddleFireball();
         PlayerManager.Instance.LockRightFireball();
@@ -105,6 +114,10 @@ public class TutorialManager : Singleton<TutorialManager>
             dummy.transform.position = new Vector3(PlayerManager.Instance.GetPlayerXPosition(i) + laneSpace, dummy.transform.position.y, 10);
             spawnedDummies.Add(dummy);
         }
+
+        UIManager.Instance?.tutorialPanelController.SetTutorialText("Perform right hook to cast a fireball to your right!");
+        UIManager.Instance?.tutorialPanelController.SetTutorialImageRightHook();
+
         PlayerManager.Instance.LockLeftFireball();
         PlayerManager.Instance.LockMiddleFireball();
         PlayerManager.Instance.UnlockRightFireball();
