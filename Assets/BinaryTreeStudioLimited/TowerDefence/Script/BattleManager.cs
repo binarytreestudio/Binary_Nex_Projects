@@ -290,15 +290,15 @@ public class BattleManager : Singleton<BattleManager>
             ObjectPoolManager.Instance.PreloadEnemyParticles();
         }
 
-        EnemyManager.Instance.SetLanes(spawnedLanes);
+        EnemyManager.Instance.InitConfigs(playerCount, spawnedLanes);
         gameStarted = true;
         if (skipTutorial)
         {
-            EnemyManager.Instance.OnGameStarted(playerCount);
+            EnemyManager.Instance.GameStarted();
         }
         else
         {
-            //tutorial
+            TutorialManager.Instance.StartTutorial(playerCount);
         }
         OnGameStarted?.Invoke(playerCount);
         PlayerManager.Instance.OnGameStarted(playerCount);

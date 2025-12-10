@@ -38,11 +38,13 @@ public class PlayerController : MonoBehaviour
     private float lastLeftLaneShootTime = 0;
     private float lastRightLaneShootTime = 0;
     private float lastMiddleLaneShootTime = 0;
-    int playerCount;
     private float laneSpace;
     [SerializeField] private List<AppliedPowerUp> appliedPowerUps = new();
     //int nextPower = -1;
     private bool levelStarted = false;
+    private bool isLeftFireballLocked = false;
+    private bool isRightFireballLocked = false;
+    private bool isMiddleFireballLocked = false;
 
     public void Init(int playerIndex)
     {
@@ -141,8 +143,6 @@ public class PlayerController : MonoBehaviour
 
     public void OnGameStarted(int playerCount)
     {
-        this.playerCount = playerCount;
-
         switch (BattleManager.Instance.LaneType)
         {
             case BattleManager.LaneSetting.Straight:
@@ -164,16 +164,22 @@ public class PlayerController : MonoBehaviour
         switch (index)
         {
             case -1:
+                if (isLeftFireballLocked)
+                    return;
                 if (Time.time - lastLeftLaneShootTime < laneFireballCooldown)
                     return;
                 lastLeftLaneShootTime = Time.time;
                 break;
             case 0:
+                if (isMiddleFireballLocked)
+                    return;
                 if (Time.time - lastMiddleLaneShootTime < laneFireballCooldown)
                     return;
                 lastMiddleLaneShootTime = Time.time;
                 break;
             case 1:
+                if (isRightFireballLocked)
+                    return;
                 if (Time.time - lastRightLaneShootTime < laneFireballCooldown)
                     return;
                 lastRightLaneShootTime = Time.time;
@@ -346,6 +352,31 @@ public class PlayerController : MonoBehaviour
         {
             levelStarted = true;
         });
+    }
+
+    public void LockLeftFireball()
+    {
+        isLeftFireballLocked = true;
+    }
+    public void LockRightFireball()
+    {
+        isRightFireballLocked = true;
+    }
+    public void LockMiddleFireball()
+    {
+        isMiddleFireballLocked = true;
+    }
+    public void UnlockLeftFireball()
+    {
+        isLeftFireballLocked = false;
+    }
+    public void UnlockRightFireball()
+    {
+        isRightFireballLocked = false;
+    }
+    public void UnlockMiddleFireball()
+    {
+        isMiddleFireballLocked = false;
     }
 }
 

@@ -102,6 +102,7 @@ public class EnemyController : MonoBehaviour
     // =========================================================
     private void Update()
     {
+        Debug.Log(modifiedStats.health);
         if (isDead)
         {
             if (transform.position.y < -10f)
@@ -123,6 +124,8 @@ public class EnemyController : MonoBehaviour
                 .transform.Find("Destination");
                 break;
         }
+
+        if (laneDestination == null) return;
 
         transform.position = Vector3.MoveTowards(
             transform.position,

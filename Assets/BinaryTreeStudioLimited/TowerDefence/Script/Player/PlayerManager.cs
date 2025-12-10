@@ -20,7 +20,7 @@ public class PlayerManager : Singleton<PlayerManager>
     void Start()
     {
         currentHealth = maxHealth;
-        GameplayHUDController.Instance?.SetPlayerHealthBarValue(1f);
+        UIManager.Instance?.gameplayHUDController.SetPlayerHealthBarValue(1f);
     }
 
     public void RegisterPlayerController(PlayerController playerController)
@@ -44,7 +44,7 @@ public class PlayerManager : Singleton<PlayerManager>
     {
         if (currentHealth <= 0) return;
         currentHealth -= damage;
-        GameplayHUDController.Instance?.SetPlayerHealthBarValue(currentHealth / maxHealth);
+        UIManager.Instance?.gameplayHUDController.SetPlayerHealthBarValue(currentHealth / maxHealth);
         AudioManager.Instance.PlayPlayerHurtAudio();
         if (currentHealth <= 0)
         {
@@ -65,7 +65,7 @@ public class PlayerManager : Singleton<PlayerManager>
     public void RecoverHP(float amount)
     {
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-        GameplayHUDController.Instance?.SetPlayerHealthBarValue(currentHealth / maxHealth);
+        UIManager.Instance?.gameplayHUDController.SetPlayerHealthBarValue(currentHealth / maxHealth);
     }
 
     //public List<AppliedPowerUp> GetPlayerPowerUps(int playerIndex)
@@ -127,6 +127,38 @@ public class PlayerManager : Singleton<PlayerManager>
         {
             player.playerController.LevelStart();
         }
+    }
+
+    public float GetPlayerXPosition(int playerIndex)
+    {
+        if (playerIndex < 0 || playerIndex >= playerMapping.Count)
+            return 0f;
+        return playerMapping[playerIndex].playerController.transform.position.x;
+    }
+
+    public void LockLeftFireball()
+    {
+        playerMapping.ForEach(player => player.playerController.LockLeftFireball());
+    }
+    public void LockRightFireball()
+    {
+        playerMapping.ForEach(player => player.playerController.LockRightFireball());
+    }
+    public void LockMiddleFireball()
+    {
+        playerMapping.ForEach(player => player.playerController.LockMiddleFireball());
+    }
+    public void UnlockLeftFireball()
+    {
+        playerMapping.ForEach(player => player.playerController.UnlockLeftFireball());
+    }
+    public void UnlockRightFireball()
+    {
+        playerMapping.ForEach(player => player.playerController.UnlockRightFireball());
+    }
+    public void UnlockMiddleFireball()
+    {
+        playerMapping.ForEach(player => player.playerController.UnlockMiddleFireball());
     }
 }
 

@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-public class GameplayHUDController : Singleton<GameplayHUDController>
+public class GameplayHUDController : MonoBehaviour
 {
     [SerializeField] private Image playerHealthBarImage;
     [SerializeField] private TextMeshProUGUI levelText;
@@ -11,9 +11,9 @@ public class GameplayHUDController : Singleton<GameplayHUDController>
         playerHealthBarImage.fillAmount = percentage;
     }
 
-    public void SetLevelText(int level)
+    public void SetLevelText(string text)
     {
-        levelText.text = "Level " + level.ToString();
+        levelText.text = $"Level: {text}";
     }
 }
 

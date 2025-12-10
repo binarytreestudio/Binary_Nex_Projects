@@ -4,9 +4,10 @@ public class EnemyManager : Singleton<EnemyManager>
 {
     public enum EnemyType
     {
-        Normal = 0,
-        Elite = 1,
-        Golem = 2,
+        Dummy = 0,
+        Normal = 1,
+        Elite = 2,
+        Golem = 3,
     }
 
     [Header("Level Settings")]
@@ -21,6 +22,7 @@ public class EnemyManager : Singleton<EnemyManager>
     [SerializeField] private GameObject normalEnemyPrefab;
     [SerializeField] private GameObject eliteEnemyPrefab;
     [SerializeField] private GameObject golemEnemyPrefab;
+    [SerializeField] private GameObject dummyEnemyPrefab;
     [Range(0f, 1f)][SerializeField] private float eliteEnemyChance = 0.1f;
     [SerializeField][Range(0f, 1f)] private float eliteEnemyChanceIncreasePerLevel = 0.2f;
     [SerializeField] private int eliteEnemyQuotaCost = 3;
@@ -54,21 +56,20 @@ public class EnemyManager : Singleton<EnemyManager>
         }
     }
 
-    public void SetLanes(List<GameObject> lanes)
+    public void InitConfigs(int playerCount, List<GameObject> lanes)
     {
+        this.playerCount = playerCount;
         this.lanes = lanes;
     }
 
-    public void OnGameStarted(int playerCount)
+    public void GameStarted()
     {
-        this.playerCount = playerCount;
-
         StartNextLevel();
 
         gameStarted = true;
     }
 
-    void SpawnEnemy()
+    public GameObject InstantiateEnemy(EnemyType overrideType = (EnemyType)(-1))
     {
         int totalLanes = playerCount + 2;
         float spacing = 2f;
@@ -78,38 +79,57 @@ public class EnemyManager : Singleton<EnemyManager>
         float xPos = startX + randomInt * spacing;
 
         float random = UnityEngine.Random.value;
-        GameObject enemyPrefab = random < golemEnemyChance * Mathf.Exp(golemEnemyChanceIncreasePerLevel * (level - 1)) ? golemEnemyPrefab :
-                                 random < eliteEnemyChance * Mathf.Exp(eliteEnemyChanceIncreasePerLevel * (level - 1)) ? eliteEnemyPrefab :
-                                 normalEnemyPrefab;
+        EnemyType enemyType = random < golemEnemyChance * Mathf.Exp(golemEnemyChanceIncreasePerLevel * (level - 1)) ? EnemyType.Golem :
+                                 random < eliteEnemyChance * Mathf.Exp(eliteEnemyChanceIncreasePerLevel * (level - 1)) ? EnemyType.Elite :
+                                 EnemyType.Normal;
 
+        if (overrideType != (EnemyType)(-1))
+        {
+            enemyType = overrideType;
+        }
+
+        GameObject enemyPrefab = enemyType switch
+        {
+            EnemyType.Golem => golemEnemyPrefab,
+            EnemyType.Elite => eliteEnemyPrefab,
+            EnemyType.Normal => normalEnemyPrefab,
+            EnemyType.Dummy => dummyEnemyPrefab,
+            _ => null,
+        };
+
+        GameObject enemy = null;
         switch (BattleManager.Instance.LaneType)
         {
             case BattleManager.LaneSetting.Straight:
-                GameObject enemy = Instantiate(enemyPrefab, lanes[randomInt].transform.Find("Start").position, Quaternion.identity);
+                enemy = Instantiate(enemyPrefab, lanes[randomInt].transform.Find("Start").position, Quaternion.identity);
                 var enemyController = enemy.GetComponent<EnemyController>();
                 enemyController.Init(level, lanes[randomInt]);
-                spawnedEnemies.Add(enemyController);
                 break;
             case BattleManager.LaneSetting.SShape:
                 enemy = Instantiate(enemyPrefab, lanes[0].transform.Find("Start").position, Quaternion.identity);
                 enemyController = enemy.GetComponent<EnemyController>();
                 enemyController.Init(level, lanes);
-                spawnedEnemies.Add(enemyController);
                 break;
         }
 
-        if (enemyPrefab == golemEnemyPrefab)
+        switch (enemyType)
         {
-            enemiesSpawnedThisLevel += golemEnemyQuotaCost;
+            case EnemyType.Golem:
+                enemiesSpawnedThisLevel += golemEnemyQuotaCost;
+                break;
+            case EnemyType.Elite:
+                enemiesSpawnedThisLevel += eliteEnemyQuotaCost;
+                break;
+            case EnemyType.Normal:
+                enemiesSpawnedThisLevel += 1;
+                break;
+            case EnemyType.Dummy:
+                break;
+            default:
+                Debug.LogError("Unknown enemy type spawned.");
+                break;
         }
-        else if (enemyPrefab == eliteEnemyPrefab)
-        {
-            enemiesSpawnedThisLevel += eliteEnemyQuotaCost;
-        }
-        else
-        {
-            enemiesSpawnedThisLevel += 1;
-        }
+        return enemy;
     }
 
     public void OnEnemyDefeated(EnemyController enemy)
@@ -127,14 +147,14 @@ public class EnemyManager : Singleton<EnemyManager>
     {
         level++;
         enemiesSpawnedThisLevel = 0;
-        Debug.Log($"Spawn enemy count {spawnedEnemies.Count}");
         while (enemiesSpawnedThisLevel < levelEnemyCount * Mathf.Exp(enemiesPerLevelIncrease * (level - 1)) * playerCount)
         {
-            SpawnEnemy();
+            var enemy = InstantiateEnemy();
+            spawnedEnemies.Add(enemy.GetComponent<EnemyController>());
+            enemy.SetActive(false);
         }
-        spawnedEnemies.ForEach(enemy => { enemy.gameObject.SetActive(false); });
-
-        GameplayHUDController.Instance?.SetLevelText(level);
+        Debug.Log($"Spawn enemy count {spawnedEnemies.Count}");
+        UIManager.Instance?.gameplayHUDController.SetLevelText(level.ToString());
     }
 }
 
