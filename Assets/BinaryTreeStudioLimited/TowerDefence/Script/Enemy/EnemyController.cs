@@ -42,11 +42,11 @@ public class EnemyController : MonoBehaviour
     [Header("Animation")]
     [SerializeField] private Animator animator;
 
-    // ==================== ?�?��??�系�?====================
+    // ==================== 狀態效果系統 ====================
     public SerializedDictionary<StatusEffectType, List<IStatusEffect>> activeEffects = new();
     [SerializeField] private float statusEffectTickTimer = 0f;
 
-    // ==================== ?�部?�??====================
+    // ==================== 內部狀態 ====================
     private bool isDead = false;
     private int collidedCount = 0;
     private bool brokeThrough = false;
@@ -56,13 +56,13 @@ public class EnemyController : MonoBehaviour
     private Transform laneDestination;
 
     // =========================================================
-    // ?��??��???EnemyManager ?�叫）straight lane logic
+    // 初始化（由 EnemyManager 呼叫）straight lane logic
     // =========================================================
     public void Init(int level, GameObject lane)
     {
         laneDestination = lane.transform.Find("Destination");
 
-        // 計�?等�??��?
+        // 計算等級加成
         float levelMultiplier = level - 1;
 
         //baseStats.health = Mathf.CeilToInt(baseStats.health * (1f + healthIncreasePerLevel * levelMultiplier));
@@ -74,13 +74,13 @@ public class EnemyController : MonoBehaviour
 
 
     // =========================================================
-    // ?��??��???EnemyManager ?�叫）S lane logic
+    // 初始化（由 EnemyManager 呼叫）S lane logic
     // =========================================================
     public void Init(int level, List<GameObject> lanes)
     {
         this.lanes = lanes;
 
-        // 計�?等�??��?
+        // 計算等級加成
         float levelMultiplier = level - 1;
 
         //baseStats.health = Mathf.CeilToInt(baseStats.health * (1f + healthIncreasePerLevel * levelMultiplier));
@@ -92,13 +92,13 @@ public class EnemyController : MonoBehaviour
 
     private void ResetModifiedStats()
     {
-        int currentHealth = modifiedStats.health; // 保�??��?血??
+        int currentHealth = modifiedStats.health; // 保留當前血量
         modifiedStats = baseStats.DeepClone();
         modifiedStats.health = currentHealth > 0 ? currentHealth : modifiedStats.health;
     }
 
     // =========================================================
-    // Unity ?�命?��?
+    // Unity 生命周期
     // =========================================================
     private void Update()
     {
@@ -109,10 +109,10 @@ public class EnemyController : MonoBehaviour
             return;
         }
 
-        // ?�?��???Tick
+        // 狀態效果 Tick
         UpdateStatusEffects();
 
-        // 移�??�輯
+        // 移動邏輯
 
         switch (BattleManager.Instance.LaneType)
         {
@@ -180,7 +180,7 @@ public class EnemyController : MonoBehaviour
         if (activeEffects.Count == 0) return;
 
         statusEffectTickTimer += Time.deltaTime;
-        if (statusEffectTickTimer < 0.1f) return; // �?0.1 秒統一 Tick 一�?
+        if (statusEffectTickTimer < 0.1f) return; // 每 0.1 秒統一 Tick 一次
 
         float delta = statusEffectTickTimer;
         statusEffectTickTimer = 0f;
@@ -206,7 +206,7 @@ public class EnemyController : MonoBehaviour
             effect.Tick(this, delta);
         }
 
-        // 清�?空�??�表（可?��?保�?乾淨�?
+        // 清理空的列表（可選，保持乾淨）
         var emptyKeys = new List<StatusEffectType>();
         foreach (var kvp in activeEffects)
         {
@@ -234,7 +234,7 @@ public class EnemyController : MonoBehaviour
 
         activeEffects[type].Add(effect);
         effect.Apply(this);
-        Debug.LogError("apply effect: " + type.ToString());
+        Debug.Log("apply effect: " + type.ToString());
         buffController.ShowBuff(type);
     }
 
@@ -253,7 +253,7 @@ public class EnemyController : MonoBehaviour
                     activeEffects.Remove(type);
             }
         }
-        Debug.LogError("hide effect: " + type.ToString());
+        Debug.Log("hide effect: " + type.ToString());
         buffController.HideBuff(type);
     }
 
@@ -353,10 +353,9 @@ public class EnemyController : MonoBehaviour
     }
 
     // =========================================================
-    // ?��?屬性�?給其他系統�??��?
+    // 公開屬性（給其他系統讀取）
     // =========================================================
     public bool IsDead => isDead;
     public EnemyStats BaseStats { get => baseStats; }
     public EnemyStats ModifiedStats { get => modifiedStats; }
 }
-

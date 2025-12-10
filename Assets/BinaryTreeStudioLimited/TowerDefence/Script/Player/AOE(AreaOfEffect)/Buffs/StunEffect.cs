@@ -53,13 +53,13 @@ public class StunEffect : IStatusEffect
 
         if (!hasStun)
         {
-            // ��_��l�t�ס]�|�Q��L SlowEffect �����s�p��^
+            // 恢復原始速度（會被其他 SlowEffect 等重新計算）
             target.ModifiedStats.speed = target.BaseStats.speed;
 
-            // �� SlowEffect ���s�p��]�p�G�����ܡ^
+            // 讓 SlowEffect 重新計算（如果有的話）
             if (target.activeEffects.TryGetValue(StatusEffectType.Slow, out var slows))
             {
-                SlowEffect.RecalculateSpeed(target); // �I�s SlowEffect ���R�A��k
+                SlowEffect.RecalculateSpeed(target); // 呼叫 SlowEffect 的靜態方法
             }
         }
         else
@@ -68,4 +68,3 @@ public class StunEffect : IStatusEffect
         }
     }
 }
-
