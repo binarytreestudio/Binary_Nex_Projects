@@ -134,14 +134,12 @@ namespace TowerDefence
         {
             level++;
             enemiesSpawnedThisLevel = 0;
-            Debug.Log("Spawn enemy");
-            while(enemiesSpawnedThisLevel < levelEnemyCount * Mathf.Exp(enemiesPerLevelIncrease * (level - 1)) * playerCount)
+            Debug.Log($"Spawn enemy count {spawnedEnemies.Count}");
+            while (enemiesSpawnedThisLevel < levelEnemyCount * Mathf.Exp(enemiesPerLevelIncrease * (level - 1)) * playerCount)
             {
                 SpawnEnemy();
             }
-            Debug.Log(enemiesSpawnedThisLevel);
-            Debug.Log(spawnedEnemies.Count);
-            spawnedEnemies.ForEach(enemy => {enemy.gameObject.SetActive(false); });
+            spawnedEnemies.ForEach(enemy => { enemy.gameObject.SetActive(false); });
 
             GameplayHUDController.Instance?.SetLevelText(level);
         }

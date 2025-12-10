@@ -299,6 +299,7 @@ namespace TowerDefence
                 ObjectPoolManager.Instance.PreloadFireBalls();
                 ObjectPoolManager.Instance.PreloadIceAOEs();
                 ObjectPoolManager.Instance.PreloadPoisonAOEs();
+                ObjectPoolManager.Instance.PreloadEnemyParticles();
             }
 
             EnemyManager.Instance.SetLanes(spawnedLanes);

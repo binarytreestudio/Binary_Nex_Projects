@@ -29358,7 +29358,6 @@ GameObject:
   - component: {fileID: 5496304956563286661}
   - component: {fileID: 8577826952448720816}
   - component: {fileID: 515445620752580908}
-  - component: {fileID: 6343248909359730134}
   m_Layer: 0
   m_Name: MovingEnemyHit
   m_TagString: Untagged
@@ -29413,7 +29412,7 @@ ParticleSystem:
   serializedVersion: 8
   lengthInSec: 1
   simulationSpeed: 1
-  stopAction: 2
+  stopAction: 1
   cullingMode: 3
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
@@ -34183,19 +34182,6 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &6343248909359730134
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3423635635202935600}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d17143bce515bbd46aba1699a0527fdf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  timeOutDuration: 5
 --- !u!1 &3640262022854889339
 GameObject:
   m_ObjectHideFlags: 0

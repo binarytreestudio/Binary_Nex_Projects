@@ -15,10 +15,6 @@ namespace TowerDefence
         [SerializeField] private GameObject poisonEffect;
         [SerializeField] private GameObject rockEffect;
 
-        [Header("Power Up AOE")]
-        [SerializeField] private GameObject iceAOEPrefab;
-        [SerializeField] private GameObject poisonAOEPrefab;
-
         private PowerUpDatabase.PowerUpType powerUp;
 
         void Update()

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DG.Tweening;
-using Nex.Essentials;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,7 +31,6 @@ namespace TowerDefence
         [SerializeField] private IKAvatarController ikAvatarController = null!;
 
         [Header("Fireball")]
-        [SerializeField] private GameObject fireBallPrefab = null!;
         [SerializeField] private float fireBallSpeed = 10f;
         [SerializeField] private int fireBallDamage = 1;
         [SerializeField] private float laneFireballCooldown = 0.5f;

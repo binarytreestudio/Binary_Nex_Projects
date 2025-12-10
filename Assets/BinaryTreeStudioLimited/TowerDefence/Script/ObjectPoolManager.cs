@@ -18,6 +18,12 @@ namespace TowerDefence
         [SerializeField] private GameObject poisonAOEPrefab;
         [SerializeField] private List<GameObject> poisonAOEs;
 
+        [Header("Enemy Particle Effect Pool")]
+        [SerializeField] private GameObject enemyHitParticlePrefab;
+        [SerializeField] private List<GameObject> enemyHitParticles;
+        [SerializeField] private GameObject enemyDeathParticlePrefab;
+        [SerializeField] private List<GameObject> enemyDeathParticles;
+
         public void PreloadFireBalls(int count = 20)
         {
             for (int i = 0; i < count; i++)
@@ -85,6 +91,47 @@ namespace TowerDefence
 
             poisonAOE.SetActive(true);
             return poisonAOE;
+        }
+
+        public void PreloadEnemyParticles(int count = 20)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                GameObject hitParticle = Instantiate(enemyHitParticlePrefab);
+                hitParticle.SetActive(false);
+                enemyHitParticles.Add(hitParticle);
+
+                GameObject deathParticle = Instantiate(enemyDeathParticlePrefab);
+                deathParticle.SetActive(false);
+                enemyDeathParticles.Add(deathParticle);
+            }
+        }
+
+        public GameObject GetEnemyHitParticle()
+        {
+            var particle = enemyHitParticles.Find(p => !p.activeInHierarchy);
+
+            if (particle == null)
+            {
+                particle = Instantiate(enemyHitParticlePrefab);
+                enemyHitParticles.Add(particle);
+            }
+
+            particle.SetActive(true);
+            return particle;
+        }
+        public GameObject GetEnemyDeathParticle()
+        {
+            var particle = enemyDeathParticles.Find(p => !p.activeInHierarchy);
+
+            if (particle == null)
+            {
+                particle = Instantiate(enemyDeathParticlePrefab);
+                enemyDeathParticles.Add(particle);
+            }
+
+            particle.SetActive(true);
+            return particle;
         }
     }
 }

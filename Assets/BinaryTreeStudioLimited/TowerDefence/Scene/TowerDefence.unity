@@ -943,6 +943,58 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 121610285}
   m_CullTransparentMesh: 1
+--- !u!1 &168032782
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 168032784}
+  - component: {fileID: 168032783}
+  m_Layer: 0
+  m_Name: Player2LeftHandSlashDetector (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &168032783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 168032782}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ed8f7fea12fe49f3b991021e9a9626a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIndex: 0
+  nodeIndex: 18
+  bodyPoseController: {fileID: 529520463}
+  slashSpeedThreshold: 70
+  slashDetectionWindow: 0.3
+  slashCooldown: 0
+  requireTriggerFromChest: 0
+  chestDistanceLimit: 10
+--- !u!4 &168032784
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 168032782}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.63}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &290321657
 GameObject:
   m_ObjectHideFlags: 0
@@ -1106,7 +1158,7 @@ GameObject:
   - component: {fileID: 367878456}
   - component: {fileID: 367878457}
   m_Layer: 0
-  m_Name: DefaultLeftHandSlashDetector
+  m_Name: Player0LeftHandSlashDetector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1144,7 +1196,7 @@ MonoBehaviour:
   bodyPoseController: {fileID: 529520463}
   slashSpeedThreshold: 70
   slashDetectionWindow: 0.3
-  slashCooldown: 1
+  slashCooldown: 0
   requireTriggerFromChest: 0
   chestDistanceLimit: 10
 --- !u!1 &385657211
@@ -1569,6 +1621,58 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1431114363}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &520198922
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 520198924}
+  - component: {fileID: 520198923}
+  m_Layer: 0
+  m_Name: Player1RightHandSlashDetector (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &520198923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 520198922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ed8f7fea12fe49f3b991021e9a9626a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIndex: 0
+  nodeIndex: 19
+  bodyPoseController: {fileID: 529520463}
+  slashSpeedThreshold: 70
+  slashDetectionWindow: 0.3
+  slashCooldown: 0
+  requireTriggerFromChest: 0
+  chestDistanceLimit: 10
+--- !u!4 &520198924
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 520198922}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.63}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &529520462
 GameObject:
@@ -2228,6 +2332,58 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 799902715}
   m_CullTransparentMesh: 1
+--- !u!1 &831689382
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 831689384}
+  - component: {fileID: 831689383}
+  m_Layer: 0
+  m_Name: Player3LeftHandSlashDetector (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &831689383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 831689382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ed8f7fea12fe49f3b991021e9a9626a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIndex: 0
+  nodeIndex: 18
+  bodyPoseController: {fileID: 529520463}
+  slashSpeedThreshold: 70
+  slashDetectionWindow: 0.3
+  slashCooldown: 0
+  requireTriggerFromChest: 0
+  chestDistanceLimit: 10
+--- !u!4 &831689384
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 831689382}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.63}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &860022868
 GameObject:
   m_ObjectHideFlags: 0
@@ -3016,6 +3172,58 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 67117722a812a2e46ab8cb8eafbf5f5e, type: 3}
+--- !u!1 &975384046
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 975384048}
+  - component: {fileID: 975384047}
+  m_Layer: 0
+  m_Name: Player1LeftHandSlashDetector (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &975384047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975384046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ed8f7fea12fe49f3b991021e9a9626a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIndex: 0
+  nodeIndex: 18
+  bodyPoseController: {fileID: 529520463}
+  slashSpeedThreshold: 70
+  slashDetectionWindow: 0.3
+  slashCooldown: 0
+  requireTriggerFromChest: 0
+  chestDistanceLimit: 10
+--- !u!4 &975384048
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975384046}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.63}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &988500370
 GameObject:
   m_ObjectHideFlags: 0
@@ -3262,6 +3470,7 @@ Transform:
   - {fileID: 1628454911}
   - {fileID: 1827642715}
   - {fileID: 1802553909}
+  - {fileID: 2113459129}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1061070900
@@ -3378,7 +3587,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bae67df60ad63e458f40d6a277478bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skipNexSetup: 0
+  skipNexSetup: 1
   setupConfig:
     setupPanel: {fileID: 1560336239}
     setupInstruction: {fileID: 1123257251}
@@ -3433,6 +3642,15 @@ MonoBehaviour:
   restartGameDelay: 4
   levelCompleteDelay: 4
   laneSetting: 0
+  slashDetectors:
+  - {fileID: 367878457}
+  - {fileID: 1252647750}
+  - {fileID: 975384047}
+  - {fileID: 520198923}
+  - {fileID: 168032783}
+  - {fileID: 2081879111}
+  - {fileID: 831689383}
+  - {fileID: 1189769140}
 --- !u!1 &1075016628
 GameObject:
   m_ObjectHideFlags: 0
@@ -3742,6 +3960,58 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   sharedProfile: {fileID: 11400000, guid: e6d4624353901ae49af50641ce2bbcd0, type: 2}
+--- !u!1 &1189769139
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1189769141}
+  - component: {fileID: 1189769140}
+  m_Layer: 0
+  m_Name: Player3RightHandSlashDetector (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1189769140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189769139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ed8f7fea12fe49f3b991021e9a9626a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIndex: 0
+  nodeIndex: 19
+  bodyPoseController: {fileID: 529520463}
+  slashSpeedThreshold: 70
+  slashDetectionWindow: 0.3
+  slashCooldown: 0
+  requireTriggerFromChest: 0
+  chestDistanceLimit: 10
+--- !u!4 &1189769141
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189769139}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.63}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1210466365
 GameObject:
   m_ObjectHideFlags: 0
@@ -3933,7 +4203,7 @@ GameObject:
   - component: {fileID: 1252647749}
   - component: {fileID: 1252647750}
   m_Layer: 0
-  m_Name: DefaultRightHandSlashDetector
+  m_Name: Player0RightHandSlashDetector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3971,7 +4241,7 @@ MonoBehaviour:
   bodyPoseController: {fileID: 529520463}
   slashSpeedThreshold: 70
   slashDetectionWindow: 0.3
-  slashCooldown: 1
+  slashCooldown: 0
   requireTriggerFromChest: 0
   chestDistanceLimit: 10
 --- !u!1 &1286366976
@@ -5039,8 +5309,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firstSelected: {fileID: 43204101}
-  defaultLeftSlashDetector: {fileID: 0}
-  defaultRightSlashDetector: {fileID: 0}
+  defaultLeftSlashDetector: {fileID: 367878457}
+  defaultRightSlashDetector: {fileID: 1252647750}
 --- !u!1001 &1628454910
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6071,6 +6341,58 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &2081879110
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2081879112}
+  - component: {fileID: 2081879111}
+  m_Layer: 0
+  m_Name: Player2RightHandSlashDetector (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &2081879111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2081879110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ed8f7fea12fe49f3b991021e9a9626a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerIndex: 0
+  nodeIndex: 19
+  bodyPoseController: {fileID: 529520463}
+  slashSpeedThreshold: 70
+  slashDetectionWindow: 0.3
+  slashCooldown: 0
+  requireTriggerFromChest: 0
+  chestDistanceLimit: 10
+--- !u!4 &2081879112
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2081879110}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.63}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2103586836
 GameObject:
   m_ObjectHideFlags: 0
@@ -6489,6 +6811,60 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2113459128
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2113459129}
+  - component: {fileID: 2113459130}
+  m_Layer: 0
+  m_Name: ObjectPoolManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2113459129
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2113459128}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1059230280}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2113459130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2113459128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57c99eb8c27388745a3e229bbe5798da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireballPrefab: {fileID: 1571582882781154879, guid: 53ecfcf186a14054394d0764a8e2adb6, type: 3}
+  fireBalls: []
+  iceAOEPrefab: {fileID: 6110230772042272458, guid: 1d8bcee73792fcd43ac1e97565618a0c, type: 3}
+  iceAOEs: []
+  poisonAOEPrefab: {fileID: 8515068248454929658, guid: 7dfe93b29678fe843b09177616902af9, type: 3}
+  poisonAOEs: []
+  enemyHitParticlePrefab: {fileID: 3423635635202935600, guid: 9bcbd173efae1e94cad50d2a2a5ab507, type: 3}
+  enemyHitParticles: []
+  enemyDeathParticlePrefab: {fileID: 3423635635202935600, guid: 7c8328e5161f6044f85bbf86815122c9, type: 3}
+  enemyDeathParticles: []
 --- !u!1 &2114635513
 GameObject:
   m_ObjectHideFlags: 0
@@ -6651,6 +7027,12 @@ SceneRoots:
   - {fileID: 1059230280}
   - {fileID: 367878456}
   - {fileID: 1252647749}
+  - {fileID: 975384048}
+  - {fileID: 520198924}
+  - {fileID: 168032784}
+  - {fileID: 2081879112}
+  - {fileID: 831689384}
+  - {fileID: 1189769141}
   - {fileID: 1751173382}
   - {fileID: 925739509}
   - {fileID: 2112021161}

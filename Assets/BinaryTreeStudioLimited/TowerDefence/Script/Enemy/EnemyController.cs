@@ -24,8 +24,6 @@ namespace TowerDefence
     public class EnemyController : MonoBehaviour
     {
         [Header("Hit Particle Effect")]
-        [SerializeField] private GameObject hitParticleEffect;
-        [SerializeField] private GameObject deathParticleEffect;
         [SerializeField] private float particleEffectYOffset = 1f;
 
         [Header("Level Scaling")]
@@ -298,7 +296,8 @@ namespace TowerDefence
                 return;
             }
 
-            Instantiate(hitParticleEffect, transform.position + Vector3.up * particleEffectYOffset, Quaternion.identity);
+            //Instantiate(hitParticleEffect, transform.position + Vector3.up * particleEffectYOffset, Quaternion.identity);
+            ObjectPoolManager.Instance.GetEnemyHitParticle().transform.position = transform.position + Vector3.up * particleEffectYOffset;
             AudioManager.Instance.PlayNormalHitAudio();
         }
 
@@ -310,7 +309,8 @@ namespace TowerDefence
             AddExposiveForce();
 
             animator?.SetTrigger("Die");
-            Instantiate(deathParticleEffect, transform.position + Vector3.up * particleEffectYOffset, Quaternion.identity);
+            //Instantiate(deathParticleEffect, transform.position + Vector3.up * particleEffectYOffset, Quaternion.identity);
+            ObjectPoolManager.Instance.GetEnemyDeathParticle().transform.position = transform.position + Vector3.up * particleEffectYOffset;
             AudioManager.Instance.PlayCriticalHitAudio();
 
             // Clear all status effects
