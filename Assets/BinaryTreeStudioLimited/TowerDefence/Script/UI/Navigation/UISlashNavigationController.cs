@@ -7,7 +7,7 @@ public class UISlashNavigationController : MonoBehaviour
     [SerializeField] private Nex.Essentials.SlashDetector defaultLeftSlashDetector;
     [SerializeField] private Nex.Essentials.SlashDetector defaultRightSlashDetector;
     [SerializeField] private GameObject pointerPrefab;
-    [SerializeField] private float pointerYOffSet = 1;
+    [SerializeField] private float pointerYOffSet = 170;
 
     private GameObject pointer;
 
@@ -47,7 +47,7 @@ public class UISlashNavigationController : MonoBehaviour
 
     private void Update()
     {
-        pointer.transform.position = EventSystem.current.currentSelectedGameObject.transform.position + Vector3.up * pointerYOffSet;
+        pointer.transform.localPosition = EventSystem.current.currentSelectedGameObject.transform.localPosition + Vector3.up * pointerYOffSet;
     }
 
     private void OnPlayerSlashDetected(int playerIndex, Jazz.Handedness handedness, Vector2 direction)

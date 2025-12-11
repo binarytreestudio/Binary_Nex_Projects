@@ -317,12 +317,12 @@ public class PlayerController : MonoBehaviour
         if (nullSlotIndex != -1)
         {
             appliedPowerUps.RemoveAt(nullSlotIndex);
-            appliedPowerUps.Add(newPowerUp);
+            appliedPowerUps.Insert(0, newPowerUp);
         }
         else
         {
-            appliedPowerUps.RemoveAt(0);
-            appliedPowerUps.Add(newPowerUp);
+            appliedPowerUps.RemoveAt(appliedPowerUps.Count - 1);
+            appliedPowerUps.Insert(0, newPowerUp);
         }
 
         UpdatePowerUpIcons();
