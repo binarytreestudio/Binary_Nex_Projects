@@ -129,13 +129,11 @@ MonoBehaviour:
   damageSetting:
     damage: 0
   travelSpeed: 1
-  limitZ: 12
+  limitZ: 9
   fireballEffect: {fileID: 8699214030378842635}
   iceEffect: {fileID: 4546705165475038765}
   poisonEffect: {fileID: 4480816824761092109}
   rockEffect: {fileID: 5101123756164396387}
-  iceAOEPrefab: {fileID: 6110230772042272458, guid: 1d8bcee73792fcd43ac1e97565618a0c, type: 3}
-  poisonAOEPrefab: {fileID: 8515068248454929658, guid: 7dfe93b29678fe843b09177616902af9, type: 3}
 --- !u!54 &6470771625633723694
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -215,6 +213,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8748853461727533563, guid: d1715a7b0d01e964fbe06d3eb29b52d9, type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -280,6 +282,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3382852406359700161, guid: 87d950c6ca42e8f48b76069c4be315f1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8748853461727533563, guid: 87d950c6ca42e8f48b76069c4be315f1, type: 3}
+      propertyPath: scalingMode
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -376,6 +382,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: FireballPunch
       objectReference: {fileID: 0}
+    - target: {fileID: 2181733767813755874, guid: e5f45589bd0def6428ee137320deab3f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2561919447795216981, guid: e5f45589bd0def6428ee137320deab3f, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3382852406359700161, guid: e5f45589bd0def6428ee137320deab3f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -414,6 +428,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3382852406359700161, guid: e5f45589bd0def6428ee137320deab3f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8137016571676703723, guid: e5f45589bd0def6428ee137320deab3f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8748853461727533563, guid: e5f45589bd0def6428ee137320deab3f, type: 3}
+      propertyPath: scalingMode
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

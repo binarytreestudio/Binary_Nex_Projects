@@ -79,6 +79,7 @@ public class BattleManager : Singleton<BattleManager>
     private List<GameObject> spawnedLanes = new();
     private int enemyKillCount = 0;
     public int EnemyKillCount => enemyKillCount;
+    private float resetTimer = 0;
 
     public Action<int> OnGameStarted;
 
@@ -95,9 +96,17 @@ public class BattleManager : Singleton<BattleManager>
     {
         if (!gameStarted) return;
 
-        if (submit.action.WasPressedThisFrame())
+        if (submit.action.IsPressed())
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            resetTimer += Time.deltaTime;
+            if (resetTimer > 2)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+        }
+        else
+        {
+            resetTimer = 0;
         }
         if (back.action.WasPressedThisFrame())
         {
@@ -352,6 +361,11 @@ public class BattleManager : Singleton<BattleManager>
     public void OnEnemyDeath()
     {
         enemyKillCount++;
+        UIManager.Instance.gameplayHUDController.SetKillCountText(enemyKillCount.ToString());
+    }
+    public void ResetEnemyKillCount()
+    {
+        enemyKillCount = 0;
         UIManager.Instance.gameplayHUDController.SetKillCountText(enemyKillCount.ToString());
     }
 }

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using UnityEngine;
 public class FireBallController : MonoBehaviour
@@ -14,19 +15,32 @@ public class FireBallController : MonoBehaviour
     [SerializeField] private GameObject rockEffect;
 
     private PowerUpDatabase.PowerUpType powerUp;
+    private float runtimeLimitZ = 10;
+    private Tween sizeReductionTween;
+
+    private void OnDisable()
+    {
+        sizeReductionTween?.Kill();
+        sizeReductionTween = null;
+    }
 
     void Update()
     {
         transform.Translate(Vector3.forward * travelSpeed * Time.deltaTime);
-        if (transform.position.z >= limitZ)
+        if (transform.position.z >= runtimeLimitZ && sizeReductionTween == null)
         {
-            PowerUpAOE();
-            gameObject.SetActive(false);
+            sizeReductionTween = transform.DOScale(Vector3.zero, 1f)
+                .OnComplete(() =>
+                {
+                    PowerUpAOE();
+                    gameObject.SetActive(false);
+                });
         }
     }
 
     public void Init(float speed, int damage, PowerUpDatabase.PowerUpType power)
     {
+        transform.localScale = Vector3.one;
         damageSetting.damage = damage;
         travelSpeed = speed;
         powerUp = power;
@@ -34,6 +48,7 @@ public class FireBallController : MonoBehaviour
         iceEffect.SetActive(false);
         poisonEffect.SetActive(false);
         rockEffect.SetActive(false);
+        runtimeLimitZ = limitZ;
         switch (powerUp)
         {
             case PowerUpDatabase.PowerUpType.Ice:
@@ -44,7 +59,7 @@ public class FireBallController : MonoBehaviour
                 break;
             case PowerUpDatabase.PowerUpType.Stone:
                 rockEffect.SetActive(true);
-                limitZ = 100f;
+                runtimeLimitZ = 100f;
                 break;
             default:
                 fireballEffect.SetActive(true);

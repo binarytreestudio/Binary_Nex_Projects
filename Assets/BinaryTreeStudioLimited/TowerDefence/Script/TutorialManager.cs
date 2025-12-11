@@ -25,6 +25,7 @@ public class TutorialManager : Singleton<TutorialManager>
             SaveManager.Instance.CompleteTutorial();
             UIManager.Instance?.HideTutorialPanel();
             dummyPlayerController.gameObject.SetActive(false);
+            BattleManager.Instance.ResetEnemyKillCount();
             return;
         }
         if (!leftTutorialCompleted)
@@ -70,6 +71,7 @@ public class TutorialManager : Singleton<TutorialManager>
                 laneSpace = 5f / playerCount;
                 break;
         }
+        this.enabled = true;
         UIManager.Instance?.ShowTutorialPanel();
         UIManager.Instance?.gameplayHUDController.SetLevelText("Tutorial");
         dummyPlayerController.gameObject.SetActive(true);
