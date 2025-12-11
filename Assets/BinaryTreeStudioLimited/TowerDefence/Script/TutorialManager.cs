@@ -6,7 +6,6 @@ public class TutorialManager : Singleton<TutorialManager>
 {
     [SerializeField] private DummyPlayerController dummyPlayerController;
 
-    private List<GameObject> spawnedDummies = new();
     private bool leftTutorialCompleted = false;
     private bool centerTutorialCompleted = false;
     private bool rightTutorialCompleted = false;
@@ -18,8 +17,6 @@ public class TutorialManager : Singleton<TutorialManager>
     {
         if (leftTutorialCompleted && centerTutorialCompleted && rightTutorialCompleted)
         {
-            spawnedDummies.ForEach(dummy => Destroy(dummy));
-            spawnedDummies.Clear();
             EnemyManager.Instance.GameStarted();
             this.enabled = false;
             PlayerManager.Instance.UnlockLeftFireball();
@@ -30,29 +27,32 @@ public class TutorialManager : Singleton<TutorialManager>
             dummyPlayerController.gameObject.SetActive(false);
             return;
         }
-        if (spawnedDummies.Count <= 0)
-        {
-            return;
-        }
-        for (int i = 0; i < spawnedDummies.Count; i++)
-        {
-            if (spawnedDummies[i] != null) return;
-        }
-        spawnedDummies.Clear();
         if (!leftTutorialCompleted)
         {
+            if (BattleManager.Instance.EnemyKillCount < playerCount)
+            {
+                return;
+            }
             leftTutorialCompleted = true;
             StartCenterTutorial();
             return;
         }
         else if (!centerTutorialCompleted)
         {
+            if (BattleManager.Instance.EnemyKillCount < 2 * playerCount)
+            {
+                return;
+            }
             centerTutorialCompleted = true;
             StartRightTutorial();
             return;
         }
         else if (!rightTutorialCompleted)
         {
+            if (BattleManager.Instance.EnemyKillCount < 3 * playerCount)
+            {
+                return;
+            }
             rightTutorialCompleted = true;
         }
     }
@@ -83,7 +83,6 @@ public class TutorialManager : Singleton<TutorialManager>
         {
             var dummy = EnemyManager.Instance.InstantiateEnemy(EnemyManager.EnemyType.Dummy);
             dummy.transform.position = new Vector3(PlayerManager.Instance.GetPlayerXPosition(i) - laneSpace, dummy.transform.position.y, 10);
-            spawnedDummies.Add(dummy);
         }
 
         UIManager.Instance?.tutorialPanelController.SetTutorialText("Perform left hook to cast a fireball to your left!");
@@ -102,7 +101,6 @@ public class TutorialManager : Singleton<TutorialManager>
         {
             var dummy = EnemyManager.Instance.InstantiateEnemy(EnemyManager.EnemyType.Dummy);
             dummy.transform.position = new Vector3(PlayerManager.Instance.GetPlayerXPosition(i), dummy.transform.position.y, 10);
-            spawnedDummies.Add(dummy);
         }
 
         UIManager.Instance?.tutorialPanelController.SetTutorialText("Perform uppercut to cast a fireball in front of you!");
@@ -122,7 +120,6 @@ public class TutorialManager : Singleton<TutorialManager>
         {
             var dummy = EnemyManager.Instance.InstantiateEnemy(EnemyManager.EnemyType.Dummy);
             dummy.transform.position = new Vector3(PlayerManager.Instance.GetPlayerXPosition(i) + laneSpace, dummy.transform.position.y, 10);
-            spawnedDummies.Add(dummy);
         }
 
         UIManager.Instance?.tutorialPanelController.SetTutorialText("Perform right hook to cast a fireball to your right!");

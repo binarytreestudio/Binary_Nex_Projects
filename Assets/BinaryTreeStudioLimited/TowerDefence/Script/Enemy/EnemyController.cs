@@ -312,6 +312,7 @@ public class EnemyController : MonoBehaviour
         ObjectPoolManager.Instance.GetEnemyDeathParticle().transform.position = transform.position + Vector3.up * particleEffectYOffset;
         AudioManager.Instance.PlayCriticalHitAudio();
 
+        BattleManager.Instance.OnEnemyDeath();
         // Clear all status effects
         ClearStatusEffect();
     }

@@ -77,6 +77,8 @@ public class BattleManager : Singleton<BattleManager>
     private bool gameStarted = false;
     public bool GameStarted => gameStarted;
     private List<GameObject> spawnedLanes = new();
+    private int enemyKillCount = 0;
+    public int EnemyKillCount => enemyKillCount;
 
     public Action<int> OnGameStarted;
 
@@ -327,6 +329,7 @@ public class BattleManager : Singleton<BattleManager>
         OnGameStarted?.Invoke(playerCount);
         PlayerManager.Instance.OnGameStarted(playerCount);
         AudioManager.Instance.PlayGameStartAudio();
+        UIManager.Instance.gameplayHUDController.SetKillCountText(enemyKillCount.ToString());
     }
 
     public void GameOver()
@@ -344,5 +347,11 @@ public class BattleManager : Singleton<BattleManager>
         AudioManager.Instance.PlayGameWinAudio();
         UIManager.Instance?.ShowPowerUpPanel();
         PlayerManager.Instance.LevelComplete();
+    }
+
+    public void OnEnemyDeath()
+    {
+        enemyKillCount++;
+        UIManager.Instance.gameplayHUDController.SetKillCountText(enemyKillCount.ToString());
     }
 }
