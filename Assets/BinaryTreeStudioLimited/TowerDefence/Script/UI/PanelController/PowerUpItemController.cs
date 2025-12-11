@@ -1,4 +1,3 @@
-using Jazz;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,19 +20,7 @@ public class PowerUpItemController : MonoBehaviour
         nameText.text = powerUpData.powerUpName;
         iconImage.sprite = powerUpData.icon;
         descriptionText.text = powerUpData.description;
-
-
-        //hardcode for now
-        if (powerUpData.powerUpType == PowerUpDatabase.PowerUpType.RecoverHP)
-        {
-            punchIcon.gameObject.SetActive(false);
-            iconImage.rectTransform.localPosition = Vector2.zero;
-        }
-        else if (powerUpData.powerUpType != PowerUpDatabase.PowerUpType.RecoverHP)  // if it is power up
-        {
-            punchIcon.gameObject.SetActive(true);
-            iconImage.rectTransform.localPosition = new Vector2(87, 26);
-        }
+        punchIcon.gameObject.SetActive(false);
 
     }
 

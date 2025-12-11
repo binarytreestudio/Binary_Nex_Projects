@@ -14,32 +14,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   powerUpDataList:
   - powerUpType: -50
-    icon: {fileID: 21300000, guid: 69e66dbbe3594444db56d55aec438f7b, type: 3}
+    icon: {fileID: 21300000, guid: 98371d92665e618479fa998c89216a74, type: 3}
     powerUpName: Recovery
     description: Heal 50HP
     maxStack: -1
   - powerUpType: 0
-    icon: {fileID: 21300000, guid: cb309b4a4b4000d4183d680888ed808d, type: 3}
+    icon: {fileID: 21300000, guid: edc6bcfe7c4222a49a293849ec179016, type: 3}
     powerUpName: Punch
     description: 
     maxStack: -1
   - powerUpType: 10
-    icon: {fileID: 21300000, guid: 06e30e73005aa1b4f93423cca27610c5, type: 3}
+    icon: {fileID: 21300000, guid: 6ee225106bc36b44da6c54e6b2b24221, type: 3}
     powerUpName: Ice Punch
     description: 
     maxStack: -1
   - powerUpType: 11
-    icon: {fileID: 21300000, guid: 3c3bd3d095c25f54a820d8ed4a8bbe55, type: 3}
+    icon: {fileID: 21300000, guid: 92b1dcba4f2d92c4c867487dedab94be, type: 3}
     powerUpName: Poison Punch
     description: 
     maxStack: -1
   - powerUpType: 12
-    icon: {fileID: 21300000, guid: 0f5a3ae9277fa6f4895cc329c1cd9358, type: 3}
+    icon: {fileID: 21300000, guid: 01ac292ad9bb34e46a0c147e5b1bf28c, type: 3}
     powerUpName: Multi-Fire Punch
     description: 
     maxStack: -1
   - powerUpType: 13
-    icon: {fileID: 21300000, guid: c92ed941468ea064d8afb9ddc85fc2e7, type: 3}
+    icon: {fileID: 21300000, guid: 3bfa90cc61594c240b803439d73bd91e, type: 3}
     powerUpName: Rock Punch
     description: 
     maxStack: -1

@@ -95,7 +95,7 @@ namespace Nex.Starter
         }
 
         // 步驟 2: 配置 Scoped Registry
-        private static void ConfigureScopedRegistry()
+        public static void ConfigureScopedRegistry()
         {
             var manager = PackageManager.Instance;
             manager.AddScopedRegistries(

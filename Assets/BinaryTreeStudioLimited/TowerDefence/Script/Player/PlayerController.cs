@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -33,7 +34,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float fireBallSpeed = 10f;
     [SerializeField] private int fireBallDamage = 1;
     [SerializeField] private float fireballCooldown = 0.5f;
-    [SerializeField] private List<Image> powerUpIconImages;
+    [SerializeField] private CardDisplaySystem punchCardSystem;
 
     [Header("Debug")]
     [SerializeField] private InputActionReference navigate;
@@ -65,7 +66,8 @@ public class PlayerController : MonoBehaviour
         leftSlashDetector.OnSlashDetected += OnLeftSlashDetected;
         rightSlashDetector.OnSlashDetected += OnRightSlashDetected;
 
-        powerUpIconImages.ForEach(image => image.sprite = DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(PowerUpDatabase.PowerUpType.NormalPunch).icon);
+        //powerUpIconImages.ForEach(image => image.sprite = DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(PowerUpDatabase.PowerUpType.NormalPunch).icon);
+        punchCardSystem.Initialize(DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(PowerUpDatabase.PowerUpType.NormalPunch).icon);
 
         for (int i = 0; i < 6; i++)
             appliedPowerUps.Add(null);
@@ -288,7 +290,7 @@ public class PlayerController : MonoBehaviour
                 AudioManager.Instance.PlayFireBallAudio();
             });
         }
-
+        punchCardSystem.MoveCardToBottom(index);
         var usedPowerUp = appliedPowerUps[0];
         appliedPowerUps.RemoveAt(0);
         appliedPowerUps.Add(usedPowerUp);
@@ -330,16 +332,24 @@ public class PlayerController : MonoBehaviour
 
     private void UpdatePowerUpIcons()
     {
+        punchCardSystem.SetPowerUpIcons(appliedPowerUps);
+
         for (int i = 0; i < appliedPowerUps.Count; i++)
         {
-            if (appliedPowerUps[i] != null && appliedPowerUps[i].powerUpType != PowerUpDatabase.PowerUpType.RecoverHP)
-            {
-                powerUpIconImages[i].sprite = DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(appliedPowerUps[i].powerUpType).icon;
-            }
-            else
-            {
-                powerUpIconImages[i].sprite = DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(PowerUpDatabase.PowerUpType.NormalPunch).icon;
-            }
+            //if (appliedPowerUps[i] != null && appliedPowerUps[i].powerUpType != PowerUpDatabase.PowerUpType.RecoverHP)
+            //    continue;
+
+            //punchCardSystem.SetPowerUpIcon(DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(appliedPowerUps[i].powerUpType).icon);
+            //if (appliedPowerUps[i] != null && appliedPowerUps[i].powerUpType != PowerUpDatabase.PowerUpType.RecoverHP)
+            //{
+            //    punchCardSystem.SetFirstPowerUpIcon(DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(appliedPowerUps[i].powerUpType).icon);
+            //    //powerUpIconImages[i].sprite = DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(appliedPowerUps[i].powerUpType).icon;
+            //}
+            //else
+            //{
+            //    punchCardSystem.SetFirstPowerUpIcon(DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(PowerUpDatabase.PowerUpType.NormalPunch).icon);
+            //    //powerUpIconImages[i].sprite = DatabaseManager.Instance.powerUpDatabase.GetPowerUpData(PowerUpDatabase.PowerUpType.NormalPunch).icon;
+            //}
         }
     }
 

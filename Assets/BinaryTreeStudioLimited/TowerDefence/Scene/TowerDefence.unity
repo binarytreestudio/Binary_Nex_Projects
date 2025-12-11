@@ -3700,7 +3700,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bae67df60ad63e458f40d6a277478bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skipNexSetup: 0
+  skipNexSetup: 1
   setupConfig:
     setupPanel: {fileID: 1560336239}
     setupInstruction: {fileID: 1123257251}
@@ -3747,6 +3747,9 @@ MonoBehaviour:
   - {fileID: 2081879111}
   - {fileID: 831689383}
   - {fileID: 1189769140}
+  submit: {fileID: 392368643174621059, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  back: {fileID: 7727032971491509709, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  debugObjects: []
 --- !u!1 &1075016628
 GameObject:
   m_ObjectHideFlags: 0
@@ -5338,6 +5341,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerHealthBarImage: {fileID: 1585022243}
   levelText: {fileID: 1405696896}
+  killCountText: {fileID: 0}
 --- !u!1 &1585022241
 GameObject:
   m_ObjectHideFlags: 0
@@ -5457,6 +5461,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d426fd1e833b644a8248b792e471e25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dummyPlayerController: {fileID: 0}
 --- !u!1 &1614340978
 GameObject:
   m_ObjectHideFlags: 0
@@ -5513,6 +5518,8 @@ MonoBehaviour:
   firstSelected: {fileID: 43204101}
   defaultLeftSlashDetector: {fileID: 367878457}
   defaultRightSlashDetector: {fileID: 1252647750}
+  pointerPrefab: {fileID: 5763696414097147459, guid: 96771930e9ca08949bcca8c18477aa74, type: 3}
+  pointerYOffSet: 170
 --- !u!1001 &1628454910
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6285,11 +6292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad614290e11d07744b70b75eb63a6bb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialImage: {fileID: 640552075}
   tutorialText: {fileID: 631085881}
-  leftHookSprite: {fileID: 21300000, guid: e7b7842adb7c2b34bb8aa7247cf92a2f, type: 3}
-  uppercutSprite: {fileID: 21300000, guid: cb309b4a4b4000d4183d680888ed808d, type: 3}
-  rightHookSprite: {fileID: 21300000, guid: 3c3bd3d095c25f54a820d8ed4a8bbe55, type: 3}
 --- !u!1 &1987213970
 GameObject:
   m_ObjectHideFlags: 0

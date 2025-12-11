@@ -31,7 +31,7 @@ namespace Nex.Starter
 
         private class StarterState : ScriptableObject
         {
-            public string accessToken = "VXxq0uuN5aoTb2N0A2HXKEtD1ru6K6H+I58QF1uk/ShjjqiGzOVR04yjvR4eKcGL";
+            public string accessToken = "";
         }
 
         private StarterState activeState = null!;
