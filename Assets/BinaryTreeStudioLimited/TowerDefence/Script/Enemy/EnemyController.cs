@@ -102,7 +102,6 @@ public class EnemyController : MonoBehaviour
     // =========================================================
     private void Update()
     {
-        Debug.Log(modifiedStats.health);
         if (isDead)
         {
             if (transform.position.y < -10f)

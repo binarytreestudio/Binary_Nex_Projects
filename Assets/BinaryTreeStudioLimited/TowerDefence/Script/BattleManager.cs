@@ -7,6 +7,8 @@ using System.Threading;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 public class BattleManager : Singleton<BattleManager>
 {
     [Serializable]
@@ -64,6 +66,11 @@ public class BattleManager : Singleton<BattleManager>
     [SerializeField] private LaneSetting laneSetting = LaneSetting.Straight;
     [SerializeField] private bool skipTutorial = false;
     public List<SlashDetector> slashDetectors = new();
+
+    [Header("Debug")]
+    [SerializeField] private InputActionReference submit;
+    [SerializeField] private InputActionReference back;
+    [SerializeField] private List<GameObject> debugObjects;
     public LaneSetting LaneType => laneSetting;
 
     private int playerCount = 1;
@@ -80,6 +87,23 @@ public class BattleManager : Singleton<BattleManager>
         mdkController.StartRunning().Forget();
 
         Run(destroyCancellationToken).Forget();
+    }
+
+    private void Update()
+    {
+        if (!gameStarted) return;
+
+        if (submit.action.WasPressedThisFrame())
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        if (back.action.WasPressedThisFrame())
+        {
+            foreach (var item in debugObjects)
+            {
+                item.SetActive(!item.activeSelf);
+            }
+        }
     }
 
     private async UniTaskVoid Run(CancellationToken cancellationToken)

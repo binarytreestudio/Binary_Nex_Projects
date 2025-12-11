@@ -3700,7 +3700,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bae67df60ad63e458f40d6a277478bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skipNexSetup: 1
+  skipNexSetup: 0
   setupConfig:
     setupPanel: {fileID: 1560336239}
     setupInstruction: {fileID: 1123257251}
@@ -5457,10 +5457,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d426fd1e833b644a8248b792e471e25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnedDummies: []
-  leftTutorialCompleted: 0
-  centerTutorialCompleted: 0
-  rightTutorialCompleted: 0
 --- !u!1 &1614340978
 GameObject:
   m_ObjectHideFlags: 0

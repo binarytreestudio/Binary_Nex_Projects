@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/PlaygroundSDKEssentials/Examples/SlashDetection/SlashDetection.unity
     guid: 4963660483d07461ba524d947b7b8762
   - enabled: 1
-    path: Assets/PlaygroundSDKEssentials/Examples/SlashDetection/SlashDetection 1.unity
+    path: Assets/BinaryTreeStudioLimited/TowerDefence/Scene/SlashDetection 1.unity
     guid: ee7b27aacf02da74da77feeac5026d39
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

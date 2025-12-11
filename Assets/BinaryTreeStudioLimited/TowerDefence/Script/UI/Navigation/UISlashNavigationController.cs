@@ -6,11 +6,16 @@ public class UISlashNavigationController : MonoBehaviour
     [SerializeField] private GameObject firstSelected;
     [SerializeField] private Nex.Essentials.SlashDetector defaultLeftSlashDetector;
     [SerializeField] private Nex.Essentials.SlashDetector defaultRightSlashDetector;
+    [SerializeField] private GameObject pointerPrefab;
+    [SerializeField] private float pointerYOffSet = 1;
+
+    private GameObject pointer;
 
     private bool gameStarted = false;
 
     void OnEnable()
     {
+        pointer = Instantiate(pointerPrefab, transform);
         EventSystem.current.SetSelectedGameObject(firstSelected);
 
         if (BattleManager.Instance.GameStarted)
@@ -37,6 +42,12 @@ public class UISlashNavigationController : MonoBehaviour
             defaultRightSlashDetector.OnSlashDetected -= RightSlashDetected;
         }
         gameStarted = false;
+        Destroy(pointer);
+    }
+
+    private void Update()
+    {
+        pointer.transform.position = EventSystem.current.currentSelectedGameObject.transform.position + Vector3.up * pointerYOffSet;
     }
 
     private void OnPlayerSlashDetected(int playerIndex, Jazz.Handedness handedness, Vector2 direction)

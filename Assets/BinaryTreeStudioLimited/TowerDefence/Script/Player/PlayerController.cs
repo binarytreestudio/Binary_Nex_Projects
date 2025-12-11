@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     public enum HitAngle
     {
-        LeftHook = 60,
-        RightHook = 120,
+        LeftHook = 45,
+        RightHook = 135,
         UpperCut = 90
     }
 
@@ -23,6 +24,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Nex.Essentials.SlashDetector leftSlashDetector = null!;
     [SerializeField] Nex.Essentials.SlashDetector rightSlashDetector = null!;
     [SerializeField] private float hookAngleRange = 60f;
+    [SerializeField] private float uppercutAngleRange = 30f;
 
     [Header("IK Avatar Controller")]
     [SerializeField] private IKAvatarController ikAvatarController = null!;
@@ -32,6 +34,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int fireBallDamage = 1;
     [SerializeField] private float fireballCooldown = 0.5f;
     [SerializeField] private List<Image> powerUpIconImages;
+
+    [Header("Debug")]
+    [SerializeField] private InputActionReference navigate;
 
     private bool gameStarted = false;
     private int playerIndex;
@@ -76,15 +81,15 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (navigate.action.ReadValue<Vector2>().x < 0)
         {
             SlashDetected(Jazz.Handedness.Left, (Vector2.right + Vector2.up).normalized);
         }
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if (navigate.action.ReadValue<Vector2>().x > 0)
         {
             SlashDetected(Jazz.Handedness.Right, (Vector2.left + Vector2.up).normalized);
         }
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (navigate.action.ReadValue<Vector2>().y > 0)
         {
             SlashDetected(Jazz.Handedness.Right, Vector2.up);
         }
@@ -104,7 +109,6 @@ public class PlayerController : MonoBehaviour
 
     void SlashDetected(Jazz.Handedness handedness, Vector2 direction)
     {
-        Debug.Log($"Player Controller {playerIndex} {handedness} slash detected, direction: {direction}");
         PlayerManager.Instance.PlayerSlashDetected(playerIndex, handedness, direction);
         if (!gameStarted)
             return;
@@ -114,34 +118,13 @@ public class PlayerController : MonoBehaviour
             return;
         float angleDegrees = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         angleDegrees = (angleDegrees + 360) % 360;
+        Debug.Log($"Player Controller {playerIndex} {handedness} slash detected, angle: {angleDegrees}");
 
-        float leftHookDifference = Mathf.Abs(angleDegrees - (float)HitAngle.LeftHook);
-        float rightHookDifference = Mathf.Abs(angleDegrees - (float)HitAngle.RightHook);
-        float upperCutDifference = Mathf.Abs(angleDegrees - (float)HitAngle.UpperCut);
+        //float leftHookDifference = Mathf.Abs(angleDegrees - (float)HitAngle.LeftHook);
+        //float rightHookDifference = Mathf.Abs(angleDegrees - (float)HitAngle.RightHook);
+        //float upperCutDifference = Mathf.Abs(angleDegrees - (float)HitAngle.UpperCut);
 
-        bool leftHookAngleCheck = angleDegrees > (float)HitAngle.LeftHook - hookAngleRange / 2 && angleDegrees < (float)HitAngle.LeftHook + hookAngleRange / 2;
-        if (handedness == Jazz.Handedness.Left && leftHookAngleCheck && leftHookDifference < upperCutDifference)
-        {
-            if (isLeftFireballLocked)
-                return;
-
-            //Left Hook
-            Shoot(-1);
-            lastLeftHandShootTime = Time.time;
-            return;
-        }
-        bool rightHookAngleCheck = angleDegrees > (float)HitAngle.RightHook - hookAngleRange / 2 && angleDegrees < (float)HitAngle.RightHook + hookAngleRange / 2;
-        if (handedness == Jazz.Handedness.Right && rightHookAngleCheck && rightHookDifference < upperCutDifference)
-        {
-            if (isRightFireballLocked)
-                return;
-
-            //Right Hook
-            Shoot(1);
-            lastRightHandShootTime = Time.time;
-            return;
-        }
-        bool upperCutAngleCheck = angleDegrees > (float)HitAngle.UpperCut - hookAngleRange / 2 && angleDegrees < (float)HitAngle.UpperCut + hookAngleRange / 2;
+        bool upperCutAngleCheck = angleDegrees > (float)HitAngle.UpperCut - uppercutAngleRange / 2 && angleDegrees < (float)HitAngle.UpperCut + uppercutAngleRange / 2;
         if (upperCutAngleCheck)
         {
             if (isMiddleFireballLocked)
@@ -158,7 +141,29 @@ public class PlayerController : MonoBehaviour
                     lastRightHandShootTime = Time.time;
                     break;
             }
-            return;
+        }
+        else
+        {
+            bool leftHookAngleCheck = angleDegrees > (float)HitAngle.LeftHook - hookAngleRange / 2 && angleDegrees < (float)HitAngle.LeftHook + hookAngleRange / 2;
+            if (handedness == Jazz.Handedness.Left && leftHookAngleCheck)
+            {
+                if (isLeftFireballLocked)
+                    return;
+
+                //Left Hook
+                Shoot(-1);
+                lastLeftHandShootTime = Time.time;
+            }
+            bool rightHookAngleCheck = angleDegrees > (float)HitAngle.RightHook - hookAngleRange / 2 && angleDegrees < (float)HitAngle.RightHook + hookAngleRange / 2;
+            if (handedness == Jazz.Handedness.Right && rightHookAngleCheck)
+            {
+                if (isRightFireballLocked)
+                    return;
+
+                //Right Hook
+                Shoot(1);
+                lastRightHandShootTime = Time.time;
+            }
         }
     }
 
