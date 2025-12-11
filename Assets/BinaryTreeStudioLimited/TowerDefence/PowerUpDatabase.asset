@@ -35,7 +35,7 @@ MonoBehaviour:
     maxStack: -1
   - powerUpType: 12
     icon: {fileID: 21300000, guid: 01ac292ad9bb34e46a0c147e5b1bf28c, type: 3}
-    powerUpName: Multi-Fire Punch
+    powerUpName: Multi Punch
     description: 
     maxStack: -1
   - powerUpType: 13

@@ -14,7 +14,10 @@ public class PowerUpPanelController : MonoBehaviour
     void OnEnable()
     {
         init = false;
-        PlayerManager.Instance.OnPlayerSlashDetected += OnClickPowerUp;
+        PlayerManager.Instance.OnPlayerLeftHookDetected += PickLeftPowerUp;
+        PlayerManager.Instance.OnPlayerRightHookDetected += PickRightPowerUp;
+        PlayerManager.Instance.OnPlayerUppercutDetected += PickMiddlePowerUp;
+
 
         var randomPowerUps = DatabaseManager.Instance.powerUpDatabase.RandomPowerUps(powerUpItemControllers.Count);
         ShownPowerUp(randomPowerUps);
@@ -27,7 +30,9 @@ public class PowerUpPanelController : MonoBehaviour
 
     void OnDisable()
     {
-        PlayerManager.Instance.OnPlayerSlashDetected -= OnClickPowerUp;
+        PlayerManager.Instance.OnPlayerLeftHookDetected -= PickLeftPowerUp;
+        PlayerManager.Instance.OnPlayerRightHookDetected -= PickRightPowerUp;
+        PlayerManager.Instance.OnPlayerUppercutDetected -= PickMiddlePowerUp;
     }
 
 
@@ -39,39 +44,19 @@ public class PowerUpPanelController : MonoBehaviour
         }
     }
 
-    public void OnClickPowerUp(int playerIndex, Handedness handedness, Vector2 direction)
+    private void PickLeftPowerUp(int playerIndex)
     {
-        if (!init)
-            return;
+        powerUpItemControllers[0].ApplyPowerUp(playerIndex);
+    }
 
-        float angleDegrees = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        angleDegrees = (angleDegrees + 360) % 360;
+    private void PickMiddlePowerUp(int playerIndex)
+    {
+        powerUpItemControllers[1].ApplyPowerUp(playerIndex);
+    }
 
-        float leftHookDifference = Mathf.Abs(angleDegrees - (float)PlayerController.HitAngle.LeftHook);
-        float rightHookDifference = Mathf.Abs(angleDegrees - (float)PlayerController.HitAngle.RightHook);
-        float upperCutDifference = Mathf.Abs(angleDegrees - (float)PlayerController.HitAngle.UpperCut);
-
-        bool leftHookAngleCheck = angleDegrees > (float)PlayerController.HitAngle.LeftHook - 60 / 2 && angleDegrees < (float)PlayerController.HitAngle.LeftHook + 60 / 2;
-        if (handedness == Jazz.Handedness.Left && leftHookAngleCheck && leftHookDifference < upperCutDifference)
-        {
-            //Left Hook
-            powerUpItemControllers[0].ApplyPowerUp(playerIndex);
-            return;
-        }
-        bool rightHookAngleCheck = angleDegrees > (float)PlayerController.HitAngle.RightHook - 60 / 2 && angleDegrees < (float)PlayerController.HitAngle.RightHook + 60 / 2;
-        if (handedness == Jazz.Handedness.Right && rightHookAngleCheck && rightHookDifference < upperCutDifference)
-        {
-            //Right Hook
-            powerUpItemControllers[2].ApplyPowerUp(playerIndex);
-            return;
-        }
-        bool upperCutAngleCheck = angleDegrees > (float)PlayerController.HitAngle.UpperCut - 60 / 2 && angleDegrees < (float)PlayerController.HitAngle.UpperCut + 60 / 2;
-        if (upperCutAngleCheck)
-        {
-            //Uppercut
-            powerUpItemControllers[1].ApplyPowerUp(playerIndex);
-            return;
-        }
+    private void PickRightPowerUp(int playerIndex)
+    {
+        powerUpItemControllers[2].ApplyPowerUp(playerIndex);
     }
 }
 

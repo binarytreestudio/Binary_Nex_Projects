@@ -129,6 +129,7 @@ public class PlayerController : MonoBehaviour
         bool upperCutAngleCheck = angleDegrees > (float)HitAngle.UpperCut - uppercutAngleRange / 2 && angleDegrees < (float)HitAngle.UpperCut + uppercutAngleRange / 2;
         if (upperCutAngleCheck)
         {
+            PlayerManager.Instance.PlayerUppercutDetected(playerIndex);
             if (isMiddleFireballLocked)
                 return;
 
@@ -149,6 +150,7 @@ public class PlayerController : MonoBehaviour
             bool leftHookAngleCheck = angleDegrees > (float)HitAngle.LeftHook - hookAngleRange / 2 && angleDegrees < (float)HitAngle.LeftHook + hookAngleRange / 2;
             if (handedness == Jazz.Handedness.Left && leftHookAngleCheck)
             {
+                PlayerManager.Instance.PlayerLeftHookDetected(playerIndex);
                 if (isLeftFireballLocked)
                     return;
 
@@ -159,6 +161,7 @@ public class PlayerController : MonoBehaviour
             bool rightHookAngleCheck = angleDegrees > (float)HitAngle.RightHook - hookAngleRange / 2 && angleDegrees < (float)HitAngle.RightHook + hookAngleRange / 2;
             if (handedness == Jazz.Handedness.Right && rightHookAngleCheck)
             {
+                PlayerManager.Instance.PlayerRightHookDetected(playerIndex);
                 if (isRightFireballLocked)
                     return;
 

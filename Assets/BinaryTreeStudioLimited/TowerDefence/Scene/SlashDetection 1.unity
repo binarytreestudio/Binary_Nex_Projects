@@ -1224,7 +1224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bae67df60ad63e458f40d6a277478bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skipNexSetup: 1
+  skipNexSetup: 0
   setupConfig:
     setupPanel: {fileID: 1690334179}
     setupInstruction: {fileID: 1633135655}
@@ -1261,7 +1261,7 @@ MonoBehaviour:
   lanePrefab: {fileID: 5388462322101484927, guid: ffa0da745ef7fd84baf92d0c5ed1d424, type: 3}
   restartGameDelay: 4
   laneSetting: 0
-  skipTutorial: 1
+  skipTutorial: 0
   slashDetectors:
   - {fileID: 946155815}
   - {fileID: 2103986695}
@@ -2304,7 +2304,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1

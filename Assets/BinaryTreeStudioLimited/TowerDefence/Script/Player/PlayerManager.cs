@@ -16,6 +16,10 @@ public class PlayerManager : Singleton<PlayerManager>
     private List<PlayerMapping> playerMapping = new();
 
     public Action<int, Jazz.Handedness, Vector2> OnPlayerSlashDetected;
+    public Action<int> OnPlayerLeftHookDetected; //int: playerIndex
+    public Action<int> OnPlayerRightHookDetected; //int: playerIndex
+    public Action<int> OnPlayerUppercutDetected; //int: playerIndex
+
 
     void Start()
     {
@@ -159,6 +163,19 @@ public class PlayerManager : Singleton<PlayerManager>
     public void UnlockMiddleFireball()
     {
         playerMapping.ForEach(player => player.playerController.UnlockMiddleFireball());
+    }
+
+    public void PlayerLeftHookDetected(int playerIndex)
+    {
+        OnPlayerLeftHookDetected?.Invoke(playerIndex);
+    }
+    public void PlayerRightHookDetected(int playerIndex)
+    {
+        OnPlayerRightHookDetected?.Invoke(playerIndex);
+    }
+    public void PlayerUppercutDetected(int playerIndex)
+    {
+        OnPlayerUppercutDetected?.Invoke(playerIndex);
     }
 }
 
